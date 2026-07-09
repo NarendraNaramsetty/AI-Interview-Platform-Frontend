@@ -1,26 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Users, Search, Filter, ShieldAlert, Check, X, ShieldCheck, Eye, EyeOff, Calendar, Award, BookOpen, Clock, Activity, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
-
-const INITIAL_USERS = [
-  { id: 'usr-201', name: 'Alex Developer', email: 'alex@prepai.dev', tier: 'Pro Member', status: 'Active', joined: '2026-03-10', totalInterviews: 12, billing: 'Monthly - $15.00' },
-  { id: 'usr-202', name: 'Taylor Code', email: 'taylor@prepai.dev', tier: 'Free Tier', status: 'Active', joined: '2026-04-18', totalInterviews: 3, billing: 'None' },
-  { id: 'usr-203', name: 'Jordan Stack', email: 'jordan@prepai.dev', tier: 'Enterprise Team', status: 'Active', joined: '2025-11-05', totalInterviews: 45, billing: 'Annual - $39.00/mo' },
-  { id: 'usr-204', name: 'Casey Product', email: 'casey@prepai.dev', tier: 'Pro Member', status: 'Suspended', joined: '2026-01-20', totalInterviews: 8, billing: 'Monthly - $15.00' },
-  { id: 'usr-205', name: 'Sam Script', email: 'sam@prepai.dev', tier: 'Free Tier', status: 'Active', joined: '2026-06-02', totalInterviews: 1, billing: 'None' },
-  { id: 'usr-206', name: 'Morgan DevOps', email: 'morgan@prepai.dev', tier: 'Pro Member', status: 'Active', joined: '2026-05-14', totalInterviews: 15, billing: 'Annual - $15.00/mo' },
-  { id: 'usr-207', name: 'Reese Sys', email: 'reese@prepai.dev', tier: 'Free Tier', status: 'Suspended', joined: '2026-06-28', totalInterviews: 0, billing: 'None' }
-];
-
-const USER_MOCK_HISTORY = [
-  { id: 'int-1', role: 'Frontend Engineer', date: '2026-06-28', score: 84, status: 'Completed' },
-  { id: 'int-2', role: 'Backend Engineer', date: '2026-06-15', score: 68, status: 'Completed' },
-  { id: 'int-3', role: 'System Design Sandbox', date: '2026-07-01', score: 0, status: 'Incomplete' }
-];
+import { Users, Search, Filter, ShieldAlert, Check, X, ShieldCheck, Eye, EyeOff, Calendar, Award, BookOpen, Clock, Activity, CreditCard, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { users } from '../../services/users';
 
 export default function AdminUsersPage() {
   const { theme } = useAuthStore();
-  const [users, setUsers] = useState(INITIAL_USERS);
+  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -30,6 +15,22 @@ export default function AdminUsersPage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    users.leaderboard().then((data) => {
+      const items = Array.isArray(data) ? data : data?.results || data?.data || [];
+      const mapped = items.map(u => ({
+        id: u.id,
+        name: [u.user?.first_name, u.user?.last_name].filter(Boolean).join(' ') || 'User',
+        email: u.user?.email || '',
+        tier: u.user?.role || 'Free Tier',
+        status: u.user?.is_active !== false ? 'Active' : 'Suspended',
+        joined: u.created_at ? String(u.created_at).split('T')[0] : '2026-07-01',
+        totalInterviews: 12
+      }));
+      setUsers(mapped);
+    }).catch(() => setUsers([]));
+  }, []);
 
   const handleToggleStatus = (id) => {
     setUsers(prev => prev.map(u => {
@@ -311,7 +312,7 @@ export default function AdminUsersPage() {
                   detailTab === 'history' ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-gray-400'
                 }`}
               >
-                Mock History
+                History
               </button>
               <button
                 onClick={() => setDetailTab('billing')}
@@ -328,19 +329,9 @@ export default function AdminUsersPage() {
               {detailTab === 'history' ? (
                 <div className="space-y-3">
                   <h4 className="text-xs font-bold uppercase text-gray-400 tracking-wider">User Simulation History Logs</h4>
-                  {USER_MOCK_HISTORY.map((h) => (
-                    <div key={h.id} className="flex justify-between items-center p-3 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 text-xs">
-                      <div className="space-y-0.5 text-left">
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">{h.role}</span>
-                        <p className="text-[10px] text-gray-400">{h.date} • {h.status}</p>
-                      </div>
-                      {h.status === 'Completed' ? (
-                        <span className="font-bold text-indigo-500">{h.score}% Rating</span>
-                      ) : (
-                        <span className="text-gray-400">Incomplete</span>
-                      )}
-                    </div>
-                  ))}
+                  <div className="rounded-xl border border-dashed border-light-border dark:border-dark-border bg-light-hover/20 dark:bg-dark-hover/10 p-4 text-xs text-gray-500 dark:text-gray-400">
+                    Per-user interview history is not exposed by the current backend.
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4 text-xs">

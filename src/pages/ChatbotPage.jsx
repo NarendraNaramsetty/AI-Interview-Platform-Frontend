@@ -1,21 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, User, MessageSquare, Trash2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
-
-const SUGGESTIONS = [
-  'Help me optimize my resume for ATS scans.',
-  'How do I answer "What is your greatest weakness"?',
-  'Explain the differences between state and props in React.',
-  'What are some tips to calm down during mock technical sessions?'
-];
-
-const PRESETS = {
-  resume: "For a top-tier ATS Resume score, make sure you:\n1. Quantify achievements (e.g., 'Improved load speeds by 40%').\n2. Include standard keyword densities like 'TypeScript', 'Jest', or 'CI/CD'.\n3. Use clear, single-column formatting. Check out our Resume Sync scanner page!",
-  weakness: "When interviewers ask for weaknesses, use the 'Actionable Growth' format:\n1. State a real technical or soft skill gap (e.g., public speaking or a specific framework).\n2. Explain what active steps you are taking to fix it (e.g., taking certifications, speaking up in standups).\n3. Keep it brief and constructive.",
-  react: "React props are immutable parameters passed down from a parent component. State is mutable local data managed within the component itself. Changing state or props triggers React's reconciliation engine (Virtual DOM) to re-render the view.",
-  calm: "To handle technical anxiety:\n1. Speak slowly to give yourself time to think.\n2. Ask clarifying questions before coding.\n3. Think out loud! Interviewers care more about your analytical trajectory than having immediate perfect code.",
-  default: "I'm your AI Prep coach. I can help guide your mock preparation, review common technical questions, analyze keywords, or offer design advice. Try asking about 'React', 'resume optimization tips', or 'how to handle technical questions'!"
-};
+import { chatbot } from '../services/chatbot';
 
 export default function ChatbotPage() {
   const { user } = useAuthStore();
@@ -27,22 +13,30 @@ export default function ChatbotPage() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
   const scrollRef = useRef(null);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const getResponseText = (text) => {
-    const clean = text.toLowerCase();
-    if (clean.includes('resume') || clean.includes('ats')) return PRESETS.resume;
-    if (clean.includes('weakness') || clean.includes('strength')) return PRESETS.weakness;
-    if (clean.includes('react') || clean.includes('state') || clean.includes('prop')) return PRESETS.react;
-    if (clean.includes('calm') || clean.includes('anxiety') || clean.includes('stress')) return PRESETS.calm;
-    return PRESETS.default;
-  };
+  useEffect(() => {
+    chatbot.currentSession().then((data) => {
+      setSessionId(data?.id || data?.uuid || null);
+    }).catch(() => setSessionId(null));
 
-  const handleSend = (text) => {
+    chatbot.prompts().then((data) => {
+      const promptRows = Array.isArray(data) ? data : data?.results || data?.data || [];
+      const chipText = promptRows
+          .map((item) => item?.name || item?.description || item?.system_prompt || '')
+          .filter(Boolean)
+          .slice(0, 4);
+      setSuggestions(chipText);
+    }).catch(() => setSuggestions([]));
+  }, []);
+
+  const handleSend = async (text) => {
     if (!text.trim()) return;
     
     // Add user message
@@ -51,12 +45,15 @@ export default function ChatbotPage() {
     setInputText('');
     setIsTyping(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
+    try {
+      const reply = await chatbot.sendMessage({ session_id: sessionId, message: text });
       setIsTyping(false);
-      const reply = getResponseText(text);
-      setMessages(prev => [...prev, { sender: 'ai', text: reply }]);
-    }, 1200);
+      const responseText = reply?.message || reply?.text || reply?.response || 'No response returned by the backend.';
+      setMessages(prev => [...prev, { sender: 'ai', text: responseText }]);
+    } catch (error) {
+      setIsTyping(false);
+      setMessages(prev => [...prev, { sender: 'ai', text: error.message || 'Chat request failed.' }]);
+    }
   };
 
   const clearChat = () => {
@@ -69,7 +66,7 @@ export default function ChatbotPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-6 h-[calc(100vh-10rem)] min-h-[500px]">
+    <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-6 h-[calc(100vh-10rem)] min-h-125">
       
       {/* Sidebar - Coach info & Actions */}
       <div className="w-full md:w-1/4 flex flex-col justify-between p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm shrink-0">
@@ -121,7 +118,7 @@ export default function ChatbotPage() {
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs ${
                   isAi 
                     ? 'bg-indigo-600 text-white' 
-                    : 'bg-gradient-to-tr from-indigo-500 to-violet-500 text-white'
+                    : 'bg-linear-to-tr from-indigo-500 to-violet-500 text-white'
                 }`}>
                   {isAi ? <Sparkles className="h-4.5 w-4.5" /> : (user?.name ? user.name.charAt(0) : <User className="h-4 w-4" />)}
                 </div>
@@ -158,7 +155,7 @@ export default function ChatbotPage() {
           <div className="px-5 pb-2 pt-4 border-t border-light-border dark:border-dark-border">
             <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-2">Suggested Inquiries</p>
             <div className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((s, idx) => (
+              {suggestions.map((s, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSend(s)}
@@ -168,6 +165,9 @@ export default function ChatbotPage() {
                   <ArrowRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               ))}
+              {!suggestions.length && (
+                <p className="text-xs text-gray-400">No prompt templates are available yet.</p>
+              )}
             </div>
           </div>
         )}

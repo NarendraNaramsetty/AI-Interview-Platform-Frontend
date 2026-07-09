@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { mockAiService } from '../services/mockAiService';
+import { resume } from '../services/resume';
+
+const mapAnalysis = (analysis) => ({
+  atsScore: analysis?.ats_score ?? analysis?.atsScore ?? analysis?.overall_score ?? 0,
+  parsedSkills: analysis?.missing_skills || analysis?.parsed_skills || analysis?.parsedSkills || [],
+  recommendedRoles: analysis?.recommended_roles || analysis?.recommendedRoles || [],
+  strengths: analysis?.strengths || [],
+  weaknesses: analysis?.weaknesses || [],
+  actionableTips: analysis?.summary ? [analysis.summary] : []
+});
 
 export const useResumeStore = create((set) => ({
   file: null,
@@ -25,15 +34,18 @@ export const useResumeStore = create((set) => ({
     set({ file: uploadedFile, isParsing: true, parsingProgress: 0, parsingStatus: 'Initializing...', error: null });
 
     try {
-      const response = await mockAiService.parseResume(uploadedFile, (progress, status) => {
-        set({ parsingProgress: progress, parsingStatus: status });
-      });
+      const formData = new FormData();
+      formData.append('file', uploadedFile);
+      set({ parsingProgress: 25, parsingStatus: 'Uploading...' });
+      const response = await resume.upload(formData);
+      const analysis = response?.analysis || response?.analysis || response;
+      const parsedData = mapAnalysis(analysis);
 
-      localStorage.setItem('parsed_resume', JSON.stringify(response.analysis));
-      set({ parsedData: response.analysis, isParsing: false });
+      localStorage.setItem('parsed_resume', JSON.stringify(parsedData));
+      set({ parsedData, isParsing: false, parsingProgress: 100, parsingStatus: 'Completed' });
       return true;
     } catch (err) {
-      set({ error: 'Failed to process resume. Please try again.', isParsing: false });
+      set({ error: err?.message || 'Failed to process resume. Please try again.', isParsing: false });
       return false;
     }
   },
@@ -41,5 +53,25 @@ export const useResumeStore = create((set) => ({
   clearResume: () => {
     localStorage.removeItem('parsed_resume');
     set({ file: null, parsedData: null, error: null, parsingProgress: 0, parsingStatus: '' });
+  },
+
+  hydrateResume: async () => {
+    try {
+      const list = await resume.list();
+      const items = Array.isArray(list) ? list : list?.results || list?.data || [];
+      if (items.length > 0) {
+        const latest = items[0];
+        const detail = await resume.detail(latest.id);
+        const analysis = detail?.analysis || detail;
+        const parsedData = mapAnalysis(analysis);
+        localStorage.setItem('parsed_resume', JSON.stringify(parsedData));
+        set({ parsedData });
+        return parsedData;
+      }
+      return null;
+    } catch (err) {
+      console.error('Failed to hydrate resume details:', err);
+      return null;
+    }
   }
 }));

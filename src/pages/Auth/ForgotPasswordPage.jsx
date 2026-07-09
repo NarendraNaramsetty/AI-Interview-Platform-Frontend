@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, ArrowLeft, KeyRound, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
+import { auth } from '../../services/auth';
 
 export default function ForgotPasswordPage() {
   const { theme } = useAuthStore();
@@ -11,21 +12,19 @@ export default function ForgotPasswordPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg('');
 
-    // Mock API query delay
-    setTimeout(() => {
+    try {
+      await auth.forgotPassword({ email });
+      setIsSuccess(true);
+    } catch (error) {
+      setErrorMsg(error?.message || 'No account found matching this email address.');
+    } finally {
       setIsLoading(false);
-      // Simulate simple error check
-      if (email.includes('error')) {
-        setErrorMsg('No account found matching this email address.');
-      } else {
-        setIsSuccess(true);
-      }
-    }, 1500);
+    }
   };
 
   const wrapperStyle = theme === 'dark' 
@@ -50,7 +49,7 @@ export default function ForgotPasswordPage() {
             </div>
             
             <button
-              onClick={() => navigate('/reset-password')}
+              onClick={() => navigate('/reset-password', { state: { email } })}
               className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl text-xs transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-1"
             >
               <span>Proceed to Reset Password</span>

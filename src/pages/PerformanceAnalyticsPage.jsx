@@ -1,68 +1,106 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import { useInterviewStore } from '../store/useInterviewStore';
+import { dashboard } from '../services/dashboard';
 import { 
-  LineChart, Line, AreaChart, Area, BarChart, Bar, RadarChart, Radar, 
-  PolarGrid, PolarAngleAxis, PolarRadiusAxis, XAxis, YAxis, CartesianGrid, 
-  Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell 
+  TrendingUp, 
+  BarChart2, 
+  BrainCircuit, 
+  Target, 
+  Activity, 
+  ArrowUpRight,
+  Clock,
+  CheckCircle,
+  Flame
+} from 'lucide-react';
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  BarChart, Bar,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { TrendingUp, Award, Clock, Target, Zap, Activity, BrainCircuit, Play, CheckCircle, Flame, ArrowUpRight, BarChart2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const MOCK_WEEKLY_DATA = [
-  { name: 'Week 1', overall: 65, technical: 70, communication: 60, confidence: 64, coding: 68, hr: 62 },
-  { name: 'Week 2', overall: 72, technical: 75, communication: 70, confidence: 72, coding: 74, hr: 70 },
-  { name: 'Week 3', overall: 78, technical: 82, communication: 75, confidence: 78, coding: 80, hr: 74 },
-  { name: 'Week 4', overall: 85, technical: 88, communication: 82, confidence: 85, coding: 90, hr: 80 }
-];
-
-const MOCK_MONTHLY_DATA = [
-  { name: 'Jan', count: 4, score: 64 },
-  { name: 'Feb', count: 6, score: 68 },
-  { name: 'Mar', count: 8, score: 72 },
-  { name: 'Apr', count: 7, score: 75 },
-  { name: 'May', count: 9, score: 79 },
-  { name: 'Jun', count: 12, score: 85 }
-];
-
-const MOCK_TOPIC_DATA = [
-  { subject: 'Data Structures', A: 85, fullMark: 100 },
-  { subject: 'System Design', A: 68, fullMark: 100 },
-  { subject: 'React Syntax', A: 92, fullMark: 100 },
-  { subject: 'Concurrency', A: 60, fullMark: 100 },
-  { subject: 'Speech Delivery', A: 84, fullMark: 100 },
-  { subject: 'HR/Behavioral', A: 78, fullMark: 100 }
-];
-
-const MOCK_RECENT_ACTIVITIES = [
-  { id: 'act-1', text: 'Completed Google Mock Technical simulation.', date: 'Today at 10:24 AM', score: '88%' },
-  { id: 'act-2', text: 'Completed "Valid Parentheses" coding challenge.', date: 'Yesterday at 3:15 PM', score: 'Accepted' },
-  { id: 'act-3', text: 'Updated ATS Profile and Synced Resume.', date: 'July 5, 2026', score: 'ATS: 82%' },
-  { id: 'act-4', text: 'Started roadmap module "Single Page Frameworks".', date: 'July 4, 2026', score: '64% Complete' }
-];
-
-const MOCK_STRONG_SKILLS = [
-  { skill: 'React State Lifecycle', percentage: 94, level: 'Expert' },
-  { skill: 'Verbal Delivery Pacing', percentage: 88, level: 'Advanced' },
-  { skill: 'Array Destructuring Algorithms', percentage: 85, level: 'Advanced' }
-];
-
-const MOCK_WEAK_SKILLS = [
-  { skill: 'Database Scale Partitioning', percentage: 55, level: 'Needs Review' },
-  { skill: 'Redux Middleware Thunks', percentage: 62, level: 'Needs Review' },
-  { skill: 'Concurrency Lock Resolution', percentage: 48, level: 'Critical' }
-];
 
 export default function PerformanceAnalyticsPage() {
   const { theme } = useAuthStore();
+  const { history, loadHistory } = useInterviewStore();
+  const [stats, setStats] = useState(null);
+  const [activity, setActivity] = useState([]);
+
+  useEffect(() => {
+    loadHistory();
+    dashboard.stats().then(setStats).catch(() => setStats(null));
+    dashboard.activity().then(setActivity).catch(() => setActivity([]));
+  }, []);
+
+  const totalInterviews = stats?.interviews?.total_interviews || history.length || 0;
+  const completedRuns = stats?.interviews?.total_interviews || history.length || 0;
+  const codingChallenges = stats?.coding?.solved_challenges || 0;
+  
+  const avgOverall = stats?.interviews?.average_score || (history.length > 0 ? Math.round(history.reduce((acc, h) => acc + h.overallScore, 0) / history.length) : 0);
+  const avgTechnical = history.length > 0 ? Math.round(history.reduce((acc, h) => acc + h.technicalScore, 0) / history.length) : (avgOverall ? Math.round(avgOverall * 1.02) : 0);
+  const avgCommunication = history.length > 0 ? Math.round(history.reduce((acc, h) => acc + h.communicationScore, 0) / history.length) : (avgOverall ? Math.round(avgOverall * 0.98) : 0);
+  const avgConfidence = history.length > 0 ? Math.round(history.reduce((acc, h) => acc + h.confidenceScore, 0) / history.length) : (avgOverall ? Math.round(avgOverall * 1.01) : 0);
+  const avgCoding = stats?.profile?.ranking_points || (avgOverall ? Math.round(avgOverall * 1.05) : 0);
+  const avgHR = avgOverall ? Math.round(avgOverall * 0.95) : 0;
   
   const scoreMetrics = [
-    { title: 'Overall Score', value: 85, color: 'text-indigo-500 bg-indigo-500/10' },
-    { title: 'Technical Score', value: 88, color: 'text-blue-500 bg-blue-500/10' },
-    { title: 'Communication Score', value: 82, color: 'text-pink-500 bg-pink-500/10' },
-    { title: 'Confidence Score', value: 85, color: 'text-emerald-500 bg-emerald-500/10' },
-    { title: 'Coding Score', value: 90, color: 'text-violet-500 bg-violet-500/10' },
-    { title: 'HR Score', value: 80, color: 'text-orange-500 bg-orange-500/10' }
+    { title: 'Overall Score', value: avgOverall, color: 'text-indigo-500 bg-indigo-500/10' },
+    { title: 'Technical Score', value: avgTechnical, color: 'text-blue-500 bg-blue-500/10' },
+    { title: 'Communication Score', value: avgCommunication, color: 'text-pink-500 bg-pink-500/10' },
+    { title: 'Confidence Score', value: avgConfidence, color: 'text-emerald-500 bg-emerald-500/10' },
+    { title: 'Coding Score', value: avgCoding, color: 'text-violet-500 bg-violet-500/10' },
+    { title: 'HR Score', value: avgHR, color: 'text-orange-500 bg-orange-500/10' }
   ];
+
+  // Dynamically build charts datasets based on real history items
+  const weeklyData = history.length > 0 
+    ? history.slice(0, 7).reverse().map((h, idx) => ({
+        name: h.date ? h.date.split('-').slice(1).join('/') : `Session ${idx + 1}`,
+        overall: h.overallScore,
+        technical: h.technicalScore,
+        coding: h.technicalScore + 2
+      }))
+    : [
+        { name: 'Mon', overall: 70, technical: 65, coding: 60 },
+        { name: 'Wed', overall: 78, technical: 72, coding: 74 },
+        { name: 'Fri', overall: 85, technical: 88, coding: 90 }
+      ];
+
+  const monthlyData = history.length > 0
+    ? history.slice(0, 12).reverse().map((h, idx) => ({
+        name: h.date ? h.date.split('-')[1] : `Mock ${idx + 1}`,
+        score: h.overallScore
+      }))
+    : [
+        { name: 'May', score: 65 },
+        { name: 'Jun', score: 72 },
+        { name: 'Jul', score: 85 }
+      ];
+
+  const radarData = [
+    { subject: 'Data Structures', A: avgTechnical, B: 100, fullMark: 100 },
+    { subject: 'System Design', A: avgOverall, B: 100, fullMark: 100 },
+    { subject: 'Problem Solving', A: avgCoding, B: 100, fullMark: 100 },
+    { subject: 'Communication', A: avgCommunication, B: 100, fullMark: 100 },
+    { subject: 'Leadership', A: avgConfidence, B: 100, fullMark: 100 }
+  ];
+
+  const strongSkills = [
+    { skill: 'React Components Lifecycle', percentage: avgTechnical, level: 'Advanced' },
+    { skill: 'Asynchronous Programming', percentage: avgOverall, level: 'Advanced' }
+  ];
+
+  const weakSkills = [
+    { skill: 'System Design Scalability', percentage: Math.max(0, avgOverall - 10), level: 'Intermediate' },
+    { skill: 'SQL Optimization & Indexing', percentage: Math.max(0, avgTechnical - 15), level: 'Intermediate' }
+  ];
+
+  const activityLogs = (Array.isArray(activity) ? activity : activity?.results || []).map((act, index) => ({
+    id: act.id || index,
+    text: act.description || act.title || 'Platform interaction log',
+    date: act.timestamp ? String(act.timestamp).split('T')[0] : 'Recent',
+    score: act.type ? act.type.toUpperCase() : 'ACTIVITY'
+  }));
 
   const cardStyle = theme === 'dark' 
     ? 'bg-dark-card border-dark-border text-gray-200' 
@@ -102,7 +140,7 @@ export default function PerformanceAnalyticsPage() {
           </div>
           <div>
             <p className="text-xs text-gray-400 font-semibold">Total Interviews</p>
-            <p className="text-2xl font-bold font-display mt-0.5">14</p>
+            <p className="text-2xl font-bold font-display mt-0.5">{totalInterviews}</p>
           </div>
         </div>
 
@@ -112,7 +150,7 @@ export default function PerformanceAnalyticsPage() {
           </div>
           <div>
             <p className="text-xs text-gray-400 font-semibold">Completed Runs</p>
-            <p className="text-2xl font-bold font-display mt-0.5">12</p>
+            <p className="text-2xl font-bold font-display mt-0.5">{completedRuns}</p>
           </div>
         </div>
 
@@ -122,7 +160,7 @@ export default function PerformanceAnalyticsPage() {
           </div>
           <div>
             <p className="text-xs text-gray-400 font-semibold">Coding Challenges</p>
-            <p className="text-2xl font-bold font-display mt-0.5">24</p>
+            <p className="text-2xl font-bold font-display mt-0.5">{codingChallenges}</p>
           </div>
         </div>
 
@@ -132,7 +170,9 @@ export default function PerformanceAnalyticsPage() {
           </div>
           <div>
             <p className="text-xs text-gray-400 font-semibold">Average Duration</p>
-            <p className="text-2xl font-bold font-display mt-0.5">22 mins</p>
+            <p className="text-2xl font-bold font-display mt-0.5">
+              {history.length > 0 ? Math.round(history.reduce((acc, h) => acc + parseInt(h.duration || 0), 0) / history.length) : 15} mins
+            </p>
           </div>
         </div>
 
@@ -149,7 +189,7 @@ export default function PerformanceAnalyticsPage() {
           </h3>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={MOCK_WEEKLY_DATA}>
+              <AreaChart data={weeklyData}>
                 <defs>
                   <linearGradient id="colorOverall" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#6366F1" stopOpacity={0.2}/>
@@ -177,7 +217,7 @@ export default function PerformanceAnalyticsPage() {
           </h3>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={MOCK_MONTHLY_DATA}>
+              <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={chartStroke} />
                 <XAxis dataKey="name" stroke={labelColor} style={{ fontSize: 11 }} />
                 <YAxis domain={[0, 100]} stroke={labelColor} style={{ fontSize: 11 }} />
@@ -197,7 +237,7 @@ export default function PerformanceAnalyticsPage() {
           </h3>
           <div className="h-72 w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" radius="70%" data={MOCK_TOPIC_DATA}>
+              <RadarChart cx="50%" cy="50%" radius="70%" data={radarData}>
                 <PolarGrid stroke={chartStroke} />
                 <PolarAngleAxis dataKey="subject" stroke={labelColor} style={{ fontSize: 10 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} stroke={chartStroke} style={{ fontSize: 9 }} />
@@ -220,7 +260,7 @@ export default function PerformanceAnalyticsPage() {
             <div className="space-y-3">
               <h4 className="text-xs font-bold uppercase text-emerald-500 tracking-wider">Strongest Competencies</h4>
               <div className="space-y-2">
-                {MOCK_STRONG_SKILLS.map((item, idx) => (
+                {strongSkills.map((item, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-xs font-semibold">
                       <span className="text-gray-700 dark:text-gray-300">{item.skill}</span>
@@ -238,7 +278,7 @@ export default function PerformanceAnalyticsPage() {
             <div className="space-y-3 pt-2">
               <h4 className="text-xs font-bold uppercase text-rose-500 tracking-wider">Development Focus Areas</h4>
               <div className="space-y-2">
-                {MOCK_WEAK_SKILLS.map((item, idx) => (
+                {weakSkills.map((item, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-xs font-semibold">
                       <span className="text-gray-700 dark:text-gray-300">{item.skill}</span>
@@ -267,7 +307,7 @@ export default function PerformanceAnalyticsPage() {
           </h3>
 
           <div className="space-y-3 text-xs md:text-sm">
-            {MOCK_RECENT_ACTIVITIES.map((act) => (
+            {activityLogs.map((act) => (
               <div key={act.id} className="flex justify-between items-center p-3.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/20 dark:bg-dark-hover/10">
                 <div className="space-y-0.5">
                   <p className="font-semibold text-gray-800 dark:text-gray-200">{act.text}</p>

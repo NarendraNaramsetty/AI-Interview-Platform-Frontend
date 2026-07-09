@@ -64,13 +64,13 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <div className={`min-h-screen font-sans flex ${theme === 'dark' ? 'bg-dark-bg text-gray-200' : 'bg-light-bg text-gray-800'}`}>
+    <div className={`h-screen overflow-hidden font-sans flex ${theme === 'dark' ? 'bg-dark-bg text-gray-200' : 'bg-light-bg text-gray-800'}`}>
       
       {/* Sidebar for desktop, overlay drawer for mobile */}
       <aside className={`fixed top-0 bottom-0 left-0 z-40 w-64 border-r transition-transform duration-300 transform 
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
         ${theme === 'dark' ? 'bg-dark-card border-dark-border' : 'bg-light-card border-light-border'} 
-        lg:translate-x-0 lg:static lg:flex lg:flex-col`}
+        lg:translate-x-0 lg:static lg:h-full lg:flex lg:flex-col`}
       >
         {/* Brand Header */}
         <div className={`h-16 px-6 flex items-center justify-between border-b ${theme === 'dark' ? 'border-dark-border' : 'border-light-border'}`}>

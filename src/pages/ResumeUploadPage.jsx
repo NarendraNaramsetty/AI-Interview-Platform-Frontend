@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useResumeStore } from '../store/useResumeStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { resume } from '../services/resume';
 import { 
   Upload, 
   FileText, 
@@ -29,6 +30,11 @@ export default function ResumeUploadPage() {
 
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
+  const [resumeAnalysis, setResumeAnalysis] = useState(null);
+
+  React.useEffect(() => {
+    resume.analysis().then(setResumeAnalysis).catch(() => setResumeAnalysis(null));
+  }, []);
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -81,7 +87,7 @@ export default function ResumeUploadPage() {
           
           {error && (
             <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500 flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
               <div className="text-sm font-semibold">{error}</div>
             </div>
           )}
@@ -192,9 +198,9 @@ export default function ResumeUploadPage() {
                 <span>Detected Strengths</span>
               </h4>
               <ul className="space-y-3">
-                {parsedData.strengths.map((str, idx) => (
+                {(parsedData.strengths || resumeAnalysis?.strengths || []).map((str, idx) => (
                   <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500 mt-1.5 shrink-0" />
                     <span>{str}</span>
                   </li>
                 ))}
@@ -208,9 +214,9 @@ export default function ResumeUploadPage() {
                 <span>Gaps & Issues</span>
               </h4>
               <ul className="space-y-3">
-                {parsedData.weaknesses.map((weak, idx) => (
+                {(parsedData.weaknesses || resumeAnalysis?.weaknesses || []).map((weak, idx) => (
                   <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
                     <span>{weak}</span>
                   </li>
                 ))}
@@ -226,7 +232,7 @@ export default function ResumeUploadPage() {
                 <span>Actionable Upgrade Steps</span>
               </h4>
               <ul className="space-y-3">
-                {parsedData.actionableTips.map((tip, idx) => (
+                {(parsedData.actionableTips || resumeAnalysis?.recommended_actions || []).map((tip, idx) => (
                   <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
                     <span className="font-semibold text-indigo-400">{idx + 1}.</span>
                     <span>{tip}</span>
@@ -241,7 +247,7 @@ export default function ResumeUploadPage() {
                 <span>Parsed Technical Skills</span>
               </h4>
               <div className="flex flex-wrap gap-2">
-                {parsedData.parsedSkills.map((skill) => (
+                {(parsedData.parsedSkills || resumeAnalysis?.parsed_skills || []).map((skill) => (
                   <span 
                     key={skill}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/10"

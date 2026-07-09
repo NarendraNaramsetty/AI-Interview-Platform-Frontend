@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useInterviewStore } from '../store/useInterviewStore';
-import { MOCK_SKILL_GROWTH } from '../constants/mockData';
+import { dashboard } from '../services/dashboard';
 import { 
   LineChart, 
   Line, 
@@ -31,28 +31,19 @@ import {
 export default function AnalyticsPage() {
   const { theme } = useAuthStore();
   const { history } = useInterviewStore();
+  const [dashboardStats, setDashboardStats] = React.useState(null);
+
+  React.useEffect(() => {
+    dashboard.stats().then(setDashboardStats).catch(() => setDashboardStats(null));
+  }, []);
 
   const completedMocks = history.length;
   const avgOverallScore = completedMocks > 0 
     ? Math.round(history.reduce((acc, h) => acc + h.overallScore, 0) / completedMocks) 
     : 0;
 
-  // Mock radar chart data
-  const radarData = [
-    { subject: 'System Design', A: 65, B: 85, fullMark: 100 },
-    { subject: 'Coding Syntax', A: 88, B: 90, fullMark: 100 },
-    { subject: 'Data Structures', A: 70, B: 80, fullMark: 100 },
-    { subject: 'Communication', A: 75, B: 85, fullMark: 100 },
-    { subject: 'Confidence', A: 80, B: 95, fullMark: 100 },
-    { subject: 'Problem Solving', A: 68, B: 90, fullMark: 100 }
-  ];
-
-  const categoryScores = [
-    { category: 'React Framework Architecture', score: 85, trend: 'up' },
-    { category: 'Database Isolation & Indexing', score: 62, trend: 'flat' },
-    { category: 'Express & Middleware Pipeling', score: 78, trend: 'up' },
-    { category: 'Behavioral & Scenario Empathy', score: 90, trend: 'up' }
-  ];
+  const radarData = dashboardStats?.radar || [];
+  const categoryScores = dashboardStats?.category_scores || [];
 
   const cardStyle = theme === 'dark' 
     ? 'bg-dark-card border-dark-border text-gray-200' 
@@ -122,7 +113,7 @@ export default function AnalyticsPage() {
           </h3>
           <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={MOCK_SKILL_GROWTH}>
+              <LineChart data={dashboardStats?.weekly_growth || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#242F41' : '#E2E8F0'} />
                 <XAxis dataKey="name" stroke={theme === 'dark' ? '#9CA3AF' : '#64748B'} style={{ fontSize: 11 }} />
                 <YAxis domain={[0, 100]} stroke={theme === 'dark' ? '#9CA3AF' : '#64748B'} style={{ fontSize: 11 }} />

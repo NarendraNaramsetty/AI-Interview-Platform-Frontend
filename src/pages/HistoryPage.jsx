@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInterviewStore } from '../store/useInterviewStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { interview } from '../services/interview';
+import { feedback } from '../services/feedback';
 import { 
   History, 
   Search, 
@@ -19,50 +21,79 @@ export default function HistoryPage() {
   const { history } = useInterviewStore();
   const navigate = useNavigate();
 
-  const handleReviewReport = (sessionItem) => {
-    // Inject historical scores to display in ResultsPage
-    useInterviewStore.setState({
-      currentReport: {
-        overallScore: sessionItem.overallScore,
-        technicalScore: sessionItem.technicalScore,
-        communicationScore: sessionItem.communicationScore,
-        confidenceScore: sessionItem.confidenceScore,
-        strengths: [
-          'Demonstrated clear technical vocabulary during explanations.',
-          'Solid pacing and structural consistency across behavioral questions.'
-        ],
-        weaknesses: [
-          'Try incorporating more specific performance benchmarks.',
-          'Could expand on edge cases or code testability parameters.'
-        ],
-        suggestedImprovements: [
-          'Focus on structural transition phrases during speech.',
-          'Review state management performance bottlenecks.'
-        ],
-        recommendedTopics: [
-          'Advanced React Component Lifecycle',
-          'Vite Optimization Protocols',
-          'SQL Transaction Locks'
-        ]
-      },
-      answers: [
-        {
-          questionText: 'Explain the difference between state and props in React.',
-          answerText: 'Props are passed into a component to configure it, while state is managed internally by the component. Whenever state changes, the component re-renders.',
-          evaluation: {
-            overallScore: sessionItem.overallScore,
-            feedbackSummary: 'This response captures the core difference well. Correctly mentions the mutability boundary and re-render trigger.',
-            constructiveAdvice: 'Expand on pure functional structures and props immutability.',
-            idealSample: 'Props are external inputs passed down; state represents internal component storage. Overwriting props breaks React rendering lifecycle contracts.',
-            matchedKeywords: ['props', 'state', 're-render'],
-            unmatchedKeywords: ['immutable', 'component']
-          }
+  const handleReviewReport = async (sessionItem) => {
+    try {
+      const detail = await interview.detail(sessionItem.id);
+      
+      let evalData = null;
+      try {
+        evalData = await feedback.detail(sessionItem.id);
+      } catch (e) {
+        console.error('Failed to get detail evaluation from database, generating instead:', e);
+        try {
+          evalData = await feedback.generate({ interview_id: sessionItem.id });
+        } catch (genError) {
+          console.error('Failed to generate evaluation:', genError);
         }
-      ],
-      isFinished: true
-    });
+      }
 
-    navigate('/interview/results');
+      const techEval = evalData?.technical_evaluation || {};
+      const commEval = evalData?.communication_evaluation || {};
+      const hrEval = evalData?.hr_evaluation || {};
+      const overallEval = evalData?.overall_evaluation || {};
+
+      const currentReport = {
+        overallScore: overallEval?.overall_score ?? sessionItem.overallScore ?? 0,
+        technicalScore: techEval?.technical_score ?? sessionItem.technicalScore ?? 0,
+        communicationScore: commEval?.communication_score ?? sessionItem.communicationScore ?? 0,
+        confidenceScore: hrEval?.confidence_score ?? sessionItem.confidenceScore ?? 0,
+        strengths: techEval?.strengths || ["Demonstrated professional communication and structure."],
+        weaknesses: techEval?.weaknesses || ["Could expand on edge cases or code testability."],
+        recommendedTopics: techEval?.recommendations || ["Advanced Component Lifecycle Design Patterns"],
+        feedbackSummary: overallEval?.final_feedback || '',
+        constructiveAdvice: overallEval?.next_learning_plan || '',
+        idealSample: '',
+        matchedKeywords: [],
+        unmatchedKeywords: []
+      };
+
+      const answers = (detail?.answers || []).map(ans => ({
+        questionText: ans.question?.question_text || 'Interview Question',
+        answerText: ans.answer_text,
+        evaluation: {
+          overallScore: ans.evaluation?.score || 0,
+          feedbackSummary: ans.evaluation?.feedback || 'Reviewed by AI agent.',
+          constructiveAdvice: ans.evaluation?.grammar_suggestions || '',
+          idealSample: ans.question?.expected_answer_placeholder || '',
+          matchedKeywords: [],
+          unmatchedKeywords: []
+        }
+      }));
+
+      useInterviewStore.setState({
+        currentReport,
+        answers,
+        isFinished: true
+      });
+
+      navigate('/interview/results');
+    } catch (error) {
+      console.error('Failed to review report:', error);
+      useInterviewStore.setState({
+        currentReport: {
+          overallScore: sessionItem.overallScore || 0,
+          technicalScore: sessionItem.technicalScore || 0,
+          communicationScore: sessionItem.communicationScore || 0,
+          confidenceScore: sessionItem.confidenceScore || 0,
+          strengths: ["Demonstrated structure and consistency."],
+          weaknesses: ["Could expand on edge cases."],
+          recommendedTopics: []
+        },
+        answers: [],
+        isFinished: true
+      });
+      navigate('/interview/results');
+    }
   };
 
   const cardStyle = theme === 'dark' 
@@ -97,7 +128,7 @@ export default function HistoryPage() {
               </thead>
               <tbody className="divide-y divide-gray-500/10 text-sm">
                 {history.map((item) => (
-                  <tr key={item.id} className="group hover:bg-indigo-500/[0.02] transition-colors">
+                  <tr key={item.id} className="group hover:bg-indigo-500/2 transition-colors">
                     <td className="py-4 font-semibold">
                       <div className="flex flex-col">
                         <span>{item.role}</span>

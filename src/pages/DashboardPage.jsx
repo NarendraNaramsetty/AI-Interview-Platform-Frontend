@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useResumeStore } from '../store/useResumeStore';
 import { useInterviewStore } from '../store/useInterviewStore';
-import { MOCK_RECOMMENDED_TOPICS, MOCK_SKILL_GROWTH } from '../constants/mockData';
+import { dashboard } from '../services/dashboard';
+import { useToastStore } from '../store/useToastStore';
 import { 
   LineChart, 
   Line, 
@@ -27,8 +28,36 @@ import {
 
 export default function DashboardPage() {
   const { user, theme } = useAuthStore();
-  const { parsedData } = useResumeStore();
-  const { history } = useInterviewStore();
+  const { parsedData, hydrateResume } = useResumeStore();
+  const { history, loadHistory } = useInterviewStore();
+  const { pushToast } = useToastStore();
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [dashboardActivity, setDashboardActivity] = useState([]);
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoadingDashboard(true);
+    Promise.all([
+      dashboard.stats(),
+      dashboard.activity(),
+      hydrateResume(),
+      loadHistory()
+    ])
+      .then(([stats, activity]) => {
+        if (!mounted) return;
+        setDashboardStats(stats || null);
+        setDashboardActivity(Array.isArray(activity) ? activity : activity?.items || activity?.results || []);
+      })
+      .catch((error) => {
+        if (!mounted) return;
+        pushToast({ type: 'error', title: 'Dashboard load failed', message: error.message });
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingDashboard(false);
+      });
+    return () => { mounted = false; };
+  }, [pushToast, hydrateResume, loadHistory]);
 
   // Compute overall average stats from history
   const completedMocks = history.length;
@@ -138,8 +167,8 @@ export default function DashboardPage() {
           </h3>
           <div className="h-64 w-full">
             {completedMocks > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={MOCK_SKILL_GROWTH}>
+                  <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dashboardStats?.skill_growth || dashboardStats?.growth || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#242F41' : '#E2E8F0'} />
                   <XAxis dataKey="name" stroke={theme === 'dark' ? '#9CA3AF' : '#64748B'} style={{ fontSize: 11 }} />
                   <YAxis domain={[0, 100]} stroke={theme === 'dark' ? '#9CA3AF' : '#64748B'} style={{ fontSize: 11 }} />
@@ -246,11 +275,11 @@ export default function DashboardPage() {
               <span className="text-xs font-semibold text-green-400">Strengths (Maintain):</span>
               <div className="space-y-1.5">
                 <div className="flex items-start gap-2 text-xs text-gray-400">
-                  <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" />
                   <span>Modular component styling and styling tools.</span>
                 </div>
                 <div className="flex items-start gap-2 text-xs text-gray-400">
-                  <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                  <CheckCircle className="h-3.5 w-3.5 text-green-500 mt-0.5 shrink-0" />
                   <span>Asynchronous execution pipelines.</span>
                 </div>
               </div>
@@ -260,11 +289,11 @@ export default function DashboardPage() {
               <span className="text-xs font-semibold text-red-400">Weaknesses (Improve):</span>
               <div className="space-y-1.5">
                 <div className="flex items-start gap-2 text-xs text-gray-400">
-                  <AlertTriangle className="h-3.5 w-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-500 mt-0.5 shrink-0" />
                   <span>Performance optimization hooks (useMemo, useCallback).</span>
                 </div>
                 <div className="flex items-start gap-2 text-xs text-gray-400">
-                  <AlertTriangle className="h-3.5 w-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-500 mt-0.5 shrink-0" />
                   <span>State selectors for high performance.</span>
                 </div>
               </div>
@@ -279,7 +308,7 @@ export default function DashboardPage() {
             <span>AI Practice Recommendations</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {MOCK_RECOMMENDED_TOPICS.map((item) => (
+            {(dashboardStats?.recommended_topics || dashboardStats?.recommendations || []).map((item) => (
               <div key={item.topic} className={`p-3.5 rounded-xl border flex flex-col justify-between ${
                 theme === 'dark' ? 'bg-dark-bg/40 border-dark-border' : 'bg-gray-50 border-gray-100'
               }`}>

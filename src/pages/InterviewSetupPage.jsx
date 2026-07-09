@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInterviewStore } from '../store/useInterviewStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { INTERVIEW_ROLES, EXPERIENCE_LEVELS, DIFFICULTY_LEVELS } from '../constants/mockData';
+import { questions } from '../services/questions';
+import { useToastStore } from '../store/useToastStore';
 import { 
   Play, 
   HelpCircle, 
@@ -18,10 +19,58 @@ import {
 export default function InterviewSetupPage() {
   const { theme } = useAuthStore();
   const { config, setSetupConfig, startInterview } = useInterviewStore();
+  const { pushToast } = useToastStore();
   const navigate = useNavigate();
+  const [availableRoles, setAvailableRoles] = React.useState([]);
+  const [availableDifficulties, setAvailableDifficulties] = React.useState([]);
+  const [availableExperience, setAvailableExperience] = React.useState([]);
+
+  React.useEffect(() => {
+    let mounted = true;
+    Promise.all([questions.roles(), questions.categories(), questions.topics()])
+      .then(([roles, categories, topics]) => {
+        if (!mounted) return;
+
+        const rawRoles = Array.isArray(roles) ? roles : roles?.results || roles?.data || [];
+        const mappedRoles = rawRoles.map(r => ({
+          id: r.id,
+          name: r.title,
+          techStack: r.description ? r.description.split(',').map(s => s.trim()) : ['React', 'JavaScript', 'Tailwind']
+        }));
+        setAvailableRoles(mappedRoles);
+
+        const rawCategories = Array.isArray(categories) ? categories : categories?.results || categories?.data || [];
+        const mappedCats = rawCategories.map(c => ({
+          id: c.name.toLowerCase(),
+          name: c.name
+        }));
+        setAvailableDifficulties(mappedCats.length ? mappedCats : [
+          { id: 'easy', name: 'Easy' },
+          { id: 'medium', name: 'Medium' },
+          { id: 'hard', name: 'Hard' }
+        ]);
+
+        const rawTopics = Array.isArray(topics) ? topics : topics?.results || topics?.data || [];
+        const mappedTopics = rawTopics.map(t => ({
+          id: t.name.toLowerCase(),
+          name: t.name
+        }));
+        setAvailableExperience(mappedTopics.length ? mappedTopics : [
+          { id: 'junior', name: 'Junior (0-2 years)' },
+          { id: 'mid', name: 'Mid-Level (2-5 years)' },
+          { id: 'senior', name: 'Senior (5+ years)' }
+        ]);
+      })
+      .catch((error) => {
+        if (mounted) {
+          pushToast({ type: 'error', title: 'Failed to load interview setup', message: error.message });
+        }
+      });
+    return () => { mounted = false; };
+  }, [pushToast]);
 
   const handleRoleChange = (roleId) => {
-    const selectedRole = INTERVIEW_ROLES.find(r => r.id === roleId);
+    const selectedRole = availableRoles.find(r => r.id === roleId) || availableRoles[0];
     setSetupConfig({
       role: roleId,
       techStack: selectedRole ? selectedRole.techStack.slice(0, 3) : []
@@ -38,12 +87,12 @@ export default function InterviewSetupPage() {
   };
 
   const handleLaunch = () => {
-    startInterview();
+    startInterview(currentRoleObj.name);
     // Redirect to active interview session view
     navigate('/interview/session');
   };
 
-  const currentRoleObj = INTERVIEW_ROLES.find(r => r.id === config.role) || INTERVIEW_ROLES[0];
+  const currentRoleObj = availableRoles.find(r => r.id === config.role) || availableRoles[0] || { name: 'Frontend Engineer', techStack: [] };
   const cardStyle = theme === 'dark' 
     ? 'bg-dark-card border-dark-border text-gray-200' 
     : 'bg-white border-light-border text-gray-800 shadow-sm';
@@ -68,7 +117,7 @@ export default function InterviewSetupPage() {
               1. Select Target Job Role
             </label>
             <div className="grid grid-cols-2 gap-3">
-              {INTERVIEW_ROLES.map((role) => (
+              {availableRoles.map((role) => (
                 <button
                   key={role.id}
                   onClick={() => handleRoleChange(role.id)}
@@ -122,7 +171,11 @@ export default function InterviewSetupPage() {
                   theme === 'dark' ? 'bg-dark-bg border-dark-border text-white' : 'bg-white border-light-border text-gray-800'
                 }`}
               >
-                {EXPERIENCE_LEVELS.map(exp => (
+                {(availableExperience.length ? availableExperience : [
+                  { id: 'junior', name: 'Junior (0-2 years)' },
+                  { id: 'mid', name: 'Mid-Level (2-5 years)' },
+                  { id: 'senior', name: 'Senior (5+ years)' }
+                ]).map(exp => (
                   <option key={exp.id} value={exp.id}>{exp.name}</option>
                 ))}
               </select>
@@ -139,7 +192,11 @@ export default function InterviewSetupPage() {
                   theme === 'dark' ? 'bg-dark-bg border-dark-border text-white' : 'bg-white border-light-border text-gray-800'
                 }`}
               >
-                {DIFFICULTY_LEVELS.map(diff => (
+                {(availableDifficulties.length ? availableDifficulties : [
+                  { id: 'easy', name: 'Easy' },
+                  { id: 'medium', name: 'Medium' },
+                  { id: 'hard', name: 'Hard' }
+                ]).map(diff => (
                   <option key={diff.id} value={diff.id}>{diff.name}</option>
                 ))}
               </select>

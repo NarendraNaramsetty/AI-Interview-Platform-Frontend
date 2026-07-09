@@ -1,19 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { HelpCircle, Search, Plus, Filter, Edit, Trash2, Download, Upload, X, Check, ChevronLeft, ChevronRight } from 'lucide-react';
-
-const INITIAL_QUESTIONS = [
-  { id: 'q-501', text: 'Explain the difference between state and props in React.', topic: 'React.js', company: 'Google', difficulty: 'Easy', category: 'Frontend', tags: ['state', 'props', 'lifecycle'] },
-  { id: 'q-502', text: 'What is database indexing and how does it impact write transactions?', topic: 'Databases', company: 'Amazon', difficulty: 'Medium', category: 'Backend', tags: ['indexes', 'db', 'sql'] },
-  { id: 'q-503', text: 'How do you prevent race conditions in highly concurrent API endpoints?', topic: 'Concurrency', company: 'Uber', difficulty: 'Hard', category: 'Backend', tags: ['mutex', 'redis', 'locks'] },
-  { id: 'q-504', text: 'How does the browser event loop handle microtasks vs macrotasks?', topic: 'JavaScript', company: 'Meta', difficulty: 'Medium', category: 'Frontend', tags: ['event loop', 'promises'] },
-  { id: 'q-505', text: 'Describe a time you handled a difficult conflict with a technical coworker.', topic: 'Behavioral', company: 'Netflix', difficulty: 'Easy', category: 'Behavioral', tags: ['soft skills', 'leadership'] },
-  { id: 'q-506', text: 'Explain micro-frontend module federation and its dependency resolution models.', topic: 'Architectures', company: 'Stripe', difficulty: 'Hard', category: 'Frontend', tags: ['federation', 'webpack'] }
-];
+import { questions as questionsService } from '../../services/questions';
 
 export default function AdminQuestionsPage() {
   const { theme } = useAuthStore();
-  const [questions, setQuestions] = useState(INITIAL_QUESTIONS);
+  const [questions, setQuestions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [topics, setTopics] = useState([]);
   
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -36,10 +31,45 @@ export default function AdminQuestionsPage() {
   const [formDiff, setFormDiff] = useState('Easy');
   const [formCat, setFormCat] = useState('Frontend');
   const [formTags, setFormTags] = useState('');
+  const [formError, setFormError] = useState('');
 
   // Actions
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      questionsService.list(),
+      questionsService.categories(),
+      questionsService.companies(),
+      questionsService.topics()
+    ]).then(([questionData, categoryData, companyData, topicData]) => {
+      setQuestions(Array.isArray(questionData) ? questionData : questionData?.results || questionData?.data || []);
+      setCategories(Array.isArray(categoryData) ? categoryData : categoryData?.results || categoryData?.data || []);
+      setCompanies(Array.isArray(companyData) ? companyData : companyData?.results || companyData?.data || []);
+      setTopics(Array.isArray(topicData) ? topicData : topicData?.results || topicData?.data || []);
+    }).catch(() => {
+      setQuestions([]);
+      setCategories([]);
+      setCompanies([]);
+      setTopics([]);
+    });
+  }, []);
+
+  const normalizedQuestions = useMemo(() => questions.map((item) => ({
+    id: item.id,
+    text: item.question || item.text || '',
+    topic: item.topic_details?.name || item.topic?.name || item.topic || '',
+    company: item.company_details?.name || item.company?.name || item.company || '',
+    difficulty: item.difficulty || '',
+    category: item.category_details?.name || item.category?.name || item.category || '',
+    tags: Array.isArray(item.tags) ? item.tags : []
+  })), [questions]);
+
+  const categoryOptions = useMemo(() => categories.map((category) => ({ id: category.id, name: category.name })), [categories]);
+  const resolveCategoryId = (name) => categoryOptions.find((category) => category.name.toLowerCase() === String(name || '').toLowerCase())?.id || null;
+  const resolveTopicId = (name, categoryId) => topics.find((topic) => topic.category === categoryId && topic.name.toLowerCase() === String(name || '').toLowerCase())?.id || null;
+  const resolveCompanyId = (name) => companies.find((company) => company.name.toLowerCase() === String(name || '').toLowerCase())?.id || null;
 
   const handleOpenAdd = () => {
     setFormText('');
@@ -48,22 +78,45 @@ export default function AdminQuestionsPage() {
     setFormDiff('Easy');
     setFormCat('Frontend');
     setFormTags('');
+    setFormError('');
     setShowAddModal(true);
   };
 
-  const handleAddSubmit = (e) => {
+  const buildPayload = () => ({
+    question: formText,
+    short_description: formText.slice(0, 240),
+    category: resolveCategoryId(formCat),
+    topic: resolveTopicId(formTopic, resolveCategoryId(formCat)),
+    company: resolveCompanyId(formCompany),
+    role: null,
+    difficulty: formDiff,
+    expected_duration: 30,
+    answer_type: 'Text',
+    tags: formTags ? formTags.split(',').map(t => t.trim()) : [],
+    hints: [],
+    reference_links: [],
+    expected_answer: '',
+    explanation: '',
+    source: 'Manual',
+    is_active: true
+  });
+
+  const handleAddSubmit = async (e) => {
     e.preventDefault();
-    const newQ = {
-      id: `q-${Date.now()}`,
-      text: formText,
-      topic: formTopic || 'General',
-      company: formCompany || 'Common',
-      difficulty: formDiff,
-      category: formCat,
-      tags: formTags ? formTags.split(',').map(t => t.trim()) : []
-    };
-    setQuestions(prev => [newQ, ...prev]);
-    setShowAddModal(false);
+    setFormError('');
+    const categoryId = resolveCategoryId(formCat);
+    if (!categoryId) {
+      setFormError('Select a backend category first.');
+      return;
+    }
+    try {
+      await questionsService.create(buildPayload());
+      const refreshed = await questionsService.list();
+      setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+      setShowAddModal(false);
+    } catch (error) {
+      setFormError(error?.message || 'Unable to create question.');
+    }
   };
 
   const handleOpenEdit = (q) => {
@@ -74,52 +127,60 @@ export default function AdminQuestionsPage() {
     setFormDiff(q.difficulty);
     setFormCat(q.category);
     setFormTags(q.tags.join(', '));
+    setFormError('');
   };
 
-  const handleEditSubmit = (e) => {
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
-    setQuestions(prev => prev.map(q => {
-      if (q.id === editingQuestion.id) {
-        return {
-          ...q,
-          text: formText,
-          topic: formTopic,
-          company: formCompany,
-          difficulty: formDiff,
-          category: formCat,
-          tags: formTags ? formTags.split(',').map(t => t.trim()) : []
-        };
-      }
-      return q;
-    }));
-    setEditingQuestion(null);
-  };
-
-  const handleDelete = (id) => {
-    const conf = window.confirm("Are you sure you want to delete this question? It will be removed from all future mock grids.");
-    if (conf) {
-      setQuestions(prev => prev.filter(q => q.id !== id));
+    setFormError('');
+    const categoryId = resolveCategoryId(formCat);
+    if (!categoryId) {
+      setFormError('Select a backend category first.');
+      return;
+    }
+    try {
+      await questionsService.update(editingQuestion.id, buildPayload());
+      const refreshed = await questionsService.list();
+      setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+      setEditingQuestion(null);
+    } catch (error) {
+      setFormError(error?.message || 'Unable to update question.');
     }
   };
 
-  const handleExport = () => {
-    setIsExporting(true);
-    setTimeout(() => {
-      setIsExporting(false);
-      alert('Questions database exported successfully as prepa_questions_backup.csv');
-    }, 1200);
+  const handleDelete = async (id) => {
+    const conf = window.confirm('Are you sure you want to delete this question?');
+    if (conf) {
+      try {
+        await questionsService.remove(id);
+        const refreshed = await questionsService.list();
+        setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+      } catch (error) {
+        setFormError(error?.message || 'Unable to delete question.');
+      }
+    }
   };
 
-  const handleImport = () => {
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      await questionsService.export({});
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImport = async () => {
     setIsImporting(true);
-    setTimeout(() => {
+    try {
+      await questionsService.import(new FormData());
+    } finally {
       setIsImporting(false);
-      alert('Mock JSON import parsed successfully. +15 Questions added to database.');
-    }, 1500);
+    }
   };
 
   // Filter & Search Logic
-  const filtered = questions.filter(q => {
+  const filtered = normalizedQuestions.filter(q => {
     const matchesSearch = q.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           q.topic.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesTopic = topicFilter === 'all' ? true : q.topic.toLowerCase() === topicFilter.toLowerCase();
@@ -319,6 +380,11 @@ export default function AdminQuestionsPage() {
             </h3>
 
             <form onSubmit={showAddModal ? handleAddSubmit : handleEditSubmit} className="space-y-4 text-xs">
+              {formError && (
+                <div className="p-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-500 text-xs">
+                  {formError}
+                </div>
+              )}
               <div className="space-y-1">
                 <label className="text-[10px] uppercase font-bold text-gray-400">Question Content</label>
                 <textarea

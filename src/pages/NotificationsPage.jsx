@@ -1,20 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bell, Check, Trash2, Search, Filter, MailOpen, AlertTriangle, Sparkles, CreditCard, Code, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
-
-const INITIAL_NOTIFICATIONS = [
-  { id: 'not-1', type: 'interview', title: 'Upcoming Mock Technical Run', text: 'Your Google mid-level mock simulation starts in 2 hours. Prepare your audio parameters!', time: '10 mins ago', read: false },
-  { id: 'not-2', type: 'ai', title: 'ATS Skill Matching Recommendations', text: 'Our resume scanner found missing tags for "TypeScript" and "CI/CD" in your sync profile.', time: '2 hours ago', read: false },
-  { id: 'not-3', type: 'payment', title: 'Invoice Paid Successfully', text: 'Transaction INV-8201 for Pro Membership subscription was processed successfully.', time: 'Yesterday', read: true },
-  { id: 'not-4', type: 'coding', title: 'Daily Algorithm Challenge', text: 'Solve today\'s challenge: "Valid Parentheses" using stack data structures to earn +20 EXP.', time: 'Yesterday', read: false },
-  { id: 'not-5', type: 'subscription', title: 'Welcome to Pro Member Tier!', text: 'Your account features have been upgraded successfully. Enjoy unlimited interview sandbox runs!', time: '3 days ago', read: true },
-  { id: 'not-6', type: 'resume', title: 'ATS Parser Update', text: 'We updated our resume scoring engines to verify compliance with 2026 recruiter formats.', time: '5 days ago', read: true },
-  { id: 'not-7', type: 'ai', title: 'System Design Strategy Guide', text: 'New content available: "How to handle multi-broker stream logs with Apache Kafka".', time: '1 week ago', read: true }
-];
+import { notifications as notificationsService } from '../services/notifications';
 
 export default function NotificationsPage() {
   const { theme } = useAuthStore();
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   
@@ -22,12 +13,22 @@ export default function NotificationsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
+  useEffect(() => {
+    notificationsService.list().then((data) => {
+      setNotifications(Array.isArray(data) ? data : data?.results || []);
+    }).catch(() => setNotifications([]));
+  }, []);
+
   const handleMarkRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    notificationsService.markRead(id).then(() => {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    }).catch(() => {});
   };
 
   const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    notificationsService.markAllRead().then(() => {
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    }).catch(() => {});
   };
 
   const handleDelete = (id) => {

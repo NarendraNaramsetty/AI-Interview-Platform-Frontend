@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { Sparkles, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { Sparkles, Mail, Lock, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, theme } = useAuthStore();
@@ -24,21 +24,22 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickDemoLogin = async () => {
-    setEmail('demo.user@example.com');
-    setPassword('demopassword123');
-    setLoading(true);
-    try {
-      await login('demo.user@example.com', 'demopassword123');
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Failed to authenticate with demo user.');
+      const responseData = err.response?.data;
+      if (responseData?.errors) {
+        const messages = Object.entries(responseData.errors)
+          .map(([field, msgs]) => {
+            const formattedMsgs = Array.isArray(msgs) ? msgs.join(' ') : String(msgs);
+            return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMsgs}`;
+          })
+          .join('\n');
+        setError(messages || responseData.message || 'Login validation failed.');
+      } else if (responseData?.message) {
+        setError(responseData.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Invalid credentials. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -62,16 +63,8 @@ export default function LoginPage() {
             Prepare with hyper-realistic coding and speaking mocks. Review syntax checkmarks, pronunciation confidence levels, and model-level AI sample answers instantly.
           </p>
           <div className="p-4 rounded-xl border border-dashed border-gray-500/20 bg-dark-card/20 space-y-2">
-            <p className="text-xs font-semibold text-indigo-400">Quick Test Credentials:</p>
-            <p className="text-xs text-gray-400">Email: <span className="underline">demo.user@example.com</span></p>
-            <p className="text-xs text-gray-400">Password: <span className="underline">any-password</span></p>
-            <button
-              onClick={handleQuickDemoLogin}
-              className="mt-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all"
-            >
-              <span>Instant Demo Access</span>
-              <ArrowRight className="h-3 w-3" />
-            </button>
+            <p className="text-xs font-semibold text-indigo-400">Secure JWT authentication</p>
+            <p className="text-xs text-gray-400">Use your registered email and password to sign in.</p>
           </div>
         </div>
       </div>

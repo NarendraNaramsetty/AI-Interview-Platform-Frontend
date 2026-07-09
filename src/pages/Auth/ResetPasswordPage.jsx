@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Eye, EyeOff, KeyRound, AlertCircle, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
+import { auth } from '../../services/auth';
 
 export default function ResetPasswordPage() {
   const { theme } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialEmail = location.state?.email || '';
   
+  const [email, setEmail] = useState(initialEmail);
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -41,7 +45,7 @@ export default function ResetPasswordPage() {
 
   const strength = getPasswordStrength(password);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setIsLoading(true);
@@ -64,11 +68,19 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    // Mock API query delay
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await auth.resetPassword({
+        email,
+        otp,
+        new_password: password,
+        password_confirm: confirmPassword
+      });
       setIsSuccess(true);
-    }, 1500);
+    } catch (error) {
+      setErrorMsg(error?.message || 'Unable to reset password.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Success countdown redirect timer
@@ -121,6 +133,18 @@ export default function ResetPasswordPage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                 Provide the 6-digit confirmation code and write your new password credentials.
               </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Email Address</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="alex@example.com"
+                className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
+              />
             </div>
 
             {errorMsg && (
@@ -203,7 +227,7 @@ export default function ResetPasswordPage() {
 
               <button
                 type="submit"
-                disabled={isLoading || !otp || !password || !confirmPassword}
+                disabled={isLoading || !email || !otp || !password || !confirmPassword}
                 className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl text-xs transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-1.5 disabled:opacity-60"
               >
                 {isLoading ? (

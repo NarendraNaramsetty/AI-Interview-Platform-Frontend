@@ -1,28 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { User, Mail, Briefcase, FileText, Globe, Award, Sparkles, CheckCircle2, ChevronRight, BarChart2 } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, updateProfile } = useAuthStore();
+  const { user, updateProfile, hydrateUser } = useAuthStore();
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [title, setTitle] = useState(user?.title || 'Full Stack Engineer');
-  const [bio, setBio] = useState(user?.bio || 'Passionate software developer interested in building high-scale React apps and optimization.');
-  const [github, setGithub] = useState(user?.github || 'github.com/alexdeveloper');
-  const [linkedin, setLinkedin] = useState(user?.linkedin || 'linkedin.com/in/alexdeveloper');
+  const [title, setTitle] = useState(user?.role || 'Full Stack Engineer');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [github, setGithub] = useState(user?.github_url || '');
+  const [linkedin, setLinkedin] = useState(user?.linkedin_url || '');
   
   const [isSaved, setIsSaved] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Fetch fresh profile data on component mount
+  useEffect(() => {
+    hydrateUser();
+  }, []);
+
+  // Sync state variables whenever user in the store changes
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+      setTitle(user.role || 'Full Stack Engineer');
+      setBio(user.bio || '');
+      setGithub(user.github_url || '');
+      setLinkedin(user.linkedin_url || '');
+    }
+  }, [user]);
+
   const handleSave = (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      updateProfile({ name, email, title, bio, github, linkedin });
+    const [firstName, ...lastNameParts] = name.trim().split(/\s+/);
+    updateProfile({
+      first_name: firstName || name,
+      last_name: lastNameParts.join(' ') || '.',
+      email,
+      bio,
+      github_url: github,
+      linkedin_url: linkedin,
+      role: title
+    }).then(() => {
       setLoading(false);
       setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 3000);
-    }, 800);
+      window.setTimeout(() => setIsSaved(false), 3000);
+    }).catch(() => {
+      setLoading(false);
+    });
   };
 
   const badges = [
@@ -36,11 +63,11 @@ export default function ProfilePage() {
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Top Banner Cover Card */}
       <div className="relative rounded-2xl overflow-hidden shadow-lg border border-light-border dark:border-dark-border bg-white dark:bg-dark-card p-6 md:p-8">
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="absolute top-0 left-0 right-0 h-32 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500" />
         
         <div className="relative pt-16 flex flex-col md:flex-row items-center md:items-end justify-between gap-6">
           <div className="flex flex-col md:flex-row items-center md:items-end gap-5 text-center md:text-left">
-            <div className="h-28 w-28 rounded-full border-4 border-white dark:border-dark-card bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white text-4xl font-bold font-display shadow-md">
+            <div className="h-28 w-28 rounded-full border-4 border-white dark:border-dark-card bg-linear-to-tr from-indigo-500 to-violet-500 flex items-center justify-center text-white text-4xl font-bold font-display shadow-md">
               {name ? name.charAt(0) : 'U'}
             </div>
             <div>

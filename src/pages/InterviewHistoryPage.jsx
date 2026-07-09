@@ -2,22 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Briefcase, Award, Clock, ArrowRight, Download, Trash2, RefreshCw, AlertCircle, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-
-const INITIAL_MOCK_INTERVIEWS = [
-  { id: 'int-101', name: 'Mock Technical Run 1', role: 'Frontend Engineer', company: 'Google', date: '2026-07-01', duration: '25 mins', overallScore: 88, status: 'Completed', level: 'Mid-Level', difficulty: 'Medium', technicalScore: 90, communicationScore: 85, confidenceScore: 89 },
-  { id: 'int-102', name: 'System Design Sandbox', role: 'Backend Engineer', company: 'Amazon', date: '2026-06-25', duration: '30 mins', overallScore: 72, status: 'Completed', level: 'Senior', difficulty: 'Hard', technicalScore: 75, communicationScore: 68, confidenceScore: 73 },
-  { id: 'int-103', name: 'React Context Trial', role: 'Frontend Engineer', company: 'Meta', date: '2026-07-05', duration: '12 mins', overallScore: 0, status: 'Incomplete', level: 'Junior', difficulty: 'Easy', technicalScore: 0, communicationScore: 0, confidenceScore: 0 },
-  { id: 'int-104', name: 'Product Sense Grading', role: 'Product Manager', company: 'Stripe', date: '2026-06-18', duration: '20 mins', overallScore: 84, status: 'Completed', level: 'Mid-Level', difficulty: 'Medium', technicalScore: 80, communicationScore: 88, confidenceScore: 84 },
-  { id: 'int-105', name: 'Express APIs Sandbox', role: 'Backend Engineer', company: 'Vercel', date: '2026-06-12', duration: '15 mins', overallScore: 64, status: 'Completed', level: 'Junior', difficulty: 'Easy', technicalScore: 60, communicationScore: 70, confidenceScore: 62 },
-  { id: 'int-106', name: 'Redux State Management', role: 'Frontend Engineer', company: 'Netflix', date: '2026-05-28', duration: '28 mins', overallScore: 92, status: 'Completed', level: 'Senior', difficulty: 'Hard', technicalScore: 95, communicationScore: 88, confidenceScore: 93 },
-  { id: 'int-107', name: 'Database Scalability Demo', role: 'Backend Engineer', company: 'Uber', date: '2026-07-04', duration: '8 mins', overallScore: 0, status: 'Incomplete', level: 'Senior', difficulty: 'Hard', technicalScore: 0, communicationScore: 0, confidenceScore: 0 }
-];
+import { interview } from '../services/interview';
 
 export default function InterviewHistoryPage() {
   const { theme } = useAuthStore();
   const navigate = useNavigate();
   
-  const [interviews, setInterviews] = useState(INITIAL_MOCK_INTERVIEWS);
+  const [interviews, setInterviews] = useState([]);
+  useEffect(() => {
+    setIsLoading(true);
+    interview.history().then((data) => {
+      const list = Array.isArray(data) ? data : data?.results || data?.data || [];
+      const mapped = list.map(item => ({
+        id: item.id,
+        name: item.title || `${item.target_role} Practice`,
+        level: item.difficulty || 'Mid-Level',
+        difficulty: item.difficulty || 'Medium',
+        role: item.target_role || 'General',
+        company: item.target_company || 'Target',
+        date: item.completed_at ? String(item.completed_at).split('T')[0] : (item.started_at ? String(item.started_at).split('T')[0] : 'Recent'),
+        duration: `${item.duration_minutes || 10} mins`,
+        overallScore: item.result?.overall_score || 0,
+        technicalScore: item.result?.technical_score || 0,
+        communicationScore: item.result?.communication_score || 0,
+        confidenceScore: item.result?.confidence_score || 0,
+        status: item.status === 'Completed' || item.status === 'finished' ? 'Completed' : 'Incomplete'
+      }));
+      setInterviews(mapped);
+      setIsLoading(false);
+    }).catch(() => {
+      setInterviews([]);
+      setIsLoading(false);
+    });
+  }, []);
   const [isLoading, setIsLoading] = useState(false);
   
   // Search & Filter State

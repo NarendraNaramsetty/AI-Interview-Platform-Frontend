@@ -1,27 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Users, BarChart3, Database, ShieldAlert, Edit, Trash, Check, X, ToggleLeft, ToggleRight, Search, Activity } from 'lucide-react';
-
-const MOCK_USERS_LIST = [
-  { id: 'usr-1', name: 'Alex Developer', email: 'alex.dev@example.com', tier: 'Pro Member', status: 'Active', joined: '2026-03-10' },
-  { id: 'usr-2', name: 'Taylor Code', email: 'taylor.c@example.com', tier: 'Free Tier', status: 'Active', joined: '2026-04-18' },
-  { id: 'usr-3', name: 'Jordan Architect', email: 'jordan@stack.org', tier: 'Enterprise Team', status: 'Active', joined: '2025-11-05' },
-  { id: 'usr-4', name: 'Casey Product', email: 'casey.pm@example.com', tier: 'Pro Member', status: 'Suspended', joined: '2026-01-20' },
-  { id: 'usr-5', name: 'Sam Script', email: Sam => 'sam.s@example.com', tier: 'Free Tier', status: 'Active', joined: '2026-06-02' }
-];
+import { dashboard } from '../services/dashboard';
+import { users } from '../services/users';
 
 export default function AdminPage() {
-  const [users, setUsers] = useState(MOCK_USERS_LIST);
+  const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingUserId, setEditingUserId] = useState(null);
   const [editTierVal, setEditTierVal] = useState('');
   const [maintMode, setMaintMode] = useState(false);
   
-  const [systemLogs, setSystemLogs] = useState([
-    { time: '12:04:15', type: 'INFO', msg: 'Zustand Auth Store initialized successfully.' },
-    { time: '12:05:01', type: 'SUCCESS', msg: 'ATS Resume parsing container completed batch audit.' },
-    { time: '12:05:48', type: 'WARN', msg: 'Voice transcription endpoint latency spikes to 1.8s.' },
-    { time: '12:06:12', type: 'INFO', msg: 'Client router navigated to Admin console panel.' }
-  ]);
+  const [systemLogs, setSystemLogs] = useState([]);
+
+  useEffect(() => {
+    users.leaderboard().then((data) => {
+      const items = Array.isArray(data) ? data : data?.results || data?.data || [];
+      const mapped = items.map(u => ({
+        id: u.id,
+        name: [u.user?.first_name, u.user?.last_name].filter(Boolean).join(' ') || 'User',
+        email: u.user?.email || '',
+        tier: u.user?.role || 'Free Tier',
+        status: u.user?.is_active !== false ? 'Active' : 'Suspended',
+        joined: u.created_at ? String(u.created_at).split('T')[0] : '2026-07-01'
+      }));
+      setUsers(mapped);
+    }).catch(() => setUsers([]));
+    dashboard.activity().then((data) => {
+      setSystemLogs(Array.isArray(data) ? data : data?.results || data?.data || []);
+    }).catch(() => setSystemLogs([]));
+  }, []);
 
   const handleEditClick = (user) => {
     setEditingUserId(user.id);
@@ -52,21 +59,10 @@ export default function AdminPage() {
     u.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const addLog = () => {
-    const time = new Date().toTimeString().split(' ')[0];
-    const logTypes = ['INFO', 'SUCCESS', 'WARN'];
-    const logsPool = [
-      'Cleared local transaction cache buffer.',
-      'API authentication gateway token refresh successful.',
-      'Mock interview transcript stored successfully in DB.',
-      'Rate-limiting thresholds updated for Free Tier clients.',
-      'ATS grading vocabulary dictionary re-indexed.'
-    ];
-    
-    const randomType = logTypes[Math.floor(Math.random() * logTypes.length)];
-    const randomMsg = logsPool[Math.floor(Math.random() * logsPool.length)];
-    
-    setSystemLogs(prev => [{ time, type: randomType, msg: randomMsg }, ...prev.slice(0, 5)]);
+  const refreshLogs = () => {
+    dashboard.activity().then((data) => {
+      setSystemLogs(Array.isArray(data) ? data : data?.results || data?.data || []);
+    }).catch(() => setSystemLogs([]));
   };
 
   return (
@@ -89,8 +85,8 @@ export default function AdminPage() {
             <BarChart3 className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Mock Monthly Revenue</p>
-            <p className="text-2xl font-bold font-display mt-0.5">$24,420</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold">Monthly Revenue</p>
+            <p className="text-2xl font-bold font-display mt-0.5">Live</p>
           </div>
         </div>
 
@@ -245,10 +241,10 @@ export default function AdminPage() {
                 Live Log Auditing
               </h3>
               <button
-                onClick={addLog}
+                onClick={refreshLogs}
                 className="text-[10px] font-bold text-indigo-500 hover:text-indigo-600 transition-colors"
               >
-                Mock Event
+                Refresh
               </button>
             </div>
 

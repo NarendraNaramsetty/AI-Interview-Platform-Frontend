@@ -1,17 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, CheckCircle2, ShieldAlert, ArrowRight, RefreshCw, Clock } from 'lucide-react';
-import { useAuthStore } from '../../store/useAuthStore';
+import { auth } from '../../services/auth';
 
 export default function VerifyEmailPage() {
   const { theme } = useAuthStore();
   const navigate = useNavigate();
   
-  // Developer state simulator
-  const [verifyState, setVerifyState] = useState('pending'); // successful, pending, invalid
+  const [searchParams] = useSearchParams();
+  const [verifyState, setVerifyState] = useState('pending');
   const [isLoading, setIsLoading] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0); // in seconds
+  const [resendTimer, setResendTimer] = useState(0);
   const [resendSuccess, setResendSuccess] = useState(false);
+  const [email, setEmail] = useState(searchParams.get('email') || '');
+  const [token, setToken] = useState(searchParams.get('token') || '');
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (email && token) {
+      setIsLoading(true);
+      auth.verifyEmail({ email, token })
+        .then(() => {
+          setVerifyState('successful');
+          setMessage('Email verified successfully.');
+        })
+        .catch((error) => {
+          setVerifyState('invalid');
+          setMessage(error?.message || 'The verification token is invalid or expired.');
+        })
+        .finally(() => setIsLoading(false));
+    }
+  }, []);
 
   // Timer countdown logic for resend button
   useEffect(() => {
@@ -21,25 +40,34 @@ export default function VerifyEmailPage() {
     }
   }, [resendTimer]);
 
-  const handleResendEmail = () => {
+  const handleResendEmail = async () => {
     setIsLoading(true);
     setResendSuccess(false);
-    
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      await auth.resendVerification({ email });
       setResendSuccess(true);
-      setResendTimer(60); // 60 seconds countdown
-      setTimeout(() => setResendSuccess(false), 4000);
-    }, 1200);
+      setResendTimer(60);
+      setMessage('Verification email resent successfully.');
+    } catch (error) {
+      setMessage(error?.message || 'Unable to resend verification email.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRequestNewLink = () => {
+  const handleRequestNewLink = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await auth.resendVerification({ email });
       setVerifyState('pending');
       setResendTimer(30);
-    }, 1000);
+      setMessage('A new verification email has been sent.');
+    } catch (error) {
+      setMessage(error?.message || 'Unable to request a new verification link.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const wrapperStyle = theme === 'dark' 
@@ -49,33 +77,13 @@ export default function VerifyEmailPage() {
   return (
     <div className="min-h-[calc(100vh-12rem)] flex flex-col items-center justify-center p-4 gap-6">
       
-      {/* State Switcher Simulator Bar for Verification Demo */}
-      <div className="flex items-center gap-2 p-1.5 bg-light-hover dark:bg-dark-hover rounded-xl border border-light-border dark:border-dark-border">
-        <span className="text-[9px] uppercase font-bold text-gray-400 px-2">Demo State Switcher:</span>
-        {['pending', 'successful', 'invalid'].map((s) => (
-          <button
-            key={s}
-            onClick={() => setVerifyState(s)}
-            className={`px-3 py-1 text-[10px] font-semibold rounded-lg capitalize transition-all ${
-              verifyState === s
-                ? 'bg-white dark:bg-dark-card text-indigo-500 shadow-sm border border-light-border dark:border-dark-border'
-                : 'text-gray-500 hover:text-gray-800 dark:hover:text-gray-200'
-            }`}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-
       <div className={`w-full max-w-md p-8 rounded-2xl border transition-all ${wrapperStyle}`}>
         {isLoading ? (
-          // Skeletal Loader Spinner
           <div className="text-center py-10 space-y-4">
             <RefreshCw className="h-8 w-8 text-indigo-500 animate-spin mx-auto" />
-            <p className="text-xs text-gray-500">Querying email verification keys...</p>
+            <p className="text-xs text-gray-500">Processing verification request...</p>
           </div>
         ) : verifyState === 'successful' ? (
-          // Verification Successful Screen
           <div className="text-center space-y-6">
             <div className="mx-auto w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center">
               <CheckCircle2 className="h-7 w-7" />
@@ -92,12 +100,11 @@ export default function VerifyEmailPage() {
               onClick={() => navigate('/login')}
               className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-semibold rounded-xl text-xs transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-1"
             >
-              <span>Go to Dashboard</span>
+              <span>Go to Login</span>
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         ) : verifyState === 'invalid' ? (
-          // Invalid Verification link screen
           <div className="text-center space-y-6">
             <div className="mx-auto w-14 h-14 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center">
               <ShieldAlert className="h-7 w-7" />
@@ -106,7 +113,7 @@ export default function VerifyEmailPage() {
             <div className="space-y-2">
               <h3 className="text-xl font-display font-bold">Invalid or Expired Link</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                The verification token you clicked is invalid, malformed, or has already expired.
+                {message || 'The verification token you clicked is invalid, malformed, or has already expired.'}
               </p>
             </div>
 
@@ -118,7 +125,6 @@ export default function VerifyEmailPage() {
             </button>
           </div>
         ) : (
-          // Verification Pending Screen (Default)
           <div className="text-center space-y-6">
             <div className="mx-auto w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 flex items-center justify-center">
               <Mail className="h-7 w-7" />
@@ -127,8 +133,44 @@ export default function VerifyEmailPage() {
             <div className="space-y-2">
               <h3 className="text-xl font-display font-bold">Verify Your Email Address</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                We have sent an authentication link to your email. Click the link in the message to activate your profile features.
+                {message || 'Enter your email and token to complete verification, or request a fresh verification email.'}
               </p>
+            </div>
+
+            <div className="space-y-3 text-left">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="alex@example.com"
+                className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
+              />
+              <input
+                type="text"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="Verification token"
+                className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
+              />
+              <button
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await auth.verifyEmail({ email, token });
+                    setVerifyState('successful');
+                    setMessage('Email verified successfully.');
+                  } catch (error) {
+                    setVerifyState('invalid');
+                    setMessage(error?.message || 'Verification failed.');
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                disabled={!email || !token}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold rounded-xl text-xs transition-colors"
+              >
+                Verify Email
+              </button>
             </div>
 
             {resendSuccess && (

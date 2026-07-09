@@ -1,108 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Compass, CheckCircle2, Circle, ArrowRight, BookOpen, Link as LinkIcon, Cpu, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const ROADMAP_DATA = {
-  frontend: {
-    title: 'Frontend Engineering Track',
-    description: 'Master semantic layout structures, client side responsiveness, advanced frameworks, and bundle optimizations.',
-    milestones: [
-      {
-        id: 'fe-m1',
-        title: 'Foundations of the Web',
-        subtopics: [
-          { id: 'fe-s1', title: 'Semantic HTML5 structure & accessibility rules', completed: true },
-          { id: 'fe-s2', title: 'CSS layouts (Grid, Flexbox, Specificity hierarchy)', completed: true },
-          { id: 'fe-s3', title: 'Responsive design patterns & Tailwind CSS configurations', completed: false }
-        ]
-      },
-      {
-        id: 'fe-m2',
-        title: 'JavaScript & Dynamic Interactivity',
-        subtopics: [
-          { id: 'fe-s4', title: 'ES6+ features (Promises, Async/Await, Destructuring)', completed: true },
-          { id: 'fe-s5', title: 'DOM manipulation mechanics & Event Bubbling', completed: false },
-          { id: 'fe-s6', title: 'JavaScript Engine execution context & Call Stack', completed: false }
-        ]
-      },
-      {
-        id: 'fe-m3',
-        title: 'Modern Single Page Applications (React)',
-        subtopics: [
-          { id: 'fe-s7', title: 'React component lifecycles & reconciliation virtual DOM', completed: false },
-          { id: 'fe-s8', title: 'Hook architecture (useState, useEffect, useMemo, useCallback)', completed: false },
-          { id: 'fe-s9', title: 'State management solutions (Zustand, Context API)', completed: false }
-        ]
-      },
-      {
-        id: 'fe-m4',
-        title: 'Testing, Bundling & Optimization',
-        subtopics: [
-          { id: 'fe-s10', title: 'Vite & Webpack configurations (tree-shaking, lazy loading)', completed: false },
-          { id: 'fe-s11', title: 'Unit testing frameworks (Jest, React Testing Library)', completed: false },
-          { id: 'fe-s12', title: 'Core Web Vitals auditing (LCP, CLS, FID optimizations)', completed: false }
-        ]
-      }
-    ],
-    resources: [
-      { title: 'MDN Web Docs - HTML & CSS Essentials', link: 'https://developer.mozilla.org' },
-      { title: 'Eloquent JavaScript (3rd Edition)', link: 'https://eloquentjavascript.net' },
-      { title: 'React official docs - Beta walkthrough', link: 'https://react.dev' }
-    ]
-  },
-  backend: {
-    title: 'Backend Engineering Track',
-    description: 'Master server scripting, database design patterns, caching systems, and security layers.',
-    milestones: [
-      {
-        id: 'be-m1',
-        title: 'Server Core & HTTP Protocol',
-        subtopics: [
-          { id: 'be-s1', title: 'Node.js event loop & non-blocking execution models', completed: true },
-          { id: 'be-s2', title: 'RESTful API principles and HTTP status specs', completed: true },
-          { id: 'be-s3', title: 'Routing structures and middleware architectures', completed: false }
-        ]
-      },
-      {
-        id: 'be-m2',
-        title: 'Database & Persistent Storage',
-        subtopics: [
-          { id: 'be-s4', title: 'Relational Database indexing & B-tree constraints', completed: false },
-          { id: 'be-s5', title: 'NoSQL document structure (MongoDB/Redis caches)', completed: false },
-          { id: 'be-s6', title: 'SQL Joins, Subqueries and aggregate performance analysis', completed: false }
-        ]
-      },
-      {
-        id: 'be-m3',
-        title: 'System Design & High Availability',
-        subtopics: [
-          { id: 'be-s7', title: 'Load Balancing & Rate Limiting algorithms', completed: false },
-          { id: 'be-s8', title: 'Caching protocols (Write-through vs Write-back)', completed: false },
-          { id: 'be-s9', title: 'Message queues (RabbitMQ, Kafka stream triggers)', completed: false }
-        ]
-      }
-    ],
-    resources: [
-      { title: 'Designing Data-Intensive Applications', link: 'https://www.oreilly.com' },
-      { title: 'System Design Primer (GitHub Reference)', link: 'https://github.com' },
-      { title: 'Node.js Design Patterns book', link: 'https://www.nodejsdesignpatterns.com' }
-    ]
-  }
-};
+import { roadmap } from '../services/roadmap';
 
 export default function RoadmapPage() {
   const [activeTrack, setActiveTrack] = useState('frontend');
-  const [tracks, setTracks] = useState(ROADMAP_DATA);
+  const [tracks, setTracks] = useState({ frontend: null, backend: null });
+
+  useEffect(() => {
+    roadmap.list().then((data) => {
+      if (data && typeof data === 'object' && !Array.isArray(data)) {
+        setTracks((prev) => ({ ...prev, ...data }));
+      }
+    }).catch(() => {});
+  }, []);
 
   const toggleSubtopic = (trackId, milestoneIdx, subtopicIdx) => {
-    const updatedTracks = { ...tracks };
-    const currentCompleted = updatedTracks[trackId].milestones[milestoneIdx].subtopics[subtopicIdx].completed;
-    updatedTracks[trackId].milestones[milestoneIdx].subtopics[subtopicIdx].completed = !currentCompleted;
-    setTracks(updatedTracks);
+    roadmap.progress({
+      user_roadmap_id: trackId,
+      module_id: `${milestoneIdx}-${subtopicIdx}`,
+      is_completed: true,
+      notes: ''
+    }).catch(() => {});
   };
 
   const getProgress = (trackId) => {
     const track = tracks[trackId];
+    if (!track || !track.milestones) return 0;
     let total = 0;
     let completed = 0;
     track.milestones.forEach((m) => {
@@ -114,7 +38,7 @@ export default function RoadmapPage() {
     return total === 0 ? 0 : Math.round((completed / total) * 100);
   };
 
-  const currentTrack = tracks[activeTrack];
+  const currentTrack = tracks[activeTrack] || { title: 'Loading...', description: '', milestones: [], resources: [] };
   const progressPercent = getProgress(activeTrack);
 
   return (
@@ -173,7 +97,7 @@ export default function RoadmapPage() {
               
               <div className="w-full bg-light-hover dark:bg-dark-hover h-2.5 rounded-full overflow-hidden border border-light-border dark:border-dark-border">
                 <div 
-                  className="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-500" 
+                  className="bg-linear-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-500" 
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>

@@ -25,7 +25,22 @@ export default function RegisterPage() {
       await register(name, email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      const responseData = err.response?.data;
+      if (responseData?.errors) {
+        const messages = Object.entries(responseData.errors)
+          .map(([field, msgs]) => {
+            const formattedMsgs = Array.isArray(msgs) ? msgs.join(' ') : String(msgs);
+            return `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMsgs}`;
+          })
+          .join('\n');
+        setError(messages || responseData.message || 'Validation failed.');
+      } else if (responseData?.message) {
+        setError(responseData.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

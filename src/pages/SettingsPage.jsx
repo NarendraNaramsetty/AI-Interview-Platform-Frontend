@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Settings, Shield, Bell, CreditCard, Check, CheckCircle2, ChevronRight, Download } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Link } from 'react-router-dom';
+import { auth } from '../services/auth';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -31,13 +32,17 @@ export default function SettingsPage() {
       return;
     }
 
-    setTimeout(() => {
-      setIsPwSaved(true);
-      setCurrentPw('');
-      setNewPw('');
-      setConfirmPw('');
-      setTimeout(() => setIsPwSaved(false), 3000);
-    }, 1000);
+    auth.changePassword({ old_password: currentPw, new_password: newPw, password_confirm: confirmPw })
+      .then(() => {
+        setIsPwSaved(true);
+        setCurrentPw('');
+        setNewPw('');
+        setConfirmPw('');
+        window.setTimeout(() => setIsPwSaved(false), 3000);
+      })
+      .catch((error) => {
+        setPwError(error.message || 'Unable to update password.');
+      });
   };
 
   const invoiceHistory = [
@@ -89,7 +94,7 @@ export default function SettingsPage() {
 
         {/* Right Side Content Panel */}
         <div className="md:col-span-3">
-          <div className="p-6 md:p-8 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm min-h-[350px]">
+          <div className="p-6 md:p-8 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm min-h-87.5">
             
             {/* Account Settings Tab */}
             {activeTab === 'account' && (
