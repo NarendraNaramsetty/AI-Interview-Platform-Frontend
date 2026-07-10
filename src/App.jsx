@@ -11,8 +11,11 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import PricingPage from './pages/PricingPage';
-import ContactPage from './pages/ContactPage';
-import AboutPage from './pages/AboutPage';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
+import FAQ from './pages/FAQ';
 import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/Auth/VerifyEmailPage';
@@ -71,8 +74,11 @@ export default function App() {
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
         <Route path="/pricing" element={<PublicRoute><PricingPage /></PublicRoute>} />
-        <Route path="/contact" element={<PublicRoute><ContactPage /></PublicRoute>} />
-        <Route path="/about" element={<PublicRoute><AboutPage /></PublicRoute>} />
+        <Route path="/contact" element={<PublicRoute><Contact /></PublicRoute>} />
+        <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
+        <Route path="/privacy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
+        <Route path="/terms" element={<PublicRoute><Terms /></PublicRoute>} />
+        <Route path="/faq" element={<PublicRoute><FAQ /></PublicRoute>} />
         <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
         <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
         <Route path="/verify-email" element={<PublicRoute><VerifyEmailPage /></PublicRoute>} />

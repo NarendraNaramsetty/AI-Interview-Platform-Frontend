@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useToastStore } from '../../store/useToastStore';
 import { Sparkles, Mail, Lock, User, Loader2 } from 'lucide-react';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
+import LinkedInLoginButton from '../../components/LinkedInLoginButton';
 
 export default function RegisterPage() {
-  const { register, theme } = useAuthStore();
+  const { login, register, hydrateUser, theme } = useAuthStore();
+  const { pushToast } = useToastStore();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -12,6 +16,32 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const access = query.get('access');
+    const refresh = query.get('refresh');
+    const errorParam = query.get('error');
+
+    if (errorParam) {
+      pushToast({ message: decodeURIComponent(errorParam), type: 'error' });
+      navigate('/register', { replace: true });
+      return;
+    }
+
+    if (access && refresh) {
+      setLoading(true);
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+      hydrateUser().then(() => {
+        pushToast({ message: "Successfully signed up with LinkedIn!", type: "success" });
+        navigate('/dashboard', { replace: true });
+      }).catch((err) => {
+        pushToast({ message: "Failed to retrieve user profile after LinkedIn handshake.", type: "error" });
+        setLoading(false);
+      });
+    }
+  }, [hydrateUser, navigate, pushToast]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -153,6 +183,19 @@ export default function RegisterPage() {
               )}
             </button>
           </form>
+
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-gray-500/10"></div>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
+              Or continue with
+            </span>
+            <div className="flex-1 h-px bg-gray-500/10"></div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <GoogleLoginButton />
+            <LinkedInLoginButton />
+          </div>
 
           <p className="text-center text-xs text-gray-500">
             Already have an account?{' '}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Authenticating...</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f5f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #374151;
+    }
+    .container {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      max-width: 320px;
+      width: 100%;
+    }
+    .spinner {
+      margin: 0 auto 16px auto;
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #6366f1;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h3>Connecting account...</h3>
+    <p>Please wait while we complete your authentication.</p>
+  </div>
+
+  <script>
+    // Parse query params or hash fragments
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+    const code = searchParams.get('code') || hashParams.get('code');
+    const state = searchParams.get('state') || hashParams.get('state');
+    const credential = searchParams.get('credential') || hashParams.get('credential') || hashParams.get('id_token') || searchParams.get('id_token');
+
+    if (window.opener && !window.opener.closed) {
+      if (credential) {
+        window.opener.postMessage({
+          type: 'google-auth-success',
+          credential: credential
+        }, window.location.origin);
+      } else if (code) {
+        window.opener.postMessage({
+          type: 'social-auth-code',
+          code: code,
+          state: state
+        }, window.location.origin);
+      }
+    } else {
+      console.error('Window opener is not available or closed.');
+    }
+
+    // Automatically close the popup window
+    setTimeout(() => {
+      window.close();
+    }, 800);
+  </script>
+</body>
+</html>

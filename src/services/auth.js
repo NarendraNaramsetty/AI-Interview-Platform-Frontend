@@ -12,5 +12,7 @@ export const auth = {
   resetPassword: (payload) => api.post('/api/auth/reset-password', payload),
   verifyEmail: (payload) => api.post('/api/auth/verify-email', payload),
   resendVerification: (payload) => api.post('/api/auth/resend-verification', payload),
-  updateProfile: (payload) => api.put('/api/auth/profile', payload)
+  updateProfile: (payload) => api.put('/api/auth/profile', payload),
+  googleLogin: (payload) => api.post('/api/auth/google', payload),
+  linkedinLogin: (payload) => api.post('/api/auth/linkedin', payload)
 };

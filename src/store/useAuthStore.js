@@ -24,6 +24,7 @@ export const useAuthStore = create((set, get) => ({
   user: JSON.parse(localStorage.getItem('auth_user')) || null,
   theme: 'light',
   isAuthReady: false,
+  setUser: (user) => set({ user: user ? mapUser(user) : null }),
 
   initTheme: () => {
     const root = window.document.documentElement;
@@ -96,6 +97,28 @@ export const useAuthStore = create((set, get) => ({
     const res = await auth.updateProfile(updatedFields);
     const userData = res?.data || res;
     const user = mapUser(userData);
+    localStorage.setItem('auth_user', JSON.stringify(user));
+    set({ user });
+    return user;
+  },
+
+  googleLogin: async (code, redirectUri) => {
+    const response = await auth.googleLogin({ code, redirect_uri: redirectUri });
+    const tokens = response?.tokens || response?.data?.tokens || {};
+    const user = mapUser(response?.user || response?.data?.user);
+    if (tokens.access) localStorage.setItem('access_token', tokens.access);
+    if (tokens.refresh) localStorage.setItem('refresh_token', tokens.refresh);
+    localStorage.setItem('auth_user', JSON.stringify(user));
+    set({ user });
+    return user;
+  },
+
+  linkedinLogin: async (code, redirectUri) => {
+    const response = await auth.linkedinLogin({ code, redirect_uri: redirectUri });
+    const tokens = response?.tokens || response?.data?.tokens || {};
+    const user = mapUser(response?.user || response?.data?.user);
+    if (tokens.access) localStorage.setItem('access_token', tokens.access);
+    if (tokens.refresh) localStorage.setItem('refresh_token', tokens.refresh);
     localStorage.setItem('auth_user', JSON.stringify(user));
     set({ user });
     return user;

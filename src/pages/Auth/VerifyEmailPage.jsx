@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, CheckCircle2, ShieldAlert, ArrowRight, RefreshCw, Clock } from 'lucide-react';
+import { useAuthStore } from '../../store/useAuthStore';
 import { auth } from '../../services/auth';
 
 export default function VerifyEmailPage() {

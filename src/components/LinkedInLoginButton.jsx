@@ -1,0 +1,45 @@
+import React, { useState } from 'react';
+import { Button, CircularProgress } from '@mui/material';
+import { FaLinkedin } from 'react-icons/fa';
+import { useToastStore } from '../store/useToastStore';
+
+export default function LinkedInLoginButton() {
+  const { pushToast } = useToastStore();
+  const [loading, setLoading] = useState(false);
+
+  const handleLinkedInLogin = () => {
+    setLoading(true);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    // Redirect browser to django OAuth initiate endpoint
+    window.location.href = `${apiBaseUrl}/api/auth/linkedin/login/`;
+  };
+
+  return (
+    <Button
+      variant="outlined"
+      fullWidth
+      disabled={loading}
+      onClick={handleLinkedInLogin}
+      startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <FaLinkedin />}
+      sx={{
+        py: 1.2,
+        borderRadius: 3,
+        textTransform: 'none',
+        fontWeight: 600,
+        fontSize: '0.825rem',
+        borderColor: 'rgba(0,0,0,0.12)',
+        color: 'text.primary',
+        '&:hover': {
+          borderColor: 'text.primary',
+          backgroundColor: 'action.hover',
+        },
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1
+      }}
+    >
+      {loading ? 'Redirecting to LinkedIn...' : 'Continue with LinkedIn'}
+    </Button>
+  );
+}
