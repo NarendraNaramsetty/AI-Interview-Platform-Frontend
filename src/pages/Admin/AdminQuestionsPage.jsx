@@ -37,6 +37,14 @@ export default function AdminQuestionsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
 
+  const extractQuestionsList = (res) => {
+    if (Array.isArray(res)) return res;
+    if (res?.data) {
+      return Array.isArray(res.data) ? res.data : res.data.results || [];
+    }
+    return res?.results || [];
+  };
+
   useEffect(() => {
     Promise.all([
       questionsService.list(),
@@ -44,7 +52,7 @@ export default function AdminQuestionsPage() {
       questionsService.companies(),
       questionsService.topics()
     ]).then(([questionData, categoryData, companyData, topicData]) => {
-      setQuestions(Array.isArray(questionData) ? questionData : questionData?.results || questionData?.data || []);
+      setQuestions(extractQuestionsList(questionData));
       setCategories(Array.isArray(categoryData) ? categoryData : categoryData?.results || categoryData?.data || []);
       setCompanies(Array.isArray(companyData) ? companyData : companyData?.results || companyData?.data || []);
       setTopics(Array.isArray(topicData) ? topicData : topicData?.results || topicData?.data || []);
@@ -112,7 +120,7 @@ export default function AdminQuestionsPage() {
     try {
       await questionsService.create(buildPayload());
       const refreshed = await questionsService.list();
-      setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+      setQuestions(extractQuestionsList(refreshed));
       setShowAddModal(false);
     } catch (error) {
       setFormError(error?.message || 'Unable to create question.');
@@ -141,7 +149,7 @@ export default function AdminQuestionsPage() {
     try {
       await questionsService.update(editingQuestion.id, buildPayload());
       const refreshed = await questionsService.list();
-      setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+      setQuestions(extractQuestionsList(refreshed));
       setEditingQuestion(null);
     } catch (error) {
       setFormError(error?.message || 'Unable to update question.');
@@ -154,7 +162,7 @@ export default function AdminQuestionsPage() {
       try {
         await questionsService.remove(id);
         const refreshed = await questionsService.list();
-        setQuestions(Array.isArray(refreshed) ? refreshed : refreshed?.results || refreshed?.data || []);
+        setQuestions(extractQuestionsList(refreshed));
       } catch (error) {
         setFormError(error?.message || 'Unable to delete question.');
       }

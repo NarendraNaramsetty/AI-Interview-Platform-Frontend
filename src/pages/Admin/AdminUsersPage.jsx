@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Users, Search, Filter, ShieldAlert, Check, X, ShieldCheck, Eye, EyeOff, Calendar, Award, BookOpen, Clock, Activity, CreditCard, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
-import { users } from '../../services/users';
+import { users as usersService } from '../../services/users';
 
 export default function AdminUsersPage() {
   const { theme } = useAuthStore();
@@ -17,7 +17,7 @@ export default function AdminUsersPage() {
   const itemsPerPage = 5;
 
   useEffect(() => {
-    users.leaderboard().then((data) => {
+    usersService.leaderboard().then((data) => {
       const items = Array.isArray(data) ? data : data?.results || data?.data || [];
       const mapped = items.map(u => ({
         id: u.id,
