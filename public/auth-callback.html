@@ -63,6 +63,25 @@
     const state = searchParams.get('state') || hashParams.get('state');
     const credential = searchParams.get('credential') || hashParams.get('credential') || hashParams.get('id_token') || searchParams.get('id_token');
 
+    let apiBaseUrl = 'http://localhost:8000';
+    if (state) {
+      try {
+        const parsedState = JSON.parse(decodeURIComponent(state));
+        if (parsedState && parsedState.apiBaseUrl) {
+          apiBaseUrl = parsedState.apiBaseUrl;
+        }
+      } catch (e) {
+        try {
+          const parsedState = JSON.parse(state);
+          if (parsedState && parsedState.apiBaseUrl) {
+            apiBaseUrl = parsedState.apiBaseUrl;
+          }
+        } catch (err) {
+          console.error('Failed to parse state:', err);
+        }
+      }
+    }
+
     if (window.opener && !window.opener.closed) {
       if (credential) {
         window.opener.postMessage({
@@ -76,14 +95,53 @@
           state: state
         }, window.location.origin);
       }
+      // Automatically close the popup window
+      setTimeout(() => {
+        window.close();
+      }, 800);
     } else {
-      console.error('Window opener is not available or closed.');
+      console.warn('Window opener is not available or closed. Running fallback verification.');
+      if (credential) {
+        fetch(`${apiBaseUrl}/api/auth/google/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: credential })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Authentication verification failed.');
+          }
+          return response.json();
+        })
+        .then(res => {
+          const responseData = res.data || res;
+          const { access, refresh, user } = responseData;
+          if (access && refresh) {
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+            if (user) {
+              localStorage.setItem('auth_user', JSON.stringify(user));
+            }
+            window.location.href = '/dashboard';
+          } else {
+            throw new Error('Tokens were not returned by the backend.');
+          }
+        })
+        .catch(err => {
+          console.error('Fallback authentication failed:', err);
+          document.querySelector('h3').innerText = 'Authentication Failed';
+          document.querySelector('p').innerHTML = `${err.message || 'Could not verify login status.'}<br><br><a href="/login" style="color: #6366f1; text-decoration: none; font-weight: 600;">Go back to Login</a>`;
+          document.querySelector('.spinner').style.display = 'none';
+        });
+      } else {
+        console.error('No credential or code found in fallback flow.');
+        document.querySelector('h3').innerText = 'Authentication Failed';
+        document.querySelector('p').innerHTML = `Authentication context was lost.<br><br><a href="/login" style="color: #6366f1; text-decoration: none; font-weight: 600;">Go back to Login</a>`;
+        document.querySelector('.spinner').style.display = 'none';
+      }
     }
-
-    // Automatically close the popup window
-    setTimeout(() => {
-      window.close();
-    }, 800);
   </script>
 </body>
 </html>

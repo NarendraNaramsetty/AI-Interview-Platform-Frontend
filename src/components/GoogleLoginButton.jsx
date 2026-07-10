@@ -24,18 +24,28 @@ export default function GoogleLoginButton() {
       return;
     }
 
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const stateObj = { provider: 'google', apiBaseUrl };
+    const stateStr = encodeURIComponent(JSON.stringify(stateObj));
+
     const redirectUri = `${window.location.origin}/auth-callback.html`;
     const nonce = Math.random().toString(36).substring(2);
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=id_token&scope=openid%20email%20profile&nonce=${nonce}&state=google`;
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=id_token&scope=openid%20email%20profile&nonce=${nonce}&state=${stateStr}`;
 
-    const popup = window.open(
-      authUrl,
-      'google-oauth-popup',
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-    );
+    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    if (!popup) {
-      alert("Popup blocker is enabled! Please allow popups to sign in with Google.");
+    if (isMobile) {
+      window.location.href = authUrl;
+    } else {
+      const popup = window.open(
+        authUrl,
+        'google-oauth-popup',
+        `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+      );
+
+      if (!popup) {
+        alert("Popup blocker is enabled! Please allow popups to sign in with Google.");
+      }
     }
   };
 
@@ -53,7 +63,7 @@ export default function GoogleLoginButton() {
           // Send ID Token to backend for verification
           const response = await api.post('/api/auth/google/', { token: credential });
           const responseData = response.data || response;
-          const { access, refresh, user } = responseData;
+          const { access, refresh, user } = responseData.data || responseData;
 
           if (access && refresh) {
             localStorage.setItem('access_token', access);
