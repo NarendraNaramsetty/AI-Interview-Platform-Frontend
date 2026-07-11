@@ -76,9 +76,10 @@ export default function CodingPage() {
   });
 
   // CONFIGURATION STATES
+  const [selectedLanguage, setSelectedLanguage] = useState('python');
   const [practiceType, setPracticeType] = useState('Backend Development');
   const [selectedRole, setSelectedRole] = useState('backend');
-  const [selectedSkills, setSelectedSkills] = useState(['Python', 'Django']);
+  const [selectedSkills, setSelectedSkills] = useState(['Python']);
   const [selectedCompany, setSelectedCompany] = useState('Amazon');
   const [experienceLevel, setExperienceLevel] = useState('junior');
   const [difficulty, setDifficulty] = useState('medium');
@@ -172,21 +173,18 @@ export default function CodingPage() {
     }
   };
 
+  const [sandboxSessionId, setSandboxSessionId] = useState(null);
+
   const handleGenerateChallenge = async () => {
     setIsGenerating(true);
     pushToast({ type: 'info', title: 'AI Generating Problem', message: 'Personalizing coding challenge...' });
 
     const payload = {
-      practice_type: practiceType,
-      role: roles.find(r => r.id === selectedRole)?.name || 'Backend Engineer',
-      tech_stack: selectedSkills,
-      company: selectedCompany,
-      experience: experienceLevel,
-      difficulty: difficulty,
-      question_count: questionCount,
-      focus_areas: selectedFocus,
-      interview_goal: interviewGoal,
-      use_resume: useResumeSkills
+      language: selectedLanguage,
+      questions_count: questionCount,
+      company_focus: selectedCompany,
+      experience_tier: experienceLevel,
+      difficulty: difficulty
     };
 
     try {
@@ -194,13 +192,28 @@ export default function CodingPage() {
       setIsGenerating(false);
       
       if (res && res.success) {
-        setCurrentQuestion(res.question);
-        setCurrentQuestionId(res.question_id);
-        setCode(res.question.starter_code || '');
+        setSandboxSessionId(res.session_id);
+        const mappedChallenge = {
+          id: res.challenge.id,
+          title: res.challenge.ai_feedback?.title || 'Coding Challenge',
+          difficulty: res.challenge.ai_feedback?.difficulty_tag || 'medium',
+          description: res.challenge.question_text,
+          starter_code: res.challenge.starter_code,
+          test_cases: (res.challenge.test_cases || []).map(tc => ({
+            input: tc.input,
+            expected_output: tc.output || tc.expected_output
+          })),
+          hints: res.challenge.ai_feedback?.hints || ['Break down the requirements.', 'Optimize loops.'],
+          follow_up_questions: res.challenge.ai_feedback?.follow_up_questions || ['Explain edge cases.']
+        };
+
+        setCurrentQuestion(mappedChallenge);
+        setCurrentQuestionId(res.challenge.id);
+        setCode(mappedChallenge.starter_code || '');
         setIsChallengeActive(true);
         setCurrentHintLevel(0);
         setTerminalOutput('');
-        pushToast({ type: 'success', title: 'AI Challenge Ready', message: res.question.title });
+        pushToast({ type: 'success', title: 'AI Challenge Ready', message: mappedChallenge.title });
       } else {
         throw new Error(res?.message || 'Server error generating question.');
       }
@@ -232,22 +245,36 @@ export default function CodingPage() {
     setTerminalOutput('🚀 Submitting to LLM review suite. Checking structural efficiency...');
 
     const payload = {
-      question_id: currentQuestionId,
-      source_code: code,
-      programming_language: language,
-      status: 'Compiled',
-      passed_test_cases: 2,
-      total_test_cases: 2
+      user_submitted_code: code
     };
 
     try {
-      const res = await aiCoding.reviewCode(payload);
+      const res = await aiCoding.reviewCode(currentQuestionId, payload);
       setIsSubmitting(false);
       if (res && res.success) {
-        setAiReviewData(res);
+        const evalData = res.challenge.ai_feedback?.evaluation || {};
+        
+        const mappedReview = {
+          score: evalData.score || 80,
+          gamification: {
+            xp_gained: 150,
+            streak: 4
+          },
+          correctness: evalData.status === "pass" 
+            ? "Passes all structural test checks." 
+            : `Fails test checks. Feedback: ${evalData.feedback?.bugs_found?.join(', ') || 'Logic issue.'}`,
+          performance: `Complexity target: ${evalData.feedback?.time_complexity || 'O(N)'}. Space complexity: ${evalData.feedback?.space_complexity || 'O(1)'}.`,
+          code_quality: "Excellent code modularity, variable naming conforms to language guidelines.",
+          edge_cases: evalData.feedback?.correct_answer_summary || "Handles standard input ranges successfully.",
+          suggestions: evalData.feedback?.optimization_tips || [],
+          alternative_solution: evalData.corrected_code_snippet || "",
+          follow_up_questions: ["Discuss performance trade-offs.", "Write unit tests for this solution."]
+        };
+
+        setAiReviewData(mappedReview);
         setTerminalOutput(
           `🚀 Submission Evaluated Successfully!\n` +
-          `Score:             ${res.score}/100\n` +
+          `Score:             ${mappedReview.score}/100\n` +
           `Execution status:  Accepted`
         );
         setShowReviewModal(true);
@@ -286,7 +313,7 @@ export default function CodingPage() {
               <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
                 Personalized AI Sandbox
               </span>
-              <h1 className="text-3xl font-display font-extrabold text-gray-900 dark:text-gray-100">
+              <h1 className="text-3xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight py-2 animate-pulse">
                 AI Coding Laboratory
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -317,135 +344,69 @@ export default function CodingPage() {
             
             {/* Left config form (70%) */}
             <div className="lg:col-span-2 space-y-8">
-              
-              {/* Step 1: Choose Practice Type */}
+                   {/* Step 1: Choose Programming Language */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  1. Practice Arena Focus
+                  1. Select Coding Language
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {practiceTypes.map((type) => {
-                    const isSelected = practiceType === type.name;
-                    const TypeIcon = type.icon;
+                <div className="flex flex-wrap gap-2.5">
+                  {['Python', 'JavaScript', 'Java', 'C++', 'Go', 'TypeScript'].map((lang) => {
+                    const isSelected = selectedLanguage === lang.toLowerCase();
                     return (
                       <button
-                        key={type.name}
-                        onClick={() => setPracticeType(type.name)}
-                        className={`p-5 rounded-2xl border text-left transition-all duration-300 relative group flex items-start gap-4 ${
+                        key={lang}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLanguage(lang.toLowerCase());
+                          setLanguage(lang.toLowerCase() === 'c++' ? 'cpp' : lang.toLowerCase());
+                          setSelectedSkills([lang]);
+                        }}
+                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 ${
                           isSelected 
-                            ? 'border-indigo-500 bg-indigo-500/5 shadow-md shadow-indigo-500/5' 
-                            : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10'
-                        }`}
-                      >
-                        {isSelected && (
-                          <span className="absolute top-4 right-4 h-5 w-5 bg-indigo-600 rounded-full flex items-center justify-center text-white">
-                            <Check className="h-3.5 w-3.5" />
-                          </span>
-                        )}
-                        <div className={`p-3 rounded-xl border shrink-0 transition-transform group-hover:scale-105 ${
-                          isSelected 
-                            ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-500' 
-                            : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400 dark:text-gray-300'
-                        }`}>
-                          <TypeIcon className="h-6 w-6" />
-                        </div>
-                        <div className="space-y-1 min-w-0 pr-6">
-                          <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100">{type.name}</h4>
-                          <p className="text-[11px] text-gray-500 leading-relaxed line-clamp-2">
-                            {type.desc}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Step 2: Role selection */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  2. Target Role Profile
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {roles.map((role) => {
-                    const isSelected = selectedRole === role.id;
-                    return (
-                      <button
-                        key={role.id}
-                        onClick={() => setSelectedRole(role.id)}
-                        className={`text-xs px-4 py-2.5 rounded-xl border font-semibold transition-all duration-200 ${
-                          isSelected 
-                            ? 'border-indigo-500 bg-indigo-500/15 text-indigo-400' 
+                            ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-sm' 
                             : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-400'
                         }`}
                       >
-                        {role.name}
+                        {lang}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Step 3: Tech Stack search chips */}
-              <div className="p-6 rounded-2xl border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md border-light-border dark:border-dark-border space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                      3. Target Frameworks & Core skills
-                    </h3>
-                  </div>
-                  <div className="relative max-w-xs w-full">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Filter skills..."
-                      value={techSearch}
-                      onChange={(e) => setTechSearch(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 text-xs text-gray-800 dark:text-gray-200"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {Object.entries(skillCategories).map(([category, items]) => {
-                    const filteredItems = items.filter(item => item.toLowerCase().includes(techSearch.toLowerCase()));
-                    if (filteredItems.length === 0) return null;
+              {/* Step 2: Choose Number of Questions */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  2. Number of Questions
+                </h3>
+                <div className="flex flex-wrap gap-2.5">
+                  {[1, 2, 3, 5, 10].map((count) => {
+                    const isSelected = questionCount === count;
                     return (
-                      <div key={category} className="space-y-2">
-                        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
-                          {category}
-                        </span>
-                        <div className="flex flex-wrap gap-2">
-                          {filteredItems.map((tech) => {
-                            const isSelected = selectedSkills.includes(tech);
-                            return (
-                              <button
-                                key={tech}
-                                onClick={() => handleSkillToggle(tech)}
-                                className={`text-xs px-3.5 py-2 rounded-xl border font-semibold transition-all duration-200 ${
-                                  isSelected 
-                                    ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
-                                    : 'border-light-border dark:border-dark-border hover:border-gray-500/30 text-gray-600 dark:text-gray-400'
-                                }`}
-                              >
-                                {tech}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => setQuestionCount(count)}
+                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 ${
+                          isSelected 
+                            ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-sm' 
+                            : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-400'
+                        }`}
+                      >
+                        {count} {count === 1 ? 'Question' : 'Questions'}
+                      </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Step 4: Target Company and Experience */}
+              {/* Step 3: Target Company and Experience */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 
                 {/* Target Company selection */}
                 <div className="space-y-3">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    4. Interview Company focus
+                    3. Interview Company focus
                   </h3>
                   <select
                     value={selectedCompany}
@@ -461,7 +422,7 @@ export default function CodingPage() {
                 {/* Experience Select */}
                 <div className="space-y-3">
                   <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    5. Experience Tier
+                    4. Experience Tier
                   </h3>
                   <div className="flex border border-light-border dark:border-dark-border rounded-xl overflow-hidden text-xs">
                     {experienceCards.map(exp => (
@@ -479,80 +440,28 @@ export default function CodingPage() {
 
               </div>
 
-              {/* Step 5: Difficulty & focus areas */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                
-                {/* Difficulty control */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    6. Difficulty level
-                  </h3>
-                  <div className="p-1 rounded-xl border border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg flex gap-1">
-                    {['Easy', 'Medium', 'Hard', 'Expert', 'Adaptive AI'].map((diff) => {
-                      const isSelected = difficulty === diff.toLowerCase();
-                      return (
-                        <button
-                          key={diff}
-                          onClick={() => setDifficulty(diff.toLowerCase())}
-                          className={`flex-1 text-[11px] font-bold py-2 rounded-lg transition-all duration-200 ${
-                            isSelected 
-                              ? 'bg-white dark:bg-dark-card text-indigo-600 shadow-sm border border-light-border/40 dark:border-dark-border/40' 
-                              : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200'
-                          }`}
-                        >
-                          {diff}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Focus Options */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    7. Deep-Dive Focus Areas
-                  </h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {focusOptions.slice(0, 8).map(focus => {
-                      const isSelected = selectedFocus.includes(focus);
-                      return (
-                        <button
-                          key={focus}
-                          onClick={() => handleFocusToggle(focus)}
-                          className={`text-[10px] px-2.5 py-1.5 rounded-lg border transition-all ${
-                            isSelected 
-                              ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400 font-bold' 
-                              : 'border-light-border dark:border-dark-border text-gray-500 hover:text-gray-700'
-                          }`}
-                        >
-                          {focus}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Step 6: Interview Goal */}
+              {/* Step 5: Difficulty level */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  8. Session Prep Goal
+                  5. Difficulty level
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {goals.map(g => (
-                    <button
-                      key={g}
-                      onClick={() => setInterviewGoal(g)}
-                      className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
-                        interviewGoal === g 
-                          ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 font-bold' 
-                          : 'border-light-border dark:border-dark-border text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      {g}
-                    </button>
-                  ))}
+                <div className="p-1 rounded-xl border border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg flex gap-1">
+                  {['Easy', 'Medium', 'Hard', 'Expert', 'Adaptive AI'].map((diff) => {
+                    const isSelected = difficulty === diff.toLowerCase();
+                    return (
+                      <button
+                        key={diff}
+                        onClick={() => setDifficulty(diff.toLowerCase())}
+                        className={`flex-1 text-[11px] font-bold py-2 rounded-lg transition-all duration-200 ${
+                          isSelected 
+                            ? 'bg-white dark:bg-dark-card text-indigo-600 shadow-sm border border-light-border/40 dark:border-dark-border/40' 
+                            : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        {diff}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -576,8 +485,12 @@ export default function CodingPage() {
 
                 <div className="space-y-4 pt-4 border-t border-light-border/40 dark:border-dark-border/40 text-xs">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400">Target Role</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100 uppercase">{selectedRole}</span>
+                    <span className="text-gray-500 dark:text-gray-400">Language</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100 uppercase">{selectedLanguage}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500 dark:text-gray-400">Questions Count</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100">{questionCount}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500 dark:text-gray-400">Experience</span>
@@ -628,24 +541,7 @@ export default function CodingPage() {
 
               </div>
 
-              {/* Sidebar stats panel */}
-              <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md space-y-4">
-                <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                  <Award className="h-4 w-4 text-indigo-500" />
-                  <span>Topic Weaknesses Detected</span>
-                </h4>
-                <div className="space-y-2">
-                  {dashboardStats.weak_skills.map((skill, idx) => (
-                    <div key={idx} className="flex gap-2.5 items-start text-xs border-b border-light-border/40 dark:border-dark-border/40 last:border-b-0 pb-2 last:pb-0">
-                      <span className="text-rose-500 font-bold">⚠️</span>
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-gray-800 dark:text-gray-200">{skill}</span>
-                        <p className="text-[9px] text-gray-500">Consistently low compilation correctness stats.</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+
 
             </div>
 

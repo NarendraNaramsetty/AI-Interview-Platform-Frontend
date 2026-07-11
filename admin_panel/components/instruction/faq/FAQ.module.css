@@ -1,0 +1,290 @@
+/* ====== FAQ Page Styles ====== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+.pageContainer {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f3ef;
+  color: #111111;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+/* ── Header ── */
+.header {
+  background: #5008b5;
+  color: #fff;
+  padding: 80px 40px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  left: 30px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.headerInner {
+  max-width: 820px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.headerInner h1 {
+  font-family: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(36px, 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+/* ── Main ── */
+.main {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* ── FAQ List ── */
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faqItem {
+  background: #ffffff;
+  border: 1px solid #e0ddd6;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.faqItem:hover {
+  border-color: #c8c5be;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+}
+
+.faqItem.open {
+  border-color: #5008b5;
+  box-shadow: 0 4px 24px rgba(26, 26, 46, 0.1);
+}
+
+.faqTrigger {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 22px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: left;
+}
+
+.qBadge {
+  flex-shrink: 0;
+  background: #f5f3ef;
+  border: 1px solid #e0ddd6;
+  font-family: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #99998f;
+  padding: 4px 9px;
+  border-radius: 4px;
+  margin-top: 1px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.faqItem.open .qBadge {
+  background: #5008b5;
+  color: #fff;
+  border-color: #5008b5;
+}
+
+.faqQuestion {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #111111;
+  line-height: 1.5;
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.faqIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #99998f;
+  transition: transform 0.3s ease, color 0.2s;
+  margin-top: 2px;
+}
+
+.faqItem.open .faqIcon {
+  transform: rotate(180deg);
+  color: #5008b5;
+}
+
+.faqBody {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faqItem.open .faqBody {
+  max-height: 1000px;
+}
+
+.faqBodyInner {
+  padding: 0 24px 24px 64px;
+}
+
+.faqDivider {
+  height: 1px;
+  background: #e0ddd6;
+  margin-bottom: 18px;
+}
+
+.faqAnswer {
+  font-size: 14.5px;
+  color: #555550;
+  line-height: 1.75;
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.faqAnswer:last-child {
+  margin-bottom: 0;
+}
+
+.faqAnswer strong {
+  color: #111111;
+  font-weight: 500;
+}
+
+.faqAnswer code {
+  font-family: 'Courier New', monospace;
+  font-size: 12.5px;
+  background: #f0eee9;
+  color: #5008b5;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #e0ddd6;
+}
+
+/* Steps */
+.steps {
+  list-style: none;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+}
+
+.steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #555550;
+  line-height: 1.6;
+}
+
+.stepNum {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background: #5008b5;
+  color: #fff;
+  font-family: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+/* Mandatory badge */
+.mandatoryBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff3f0;
+  color: #c0320d;
+  border: 1px solid #f5c4b8;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.mandatoryBadge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 48px 32px;
+  font-size: 13px;
+  color: #555550;
+  border-top: 1px solid #e0ddd6;
+  background: #ffffff;
+  line-height: 1.6;
+}
+
+.footer strong {
+  color: #111111;
+  font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .header {
+    padding: 40px 20px 36px;
+  }
+
+  .main {
+    padding: 32px 16px 60px;
+  }
+
+  .faqTrigger {
+    padding: 18px 16px;
+  }
+
+  .faqBodyInner {
+    padding: 0 16px 20px 52px;
+  }
+}

@@ -75,7 +75,9 @@ export default function ResumeUploadPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header title */}
       <div>
-        <h2 className="font-display font-extrabold text-3xl">ATS Resume Auditor</h2>
+        <h2 className="font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight py-2 animate-pulse text-3xl">
+          ATS Resume Auditor
+        </h2>
         <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           Upload your resume to get an instant keyword density audit, matching ratings, and recommendations.
         </p>

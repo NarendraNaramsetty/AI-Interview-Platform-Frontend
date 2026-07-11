@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
+import NotificationPopup from '../components/NotificationPopup';
+import EnvironmentConfigPopup from '../components/EnvironmentConfigPopup';
 import { 
   LayoutDashboard, 
   UploadCloud, 
@@ -19,7 +21,8 @@ import {
   MessageSquare,
   ShieldAlert,
   User,
-  Bell
+  Bell,
+  Settings2
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -27,6 +30,8 @@ export default function DashboardLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
+  const [isEnvConfigOpen, setIsEnvConfigOpen] = useState(false);
 
   // Close sidebar on mobile routes change
   useEffect(() => {
@@ -51,11 +56,7 @@ export default function DashboardLayout({ children }) {
     { name: 'AI Coach Chat', path: '/chatbot', icon: MessageSquare },
     { name: 'Performance Analytics', path: '/performance-analytics', icon: BarChart3 },
     { name: 'Interview History', path: '/interview-history', icon: History },
-    { name: 'Notifications', path: '/notifications', icon: Bell },
-    { name: 'Settings', path: '/settings', icon: Settings },
-    { name: 'Admin Analytics', path: '/admin/analytics', icon: ShieldAlert },
-    { name: 'Admin Users', path: '/admin/users', icon: User },
-    { name: 'Admin Questions', path: '/admin/questions', icon: Sparkles }
+    { name: 'Settings', path: '/settings', icon: Settings }
   ];
 
   const handleLogout = () => {
@@ -175,16 +176,27 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Notifications Shortcut */}
-            <Link
-              to="/notifications"
+            {/* Environment Config Button */}
+            <button
+              onClick={() => setIsEnvConfigOpen(true)}
+              className={`p-2 rounded-xl border relative transition-all hidden sm:flex ${
+                theme === 'dark' ? 'border-dark-border text-gray-300 hover:bg-dark-hover' : 'border-light-border text-gray-600 hover:bg-light-hover'
+              }`}
+              title="Configure service endpoints"
+            >
+              <Settings2 className="h-4.5 w-4.5" />
+            </button>
+
+            {/* Notifications Popup */}
+            <button
+              onClick={() => setIsNotificationPopupOpen(!isNotificationPopupOpen)}
               className={`p-2 rounded-xl border relative transition-all ${
                 theme === 'dark' ? 'border-dark-border text-gray-300 hover:bg-dark-hover' : 'border-light-border text-gray-600 hover:bg-light-hover'
               }`}
             >
               <Bell className="h-4.5 w-4.5" />
               <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-dark-card animate-pulse" />
-            </Link>
+            </button>
 
             {/* Quick action button */}
             <Link 
@@ -196,6 +208,18 @@ export default function DashboardLayout({ children }) {
             </Link>
           </div>
         </header>
+
+        {/* Notification Popup */}
+        <NotificationPopup 
+          isOpen={isNotificationPopupOpen} 
+          onClose={() => setIsNotificationPopupOpen(false)}
+        />
+
+        {/* Environment Config Popup */}
+        <EnvironmentConfigPopup 
+          isOpen={isEnvConfigOpen} 
+          onClose={() => setIsEnvConfigOpen(false)}
+        />
 
         {/* Dynamic page content container */}
         <main className="flex-1 overflow-y-auto p-6 lg:p-8">

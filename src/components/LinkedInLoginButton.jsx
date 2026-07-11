@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, CircularProgress } from '@mui/material';
 import { FaLinkedin } from 'react-icons/fa';
 import { useToastStore } from '../store/useToastStore';
+import { getApiUrl } from '../utils/envConfig';
 
 export default function LinkedInLoginButton() {
   const { pushToast } = useToastStore();
@@ -9,7 +10,7 @@ export default function LinkedInLoginButton() {
 
   const handleLinkedInLogin = () => {
     setLoading(true);
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const apiBaseUrl = getApiUrl();
     // Redirect browser to django OAuth initiate endpoint with dynamic origin callback
     const origin = window.location.origin;
     window.location.href = `${apiBaseUrl}/api/auth/linkedin/login/?redirect_origin=${encodeURIComponent(origin)}`;

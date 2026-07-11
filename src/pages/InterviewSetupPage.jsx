@@ -243,7 +243,7 @@ export default function InterviewSetupPage() {
               Adaptive Mode Active
             </span>
           </div>
-          <h1 className="text-3xl font-display font-extrabold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight py-2 animate-pulse">
             Simulate Your Next Interview
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -275,55 +275,12 @@ export default function InterviewSetupPage() {
         {/* LEFT COLUMN (70%) - Config Section */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* Section 1: Role Selection Cards */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              1. Target Career Role
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {availableRoles.map((role) => {
-                const IconComponent = roleIcons[role.id] || Server;
-                const isSelected = config.role === role.id;
-                return (
-                  <button
-                    key={role.id}
-                    onClick={() => handleRoleChange(role.id)}
-                    className={`p-5 rounded-2xl border text-left transition-all duration-300 relative group flex items-start gap-4 ${
-                      isSelected 
-                        ? 'border-indigo-500 bg-indigo-500/5 shadow-md shadow-indigo-500/5' 
-                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10'
-                    }`}
-                  >
-                    {isSelected && (
-                      <span className="absolute top-4 right-4 h-5 w-5 bg-indigo-600 rounded-full flex items-center justify-center text-white">
-                        <Check className="h-3.5 w-3.5" />
-                      </span>
-                    )}
-                    <div className={`p-3 rounded-xl border shrink-0 transition-transform group-hover:scale-105 ${
-                      isSelected 
-                        ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-500' 
-                        : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400 dark:text-gray-300'
-                    }`}>
-                      <IconComponent className="h-6 w-6" />
-                    </div>
-                    <div className="space-y-1 min-w-0 pr-6">
-                      <h4 className="font-bold text-sm text-gray-900 dark:text-gray-100">{role.name}</h4>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">
-                        {role.description}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section 2: Tech Stack selection */}
+          {/* Section 1: Tech Stack selection */}
           <div className="p-6 rounded-2xl border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md border-light-border dark:border-dark-border space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  2. Technology stack / Skills
+                  1. Technology stack / Skills
                 </h3>
                 <p className="text-[11px] text-gray-500">
                   Select core frameworks and compilers to shape code tasks and evaluations.
@@ -382,10 +339,10 @@ export default function InterviewSetupPage() {
             )}
           </div>
 
-          {/* Section 3: Target Experience Level */}
+          {/* Section 2: Target Experience Level */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              3. Experience Level
+              2. Experience Level
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {experienceCards.map((exp) => {
@@ -414,7 +371,7 @@ export default function InterviewSetupPage() {
             {/* Difficulty Segmented Controls */}
             <div className="space-y-3">
               <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                4. Session Difficulty
+                3. Session Difficulty
               </h3>
               <div className="p-1 rounded-2xl border border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg flex flex-wrap gap-1">
                 {difficulties.map((diff) => {
@@ -440,7 +397,7 @@ export default function InterviewSetupPage() {
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  5. Question Count
+                  4. Question Count
                 </h3>
                 <span className="text-xs font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-md">
                   {config.questionCount} Questions
@@ -470,7 +427,7 @@ export default function InterviewSetupPage() {
           {/* Section 5: Interview Mode list */}
           <div className="space-y-4">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              6. Interview Mode
+              5. Interview Mode
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {modes.map((mode) => {
@@ -503,156 +460,7 @@ export default function InterviewSetupPage() {
             </div>
           </div>
 
-          {/* Smart AI Recommendation */}
-          <div className="p-4 rounded-2xl border border-dashed border-indigo-500/20 bg-indigo-500/5 flex gap-3.5 items-start">
-            <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-500 block">AI Recommendation</span>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-semibold">
-                {getAiRecommendation()}
-              </p>
-            </div>
-          </div>
 
-          {/* Section 6: Additional Personalization Settings */}
-          <div className="p-6 rounded-2xl border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md border-light-border dark:border-dark-border space-y-6">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-3 border-light-border dark:border-dark-border">
-              7. Customized Interviewer settings
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
-              {/* Interview Goal */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 block">Target Company Profile</label>
-                <select
-                  value={selectedGoal}
-                  onChange={(e) => setSelectedGoal(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 focus:outline-none text-xs text-gray-800 dark:text-gray-200"
-                >
-                  {['Google', 'Amazon', 'Microsoft', 'Startup', 'Product Company', 'Service Company', 'Campus Placement'].map(g => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* AI Personality */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-gray-400 block">Interviewer Persona</label>
-                <select
-                  value={aiPersonality}
-                  onChange={(e) => setAiPersonality(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 focus:outline-none text-xs text-gray-800 dark:text-gray-200"
-                >
-                  {['Friendly', 'Strict', 'FAANG Style', 'Real Recruiter', 'Senior Engineer', 'Technical Manager', 'Principal Engineer'].map(p => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Focus Areas */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 block">Target Focus Areas</label>
-              <div className="flex flex-wrap gap-1.5">
-                {['Authentication', 'REST APIs', 'System Design', 'DSA', 'Database', 'Concurrency', 'Redis', 'Docker', 'AWS', 'Security', 'Testing'].map(focus => {
-                  const isSelected = selectedFocus.includes(focus);
-                  return (
-                    <button
-                      key={focus}
-                      type="button"
-                      onClick={() => handleFocusToggle(focus)}
-                      className={`text-[10px] px-2.5 py-1.5 rounded-lg border transition-all ${
-                        isSelected 
-                          ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400 font-bold' 
-                          : 'border-light-border dark:border-dark-border text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      {focus}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-light-border/50 dark:border-dark-border/50">
-              
-              {/* Time Pressure Toggle */}
-              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2">
-                <div>
-                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">Time Pressure</span>
-                  <span className="text-[10px] text-gray-500">Enable countdown timer</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setTimePressure(!timePressure)}
-                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${timePressure ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-dark-border'}`}
-                >
-                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${timePressure ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-
-              {/* Coding Preference Toggle */}
-              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2">
-                <div>
-                  <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">Coding Tasks</span>
-                  <span className="text-[10px] text-gray-500">Include compiler sandbox</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCodingPreference(!codingPreference)}
-                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${codingPreference ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-dark-border'}`}
-                >
-                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${codingPreference ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-
-              {/* Voice Speed */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block">Voice Speed</span>
-                <div className="flex border border-light-border dark:border-dark-border rounded-lg overflow-hidden text-[10px]">
-                  {['Slow', 'Normal', 'Fast'].map(speed => (
-                    <button
-                      key={speed}
-                      type="button"
-                      onClick={() => setVoiceSpeed(speed)}
-                      className={`flex-1 py-1.5 font-bold transition-all ${voiceSpeed === speed ? 'bg-indigo-600 text-white' : 'bg-light-hover/30 dark:bg-dark-hover/10 text-gray-500'}`}
-                    >
-                      {speed}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* Suggested Templates */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              Suggested Session Templates
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {sessionTemplates.map((tpl, idx) => (
-                <div key={idx} className="p-4 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md flex flex-col justify-between gap-4">
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200">{tpl.title}</h4>
-                    <p className="text-[10px] text-gray-500">
-                      Auto configurations for target {tpl.role} interview mocks.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleApplyTemplate(tpl)}
-                    className="w-fit text-[10px] font-bold text-indigo-500 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-xl border border-indigo-500/10 transition-all"
-                  >
-                    Load Configuration
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Recent Sessions */}
           {history.length > 0 && (

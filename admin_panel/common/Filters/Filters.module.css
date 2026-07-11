@@ -1,0 +1,223 @@
+.filtersContainer {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e1e5e9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+}
+
+.filtersHeading {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.filtersForm {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-radius: 20px;  
+}
+
+.filtersGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.filterSelect {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.filterSelect:hover {
+  border-color: #39ab49;
+  box-shadow: 0 0 0 3px rgba(57, 171, 73, 0.1);
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #39ab49;
+  box-shadow: 0 0 0 3px rgba(57, 171, 73, 0.2);
+}
+
+/* New styles for the date pickers */
+.datePickerInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* Customizing the calendar icon for consistency */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  /* Hide default calendar icon for Chrome/Edge */
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+  /* Hide default calendar icon for Firefox */
+  
+}
+
+.datePickerInput:hover {
+  border-color: #39ab49;
+  box-shadow: 0 0 0 3px rgba(57, 171, 73, 0.1);
+}
+
+.datePickerInput:focus {
+  outline: none;
+  border-color: #39ab49;
+  box-shadow: 0 0 0 3px rgba(57, 171, 73, 0.2);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f3f4;
+  margin-top: 8px;
+}
+
+.resetButton {
+  padding: 10px 24px;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #dc3545;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+}
+
+.submitButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #39ab49 0%, #39ab49 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(57, 171, 73, 0.3);
+}
+
+.submitButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(57, 171, 73, 0.4);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .filtersGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .filtersGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .filtersContainer {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .filtersGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filtersContainer {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .filtersHeading {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .resetButton,
+  .submitButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Additional small screen adjustments */
+@media (max-width: 480px) {
+  .filtersGrid {
+    gap: 16px;
+  }
+  
+  .filterSelect,
+  .datePickerInput {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .actionButtons {
+    padding-top: 12px;
+  }
+}

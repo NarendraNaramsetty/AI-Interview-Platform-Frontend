@@ -1,0 +1,266 @@
+/* Login.module.css */
+
+/* --- Main Layout --- */
+.wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- The Concierge Panel (Centered Card) --- */
+.panel {
+  position: relative;
+  width: 480px;
+  max-width: 90%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3.5rem 3rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08), 0 5px 15px rgba(0, 0, 0, 0.04);
+  z-index: 20;
+  box-sizing: border-box;
+
+  /* Premium fade-in-up animation */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panelHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.logoImage {
+  width: 180px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.panelTitle {
+  font-family: var(--font-heading);
+  color: var(--primary);
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* --- Form Styles --- */
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sharp, Classic Inputs */
+.fieldGroup {
+  position: relative;
+}
+
+.classicInput {
+  width: 100%;
+  padding: 16px 40px 16px 0;
+  font-size: 1.3rem;
+  color: var(--text-default);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #e0e0e0;
+  border-radius: 0;
+  /* Sharp edges */
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.classicInput:focus {
+  outline: none;
+  border-bottom-color: var(--primary);
+}
+
+.classicLabel {
+  position: absolute;
+  left: 0;
+  top: 16px;
+  color: #999;
+  font-size: 1.2rem;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  font-family: var(--font-subheading);
+}
+
+/* Float Label Animation */
+.classicInput:focus+.classicLabel,
+.classicInput:not(:placeholder-shown)+.classicLabel {
+  top: -10px;
+  font-size: 1.2rem;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.eyeIcon:hover {
+  color: var(--primary);
+}
+
+/* --- Buttons --- */
+.submitSection {
+  margin-top: 1.5rem;
+}
+
+.luxuryBtn {
+  width: 100%;
+  padding: 20px;
+  background: transparent;
+  color: #000;
+  border: 1px solid var(--primary);
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.luxuryBtn:active:not(:disabled) {
+  background: var(--primary);
+  color: #fff;
+}
+
+.luxuryBtn:hover::after {
+  width: 100%;
+}
+
+.luxuryBtn:disabled {
+  background: #ccc;
+  cursor: wait;
+}
+
+/* --- Footer Area --- */
+.helperLinks {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: end;
+}
+
+.link {
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.bottomBar {
+  margin-top: auto;
+  /* Push to bottom */
+  padding-top: 2rem;
+  text-align: center;
+}
+
+.poweredBy {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  color: var(--text-dark-gray, #666);
+  opacity: 0.8;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.poweredBy strong {
+  color: var(--primary-purple, #39ab49);
+  font-weight: 700;
+}
+
+/* --- Responsive --- */
+@media (max-width: 500px) {
+  .panel {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    padding: 2.5rem 1.5rem;
+    box-shadow: none;
+    background: var(--background-default);
+  }
+}
+
+/* --- Notification --- */
+.notif {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  background: white;
+  padding: 15px 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid var(--primary);
+  z-index: 9999;
+  animation: slideInRight 0.5s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.notifError {
+  border-left-color: var(--danger);
+}
+
+.notifWarning {
+  border-left-color: #f39c12;
+  /* Orange Warning */
+  background: #fffdf5;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

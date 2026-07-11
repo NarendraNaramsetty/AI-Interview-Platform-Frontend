@@ -11,5 +11,7 @@ export const roadmap = {
   pause: (payload) => api.post('/api/roadmap/pause', payload),
   resume: (payload) => api.post('/api/roadmap/resume', payload),
   resources: () => api.get('/api/roadmap/resources'),
-  statistics: () => api.get('/api/roadmap/statistics')
+  statistics: () => api.get('/api/roadmap/statistics'),
+  generateAI: (payload) => api.post('/api/roadmap/generate-ai', payload),
+  mentor: (payload) => api.post('/api/roadmap/mentor', payload)
 };

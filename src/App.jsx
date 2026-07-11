@@ -32,16 +32,17 @@ import ProfilePage from './pages/ProfilePage';
 import CodingPage from './pages/CodingPage';
 import RoadmapPage from './pages/RoadmapPage';
 import ChatbotPage from './pages/ChatbotPage';
-import AdminPage from './pages/AdminPage';
 import SettingsPage from './pages/SettingsPage';
 
 // Phase 2 New Pages
 import InterviewHistoryPage from './pages/InterviewHistoryPage';
 import PerformanceAnalyticsPage from './pages/PerformanceAnalyticsPage';
 import NotificationsPage from './pages/NotificationsPage';
-import AdminUsersPage from './pages/Admin/AdminUsersPage';
-import AdminQuestionsPage from './pages/Admin/AdminQuestionsPage';
-import AdminAnalyticsPage from './pages/Admin/AdminAnalyticsPage';
+
+// Isolated Admin Components
+import AdminLoginPage from '../admin_panel/components/auth/login/Login.jsx';
+import AdminMainLayout from '../admin_panel/layouts/MainLayout.jsx';
+import { AuthProvider as AdminAuthProvider } from '../admin_panel/context/AuthContext.jsx';
 
 // Simple Route Protection wrapper
 function ProtectedRoute({ children }) {
@@ -55,6 +56,17 @@ function ProtectedRoute({ children }) {
 // Public Page layout wrapper
 function PublicRoute({ children }) {
   return <MainLayout>{children}</MainLayout>;
+}
+
+// Admin Route Protection wrapper
+function AdminProtectedRoute({ children }) {
+  const adminAccessToken = localStorage.getItem('admin_access_token');
+  const adminUser = localStorage.getItem('admin_user');
+  
+  if (!adminAccessToken || !adminUser) {
+    return <Navigate to="/admin/login" replace />;
+  }
+  return children;
 }
 
 export default function App() {
@@ -95,16 +107,22 @@ export default function App() {
         <Route path="/coding" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
         <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
         <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
         {/* Phase 2 Protected Pages */}
         <Route path="/interview-history" element={<ProtectedRoute><InterviewHistoryPage /></ProtectedRoute>} />
         <Route path="/performance-analytics" element={<ProtectedRoute><PerformanceAnalyticsPage /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute><AdminUsersPage /></ProtectedRoute>} />
-        <Route path="/admin/questions" element={<ProtectedRoute><AdminQuestionsPage /></ProtectedRoute>} />
-        <Route path="/admin/analytics" element={<ProtectedRoute><AdminAnalyticsPage /></ProtectedRoute>} />
+
+        {/* Isolated Admin Portal */}
+        <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
+        <Route path="/admin/*" element={
+          <AdminProtectedRoute>
+            <AdminAuthProvider>
+              <AdminMainLayout />
+            </AdminAuthProvider>
+          </AdminProtectedRoute>
+        } />
 
         {/* Fallback Catch-All Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

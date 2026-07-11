@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useToastStore } from '../store/useToastStore';
 import api from '../services/api';
+import { getApiUrl } from '../utils/envConfig';
 
 export default function GoogleLoginButton() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export default function GoogleLoginButton() {
       return;
     }
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const apiBaseUrl = getApiUrl();
     const stateObj = { provider: 'google', apiBaseUrl };
     const stateStr = encodeURIComponent(JSON.stringify(stateObj));
 

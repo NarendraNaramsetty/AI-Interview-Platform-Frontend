@@ -63,7 +63,7 @@
     const state = searchParams.get('state') || hashParams.get('state');
     const credential = searchParams.get('credential') || hashParams.get('credential') || hashParams.get('id_token') || searchParams.get('id_token');
 
-    let apiBaseUrl = 'http://localhost:8000';
+    let apiBaseUrl = localStorage.getItem('VITE_API_URL') || 'https://api.prepai.com';
     if (state) {
       try {
         const parsedState = JSON.parse(decodeURIComponent(state));
