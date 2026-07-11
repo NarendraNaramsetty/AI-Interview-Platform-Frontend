@@ -11,18 +11,40 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  console.log(`[API Request] Initiating request:
+    URL: ${config.baseURL || ''}${config.url}
+    Method: ${config.method?.toUpperCase()}
+    Headers:`, config.headers, `
+    Data:`, config.data);
+
   const accessToken = localStorage.getItem('access_token');
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 }, (error) => {
+  console.error('[API Request Error]', error);
   return Promise.reject(error);
 });
 
 api.interceptors.response.use(
-  (response) => response.data || response,
+  (response) => {
+    console.log(`[API Response] Success:
+      URL: ${response.config.url}
+      Status: ${response.status}
+      Data:`, response.data);
+    return response.data || response;
+  },
   async (error) => {
+    console.error(`[API Response Error]:
+      URL: ${error.config?.url}
+      Status: ${error.response?.status || 'Network/Timeout'}
+      Body:`, error.response?.data, `
+      Message: ${error.message}`);
+    if (error.stack) {
+      console.error('[API Response Stack Trace]:', error.stack);
+    }
+
     const originalRequest = error.config;
 
     // Handle SimpleJWT token refresh on 401 Unauthorized

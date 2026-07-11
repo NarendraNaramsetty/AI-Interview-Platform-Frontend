@@ -102,7 +102,9 @@
     } else {
       console.warn('Window opener is not available or closed. Running fallback verification.');
       if (credential) {
-        fetch(`${apiBaseUrl}/api/auth/google/`, {
+        const url = `${apiBaseUrl}/api/auth/google/`;
+        console.log(`[Fallback Fetch] URL: ${url}, Method: POST`);
+        fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -110,12 +112,14 @@
           body: JSON.stringify({ token: credential })
         })
         .then(response => {
+          console.log(`[Fallback Fetch] Status: ${response.status}`);
           if (!response.ok) {
-            throw new Error('Authentication verification failed.');
+            throw new Error(`Authentication verification failed with status: ${response.status}`);
           }
           return response.json();
         })
         .then(res => {
+          console.log('[Fallback Fetch] Success. Response body:', res);
           const responseData = res.data || res;
           const { access, refresh, user } = responseData;
           if (access && refresh) {
@@ -130,7 +134,10 @@
           }
         })
         .catch(err => {
-          console.error('Fallback authentication failed:', err);
+          console.error('[Fallback Fetch] Exception encountered:', err);
+          if (err.stack) {
+            console.error('[Fallback Fetch] Stack trace:', err.stack);
+          }
           document.querySelector('h3').innerText = 'Authentication Failed';
           document.querySelector('p').innerHTML = `${err.message || 'Could not verify login status.'}<br><br><a href="/login" style="color: #6366f1; text-decoration: none; font-weight: 600;">Go back to Login</a>`;
           document.querySelector('.spinner').style.display = 'none';
