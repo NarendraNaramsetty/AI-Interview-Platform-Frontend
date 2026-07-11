@@ -10,8 +10,9 @@ export default function LinkedInLoginButton() {
   const handleLinkedInLogin = () => {
     setLoading(true);
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    // Redirect browser to django OAuth initiate endpoint
-    window.location.href = `${apiBaseUrl}/api/auth/linkedin/login/`;
+    // Redirect browser to django OAuth initiate endpoint with dynamic origin callback
+    const origin = window.location.origin;
+    window.location.href = `${apiBaseUrl}/api/auth/linkedin/login/?redirect_origin=${encodeURIComponent(origin)}`;
   };
 
   return (
