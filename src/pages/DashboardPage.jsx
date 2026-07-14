@@ -111,10 +111,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Aggregate Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className={`p-6 rounded-2xl border flex items-center gap-4 ${cardStyle}`}>
-          <div className="p-3.5 rounded-xl bg-indigo-500/10 text-indigo-500">
+          <div className="p-3.5 rounded-xl bg-indigo-500/10 text-indigo-500 animate-float">
             <Trophy className="h-6 w-6" />
           </div>
           <div>
@@ -124,7 +123,7 @@ export default function DashboardPage() {
         </div>
 
         <div className={`p-6 rounded-2xl border flex items-center gap-4 ${cardStyle}`}>
-          <div className="p-3.5 rounded-xl bg-green-500/10 text-green-500">
+          <div className="p-3.5 rounded-xl bg-green-500/10 text-green-500 animate-float" style={{ animationDelay: '0.4s' }}>
             <Award className="h-6 w-6" />
           </div>
           <div>
@@ -134,7 +133,7 @@ export default function DashboardPage() {
         </div>
 
         <div className={`p-6 rounded-2xl border flex items-center gap-4 ${cardStyle}`}>
-          <div className="p-3.5 rounded-xl bg-blue-500/10 text-blue-500">
+          <div className="p-3.5 rounded-xl bg-blue-500/10 text-blue-500 animate-float" style={{ animationDelay: '0.8s' }}>
             <TrendingUp className="h-6 w-6" />
           </div>
           <div>
@@ -144,7 +143,7 @@ export default function DashboardPage() {
         </div>
 
         <div className={`p-6 rounded-2xl border flex items-center gap-4 ${cardStyle}`}>
-          <div className="p-3.5 rounded-xl bg-pink-500/10 text-pink-500">
+          <div className="p-3.5 rounded-xl bg-pink-500/10 text-pink-500 animate-float" style={{ animationDelay: '1.2s' }}>
             <Sparkles className="h-6 w-6" />
           </div>
           <div>

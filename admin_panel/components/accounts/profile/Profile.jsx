@@ -10,7 +10,7 @@ const Profile = () => {
     localStorage.removeItem("admin_access_token");
     localStorage.removeItem("admin_refresh_token");
     localStorage.removeItem("admin_user");
-    navigate("/admin/login");
+    navigate("/adminlogin");
   };
 
   const user = JSON.parse(localStorage.getItem("admin_user")) || {};

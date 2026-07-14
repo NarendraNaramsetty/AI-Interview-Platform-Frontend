@@ -24,25 +24,25 @@ export default function LandingPage() {
   const features = [
     {
       title: 'ATS Resume Optimizer',
-      description: 'Upload your resume to receive an instantaneous ATS score compatibility scan, highlight critical missing keywords, and get customized resume correction tips.',
+      description: 'Upload your resume for instant ATS scores, keyword checks, and improvement tips.',
       icon: Upload,
       color: 'from-blue-500 to-indigo-500'
     },
     {
       title: 'AI Simulator Arena',
-      description: 'Simulate high-stress interviews for Frontend, Backend, Fullstack, or PM roles with customizable technology filters, experience criteria, and question counts.',
+      description: 'Simulate coding or behavioral loops with custom roles, stack filters, and levels.',
       icon: Cpu,
       color: 'from-violet-500 to-fuchsia-500'
     },
     {
-      title: 'Multimodal Modes',
-      description: 'Answer with realistic full keyboard text editor typing, or trigger voice recording to transcribe and analyze speech patterns and grammar in real-time.',
+      title: 'Multimodal Inputs',
+      description: 'Answer questions in realistic layouts using text typing or voice recording mode.',
       icon: MessageSquare,
       color: 'from-pink-500 to-rose-500'
     },
     {
       title: 'Precision Scorecards',
-      description: 'Review granular AI assessments: technical completeness rating, confidence index, communication clarity scores, and read-to-use ideal answers.',
+      description: 'Review instant AI metrics for technical depth, confidence indexes, and answers.',
       icon: TrendingUp,
       color: 'from-emerald-500 to-teal-500'
     }
@@ -124,8 +124,8 @@ export default function LandingPage() {
           </span>
         </h1>
         
-        <p className={`text-base sm:text-lg lg:text-xl max-w-2xl mx-auto mb-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Upload your resume for a diagnostic ATS audit, launch live mock sessions, speak or type your answers, and review professional scoring in minutes.
+        <p className={`text-base sm:text-lg lg:text-xl max-w-xl mx-auto mb-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          Scan your resume for ATS gaps, run realistic mock interview sessions, and get detailed AI feedback in minutes.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4">

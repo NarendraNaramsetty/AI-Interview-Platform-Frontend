@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import NotificationPopup from '../components/NotificationPopup';
-import EnvironmentConfigPopup from '../components/EnvironmentConfigPopup';
 import { 
   LayoutDashboard, 
   UploadCloud, 
@@ -21,8 +20,7 @@ import {
   MessageSquare,
   ShieldAlert,
   User,
-  Bell,
-  Settings2
+  Bell
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }) {
@@ -31,7 +29,6 @@ export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
-  const [isEnvConfigOpen, setIsEnvConfigOpen] = useState(false);
 
   // Close sidebar on mobile routes change
   useEffect(() => {
@@ -46,6 +43,13 @@ export default function DashboardLayout({ children }) {
     handleResize(); // run once on mount
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Close sidebar drawer automatically on navigation on mobile screens
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -176,16 +180,6 @@ export default function DashboardLayout({ children }) {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Environment Config Button */}
-            <button
-              onClick={() => setIsEnvConfigOpen(true)}
-              className={`p-2 rounded-xl border relative transition-all hidden sm:flex ${
-                theme === 'dark' ? 'border-dark-border text-gray-300 hover:bg-dark-hover' : 'border-light-border text-gray-600 hover:bg-light-hover'
-              }`}
-              title="Configure service endpoints"
-            >
-              <Settings2 className="h-4.5 w-4.5" />
-            </button>
 
             {/* Notifications Popup */}
             <button
@@ -213,12 +207,6 @@ export default function DashboardLayout({ children }) {
         <NotificationPopup 
           isOpen={isNotificationPopupOpen} 
           onClose={() => setIsNotificationPopupOpen(false)}
-        />
-
-        {/* Environment Config Popup */}
-        <EnvironmentConfigPopup 
-          isOpen={isEnvConfigOpen} 
-          onClose={() => setIsEnvConfigOpen(false)}
         />
 
         {/* Dynamic page content container */}

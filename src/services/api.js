@@ -37,13 +37,19 @@ api.interceptors.response.use(
     return response.data || response;
   },
   async (error) => {
-    console.error(`[API Response Error]:
-      URL: ${error.config?.url}
-      Status: ${error.response?.status || 'Network/Timeout'}
-      Body:`, error.response?.data, `
-      Message: ${error.message}`);
-    if (error.stack) {
-      console.error('[API Response Stack Trace]:', error.stack);
+    const isExpectedBusinessStatus = error.response?.status === 404 || error.response?.status === 400;
+
+    if (!isExpectedBusinessStatus) {
+      console.error(`[API Response Error]:
+        URL: ${error.config?.url}
+        Status: ${error.response?.status || 'Network/Timeout'}
+        Body:`, error.response?.data, `
+        Message: ${error.message}`);
+      if (error.stack) {
+        console.error('[API Response Stack Trace]:', error.stack);
+      }
+    } else {
+      console.log(`[API Response Info] Expected status ${error.response?.status} for URL: ${error.config?.url}. Info:`, error.response?.data);
     }
 
     const originalRequest = error.config;

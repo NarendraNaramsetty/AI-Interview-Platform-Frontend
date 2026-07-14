@@ -31,7 +31,7 @@ import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import CodingPage from './pages/CodingPage';
 import RoadmapPage from './pages/RoadmapPage';
-import ChatbotPage from './pages/ChatbotPage';
+import ChatBot from './pages/ChatBot';
 import SettingsPage from './pages/SettingsPage';
 
 // Phase 2 New Pages
@@ -64,7 +64,7 @@ function AdminProtectedRoute({ children }) {
   const adminUser = localStorage.getItem('admin_user');
   
   if (!adminAccessToken || !adminUser) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/adminlogin" replace />;
   }
   return children;
 }
@@ -72,9 +72,22 @@ function AdminProtectedRoute({ children }) {
 export default function App() {
   const { initTheme } = useAuthStore();
 
-  // Initialize theme classes (dark mode by default)
+  // Initialize theme classes and handle session expirations
   useEffect(() => {
     initTheme();
+
+    const handleAuthExpired = () => {
+      // Clear local storage and reset auth state to trigger redirect to /login
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      useAuthStore.getState().setUser(null);
+    };
+
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => {
+      window.removeEventListener('auth:expired', handleAuthExpired);
+    };
   }, [initTheme]);
 
   return (
@@ -106,7 +119,7 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/coding" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
         <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
-        <Route path="/chatbot" element={<ProtectedRoute><ChatbotPage /></ProtectedRoute>} />
+        <Route path="/chatbot" element={<ProtectedRoute><ChatBot /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
         {/* Phase 2 Protected Pages */}
@@ -115,7 +128,7 @@ export default function App() {
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
 
         {/* Isolated Admin Portal */}
-        <Route path="/admin/login" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
+        <Route path="/adminlogin" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
         <Route path="/admin/*" element={
           <AdminProtectedRoute>
             <AdminAuthProvider>

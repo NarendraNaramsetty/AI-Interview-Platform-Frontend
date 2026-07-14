@@ -51,6 +51,7 @@ export default function InterviewSetupPage() {
 
   const [availableRoles, setAvailableRoles] = useState([]);
   const [techSearch, setTechSearch] = useState('');
+  const [dynamicTechCategories, setDynamicTechCategories] = useState(null);
   const [selectedGoal, setSelectedGoal] = useState('Startup');
   const [selectedFocus, setSelectedFocus] = useState(['Authentication', 'REST APIs']);
   const [aiPersonality, setAiPersonality] = useState('FAANG Style');
@@ -86,6 +87,28 @@ export default function InterviewSetupPage() {
           techStack: r.description ? r.description.split(',').map(s => s.trim()) : ['React', 'JavaScript', 'Tailwind']
         }));
         setAvailableRoles(mappedRoles.length ? mappedRoles : fallbackRoles);
+
+        const rawCategories = Array.isArray(categories) ? categories : categories?.results || categories?.data || [];
+        const rawTopics = Array.isArray(topics) ? topics : topics?.results || topics?.data || [];
+
+        if (rawCategories.length > 0) {
+          const dynamicTech = {};
+          rawCategories.forEach(cat => {
+            if (cat.name) {
+              dynamicTech[cat.name] = [];
+            }
+          });
+          rawTopics.forEach(topic => {
+            const catName = topic.category_name || (rawCategories.find(c => c.id === topic.category)?.name);
+            if (catName) {
+              if (!dynamicTech[catName]) {
+                dynamicTech[catName] = [];
+              }
+              dynamicTech[catName].push(topic.name);
+            }
+          });
+          setDynamicTechCategories(dynamicTech);
+        }
       })
       .catch((error) => {
         if (mounted) {
@@ -138,7 +161,6 @@ export default function InterviewSetupPage() {
   const modes = [
     { id: 'text', title: 'Text Interview', desc: 'Type answers', icon: Keyboard },
     { id: 'voice', title: 'Voice Interview', desc: 'Speak answers', icon: Mic },
-    { id: 'video', title: 'AI Video Interview', desc: 'Face & voice analysis', icon: Video },
     { id: 'coding', title: 'Coding Interview', desc: 'Sandbox evaluation', icon: Code },
     { id: 'sys-design', title: 'System Design', desc: 'Architect schemas', icon: Globe },
     { id: 'behavioral', title: 'Behavioral Round', desc: 'Situational prompts', icon: UserCheck },
@@ -228,6 +250,8 @@ export default function InterviewSetupPage() {
     ? 'bg-dark-card border-dark-border text-gray-200' 
     : 'bg-white border-light-border text-gray-800 shadow-sm';
 
+  const activeTechCategories = dynamicTechCategories || techCategories;
+
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10">
       
@@ -299,7 +323,7 @@ export default function InterviewSetupPage() {
             </div>
 
             <div className="space-y-4">
-              {Object.entries(techCategories).map(([category, items]) => {
+              {Object.entries(activeTechCategories).map(([category, items]) => {
                 const filteredItems = items.filter(item => item.toLowerCase().includes(techSearch.toLowerCase()));
                 if (filteredItems.length === 0) return null;
                 return (

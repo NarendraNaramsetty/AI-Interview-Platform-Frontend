@@ -96,12 +96,12 @@ export const useInterviewStore = create((set, get) => ({
         resume_id: null
       });
 
-      const sessionId = response?.id || response?.session_id || response?.uuid || `sess-${Date.now()}`;
+      const sessionId = response?.data?.id || response?.id || response?.session_id || response?.uuid || `sess-${Date.now()}`;
       
       let sessionQuestions = [];
       try {
         const detailResponse = await interview.detail(sessionId);
-        sessionQuestions = detailResponse?.questions || [];
+        sessionQuestions = detailResponse?.data?.questions || detailResponse?.questions || [];
       } catch (detailError) {
         console.error('Failed to fetch generated questions from database:', detailError);
       }

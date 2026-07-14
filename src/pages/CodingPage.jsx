@@ -320,24 +320,6 @@ export default function CodingPage() {
                 Dynamically construct custom real-world coding problems. Escape repetitive DSA questions.
               </p>
             </div>
-            
-            {/* gamified daily header */}
-            <div className="flex gap-4">
-              <div className="px-4 py-2.5 rounded-2xl bg-white/70 dark:bg-dark-card/50 border border-light-border dark:border-dark-border flex items-center gap-3">
-                <Flame className="h-5 w-5 text-orange-500 animate-bounce" />
-                <div className="text-left">
-                  <span className="text-[9px] uppercase font-bold text-gray-400 block">Streak</span>
-                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{dashboardStats.current_streak} Days</span>
-                </div>
-              </div>
-              <div className="px-4 py-2.5 rounded-2xl bg-white/70 dark:bg-dark-card/50 border border-light-border dark:border-dark-border flex items-center gap-3">
-                <Trophy className="h-5 w-5 text-amber-500" />
-                <div className="text-left">
-                  <span className="text-[9px] uppercase font-bold text-gray-400 block">Level XP</span>
-                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{dashboardStats.xp} XP</span>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -400,44 +382,20 @@ export default function CodingPage() {
                 </div>
               </div>
 
-              {/* Step 3: Target Company and Experience */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                
-                {/* Target Company selection */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    3. Interview Company focus
-                  </h3>
-                  <select
-                    value={selectedCompany}
-                    onChange={(e) => setSelectedCompany(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 text-xs text-gray-800 dark:text-gray-200"
-                  >
-                    {companies.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Experience Select */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    4. Experience Tier
-                  </h3>
-                  <div className="flex border border-light-border dark:border-dark-border rounded-xl overflow-hidden text-xs">
-                    {experienceCards.map(exp => (
-                      <button
-                        key={exp.id}
-                        type="button"
-                        onClick={() => setExperienceLevel(exp.id)}
-                        className={`flex-1 py-2.5 font-bold transition-all ${experienceLevel === exp.id ? 'bg-indigo-600 text-white' : 'bg-light-hover/30 dark:bg-dark-hover/10 text-gray-500'}`}
-                      >
-                        {exp.title}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+              {/* Step 3: Target Company */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  3. Interview Company focus
+                </h3>
+                <select
+                  value={selectedCompany}
+                  onChange={(e) => setSelectedCompany(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 text-xs text-gray-800 dark:text-gray-200"
+                >
+                  {companies.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Step 5: Difficulty level */}
@@ -492,10 +450,7 @@ export default function CodingPage() {
                     <span className="text-gray-500 dark:text-gray-400">Questions Count</span>
                     <span className="font-bold text-gray-900 dark:text-gray-100">{questionCount}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-500 dark:text-gray-400">Experience</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100 capitalize">{experienceLevel}</span>
-                  </div>
+
                   <div className="flex justify-between items-center">
                     <span className="text-gray-500 dark:text-gray-400">Difficulty</span>
                     <span className="font-bold text-gray-900 dark:text-gray-100 capitalize">{difficulty}</span>
