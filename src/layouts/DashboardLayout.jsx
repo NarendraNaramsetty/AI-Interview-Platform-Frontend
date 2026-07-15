@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }) {
   const { user, logout, theme, toggleTheme } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false);
   const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
 
   // Close sidebar on mobile routes change

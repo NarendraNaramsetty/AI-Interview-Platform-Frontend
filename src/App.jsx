@@ -7,37 +7,37 @@ import MainLayout from './layouts/MainLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 
 // Public Pages
-import LandingPage from './pages/LandingPage';
+import LandingPage from './pages/Public/LandingPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
-import PricingPage from './pages/PricingPage';
-import Contact from './pages/Contact';
-import About from './pages/About';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import Terms from './pages/Terms';
-import FAQ from './pages/FAQ';
+import PricingPage from './pages/Public/PricingPage';
+import Contact from './pages/Public/Contact';
+import About from './pages/Public/About';
+import PrivacyPolicy from './pages/Public/PrivacyPolicy';
+import Terms from './pages/Public/Terms';
+import FAQ from './pages/Public/FAQ';
 import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/Auth/VerifyEmailPage';
 
 // Authenticated Dashboard Pages
-import DashboardPage from './pages/DashboardPage';
-import ResumeUploadPage from './pages/ResumeUploadPage';
-import InterviewSetupPage from './pages/InterviewSetupPage';
-import InterviewSessionPage from './pages/InterviewSessionPage';
-import ResultsPage from './pages/ResultsPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import HistoryPage from './pages/HistoryPage';
-import ProfilePage from './pages/ProfilePage';
-import CodingPage from './pages/CodingPage';
-import RoadmapPage from './pages/RoadmapPage';
-import ChatBot from './pages/ChatBot';
-import SettingsPage from './pages/SettingsPage';
+import DashboardPage from './pages/Dashboard/DashboardPage';
+import ResumeUploadPage from './pages/Interview/ResumeUploadPage';
+import InterviewSetupPage from './pages/Interview/InterviewSetupPage';
+import InterviewSessionPage from './pages/Interview/InterviewSessionPage';
+import ResultsPage from './pages/Interview/ResultsPage';
+import AnalyticsPage from './pages/Analytics/AnalyticsPage';
+import HistoryPage from './pages/Interview/HistoryPage';
+import ProfilePage from './pages/Dashboard/ProfilePage';
+import CodingPage from './pages/Coding/CodingPage';
+import RoadmapPage from './pages/Roadmap/RoadmapPage';
+import ChatBot from './pages/Chat/ChatBot';
+import SettingsPage from './pages/Dashboard/SettingsPage';
 
 // Phase 2 New Pages
-import InterviewHistoryPage from './pages/InterviewHistoryPage';
-import PerformanceAnalyticsPage from './pages/PerformanceAnalyticsPage';
-import NotificationsPage from './pages/NotificationsPage';
+import InterviewHistoryPage from './pages/Interview/InterviewHistoryPage';
+import PerformanceAnalyticsPage from './pages/Analytics/PerformanceAnalyticsPage';
+import NotificationsPage from './pages/Dashboard/NotificationsPage';
 
 // Isolated Admin Components
 import AdminLoginPage from '../admin_panel/components/auth/login/Login.jsx';

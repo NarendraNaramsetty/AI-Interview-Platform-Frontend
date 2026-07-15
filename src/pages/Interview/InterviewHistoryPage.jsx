@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Briefcase, Award, Clock, ArrowRight, Download, Trash2, RefreshCw, AlertCircle, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { interview } from '../services/interview';
+import { useAuthStore } from '../../store/useAuthStore';
+import { interview } from '../../services/interview';
 
 export default function InterviewHistoryPage() {
   const { theme } = useAuthStore();

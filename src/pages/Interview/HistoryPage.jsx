@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { useAuthStore } from '../store/useAuthStore';
-import { interview } from '../services/interview';
-import { feedback } from '../services/feedback';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { interview } from '../../services/interview';
+import { feedback } from '../../services/feedback';
 import { 
   History, 
   Search, 

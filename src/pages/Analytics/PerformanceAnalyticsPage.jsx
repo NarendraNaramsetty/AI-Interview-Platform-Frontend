@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { dashboard } from '../services/dashboard';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { dashboard } from '../../services/dashboard';
 import { 
   TrendingUp, 
   BarChart2, 

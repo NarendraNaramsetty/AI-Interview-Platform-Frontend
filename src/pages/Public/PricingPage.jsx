@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Check, HelpCircle, X, Shield, Sparkles, CreditCard, ChevronRight } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export default function PricingPage() {
   const { user, updateProfile } = useAuthStore();

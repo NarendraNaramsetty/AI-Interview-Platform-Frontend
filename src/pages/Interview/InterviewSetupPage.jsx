@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { useAuthStore } from '../store/useAuthStore';
-import { useResumeStore } from '../store/useResumeStore';
-import { questions } from '../services/questions';
-import { useToastStore } from '../store/useToastStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useResumeStore } from '../../store/useResumeStore';
+import { questions } from '../../services/questions';
+import { useToastStore } from '../../store/useToastStore';
 import { 
   Server, 
   Monitor, 

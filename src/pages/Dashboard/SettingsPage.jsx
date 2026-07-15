@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Settings, Shield, Bell, CreditCard, Check, CheckCircle2, ChevronRight, Download } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { Link } from 'react-router-dom';
-import { auth } from '../services/auth';
+import { auth } from '../../services/auth';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();

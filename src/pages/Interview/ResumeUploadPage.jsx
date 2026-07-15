@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { useResumeStore } from '../store/useResumeStore';
-import { useAuthStore } from '../store/useAuthStore';
-import { resume } from '../services/resume';
+import { useResumeStore } from '../../store/useResumeStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { resume } from '../../services/resume';
 import { 
   Upload, 
   FileText, 

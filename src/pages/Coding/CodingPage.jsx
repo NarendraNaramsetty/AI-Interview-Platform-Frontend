@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { useAuthStore } from '../store/useAuthStore';
-import { useResumeStore } from '../store/useResumeStore';
-import { aiCoding } from '../services/ai';
-import { coding } from '../services/coding';
-import { useToastStore } from '../store/useToastStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useResumeStore } from '../../store/useResumeStore';
+import { aiCoding } from '../../services/ai';
+import { coding } from '../../services/coding';
+import { useToastStore } from '../../store/useToastStore';
 import { 
   Play, 
   CheckSquare, 

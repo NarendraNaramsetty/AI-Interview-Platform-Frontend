@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import ApiService from "../../../service/Apiservice.jsx";
 import styles from "./Login.module.css";
@@ -100,6 +100,12 @@ const Login = () => {
             {isLoading ? "Validating Session..." : "SECURE LOGIN"}
           </button>
         </form>
+
+        <div className="text-center mt-6 pt-4 border-t border-gray-500/10">
+          <Link to="/" className="text-xs font-semibold text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1.5 cursor-pointer">
+            <span>← Back to Platform</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

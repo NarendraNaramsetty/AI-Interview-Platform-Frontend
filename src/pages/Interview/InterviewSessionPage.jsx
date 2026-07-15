@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { useAuthStore } from '../store/useAuthStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { 
   Keyboard, 
   Mic, 

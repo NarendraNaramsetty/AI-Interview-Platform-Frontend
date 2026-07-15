@@ -42,9 +42,9 @@ import {
   HelpCircle,
   RefreshCw
 } from 'lucide-react';
-import { useToastStore } from '../store/useToastStore';
-import { useAuthStore } from '../store/useAuthStore';
-import { roadmap } from '../services/roadmap';
+import { useToastStore } from '../../store/useToastStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { roadmap } from '../../services/roadmap';
 
 export default function RoadmapPage() {
   const { theme } = useAuthStore();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { useAuthStore } from '../store/useAuthStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { 
   Trophy, 
   Award, 

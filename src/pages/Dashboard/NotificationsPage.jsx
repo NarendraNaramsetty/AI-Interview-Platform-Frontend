@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Bell, Check, Trash2, Search, Filter, MailOpen, AlertTriangle, Sparkles, CreditCard, Code, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore';
-import { notifications as notificationsService } from '../services/notifications';
+import { useAuthStore } from '../../store/useAuthStore';
+import { notifications as notificationsService } from '../../services/notifications';
 
 export default function NotificationsPage() {
   const { theme } = useAuthStore();

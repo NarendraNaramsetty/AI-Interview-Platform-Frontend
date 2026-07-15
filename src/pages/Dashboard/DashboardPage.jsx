@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '../store/useAuthStore';
-import { useResumeStore } from '../store/useResumeStore';
-import { useInterviewStore } from '../store/useInterviewStore';
-import { dashboard } from '../services/dashboard';
-import { useToastStore } from '../store/useToastStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useResumeStore } from '../../store/useResumeStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
+import { dashboard } from '../../services/dashboard';
+import { useToastStore } from '../../store/useToastStore';
 import { 
   LineChart, 
   Line, 

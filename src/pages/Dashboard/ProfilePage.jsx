@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { User, Mail, Briefcase, FileText, Globe, Award, Sparkles, CheckCircle2, ChevronRight, BarChart2 } from 'lucide-react';
 
 export default function ProfilePage() {
