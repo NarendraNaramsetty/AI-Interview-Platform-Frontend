@@ -158,7 +158,7 @@ export default function ChatWindow() {
             onChange={(e) => setInputText(e.target.value)}
             disabled={isTyping}
             placeholder="Type your question here (e.g. 'Django ORM optimization' or choose a suggest chip)..."
-            className="w-full pl-4.5 pr-14 py-3.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
+            className="w-full pl-4.5 pr-14 py-3.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
           />
           <button
             type="submit"

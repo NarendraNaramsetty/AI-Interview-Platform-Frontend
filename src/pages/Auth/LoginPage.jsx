@@ -82,19 +82,19 @@ export default function LoginPage() {
       {/* Left panel: Info/Visual */}
       <div className="flex-1 bg-gradient-to-br from-indigo-900/40 via-violet-950/20 to-transparent flex flex-col justify-center p-8 lg:p-16 border-b md:border-b-0 md:border-r border-gray-500/10">
         <div className="max-w-md mx-auto space-y-6">
-          <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
+          <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20">
             <Sparkles className="h-4 w-4" />
             <span>Interactive Simulator sandbox</span>
           </div>
           <h2 className="font-display font-extrabold text-3xl sm:text-4xl leading-tight">
             Accelerate Your Technical Career Growth.
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-650 dark:text-gray-300">
             Prepare with hyper-realistic coding and speaking mocks. Review syntax checkmarks, pronunciation confidence levels, and model-level AI sample answers instantly.
           </p>
-          <div className="p-4 rounded-xl border border-dashed border-gray-500/20 bg-dark-card/20 space-y-2">
-            <p className="text-xs font-semibold text-indigo-400">Secure JWT authentication</p>
-            <p className="text-xs text-gray-400">Use your registered email and password to sign in.</p>
+          <div className="p-4 rounded-xl border border-dashed border-indigo-500/20 dark:border-dark-border bg-indigo-500/5 dark:bg-dark-card/20 space-y-2">
+            <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">Secure JWT authentication</p>
+            <p className="text-xs text-gray-600 dark:text-gray-300">Use your registered email and password to sign in.</p>
           </div>
         </div>
       </div>

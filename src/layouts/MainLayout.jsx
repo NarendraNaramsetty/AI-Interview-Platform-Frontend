@@ -50,7 +50,6 @@ export default function MainLayout({ children }) {
     { name: 'Pricing', path: '/pricing', icon: DollarSign },
     { name: 'FAQ', path: '/faq', icon: HelpCircle },
     { name: 'Contact', path: '/contact', icon: Phone },
-    { name: 'Admin Console', path: '/adminlogin', icon: Shield },
   ];
 
   return (

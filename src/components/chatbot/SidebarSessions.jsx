@@ -44,7 +44,7 @@ export default function SidebarSessions() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search conversations..."
-          className="w-full pl-9 pr-4 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
+          className="w-full pl-9 pr-4 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-hover text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-xs"
         />
       </div>
 

@@ -1288,7 +1288,7 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                         <div className="space-y-2 text-xs text-gray-500">
                           <span className="font-bold text-gray-400 block">Skills Covered:</span>
                           <div className="flex flex-wrap gap-1.5">
-                            {p.skills_covered?.map(s => <span key={s} className="bg-slate-200 dark:bg-dark-border px-2 py-0.5 rounded text-[9px] font-bold">{s}</span>)}
+                            {p.skills_covered?.map(s => <span key={s} className="bg-slate-200 dark:bg-dark-border text-gray-700 dark:text-gray-200 px-2 py-0.5 rounded text-[9px] font-bold">{s}</span>)}
                           </div>
                         </div>
 
@@ -1318,8 +1318,8 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                       <div key={idx} className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-slate-50 dark:bg-slate-900/60 space-y-2">
                         <span className="text-[9px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/10">{q.type} Question</span>
                         <h5 className="font-bold text-xs text-gray-800 dark:text-gray-100">{q.question}</h5>
-                        <div className="p-3.5 bg-slate-100 dark:bg-slate-900 rounded-xl text-xs text-gray-500 leading-relaxed pt-2">
-                          <strong className="text-gray-400 font-bold block mb-1">Answer Guideline:</strong>
+                        <div className="p-3.5 bg-slate-100 dark:bg-slate-900 rounded-xl text-xs text-gray-650 dark:text-gray-300 leading-relaxed pt-2">
+                          <strong className="text-gray-400 dark:text-gray-500 font-bold block mb-1">Answer Guideline:</strong>
                           {q.answer_guideline}
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+ import { create } from 'zustand';
 import { auth } from '../services/auth';
 import { users } from '../services/users';
 
@@ -10,7 +10,7 @@ const mapUser = (data) => ({
   email: data?.email || '',
   role: data?.role || 'Developer',
   tier: data?.tier || 'Free Tier',
-  joined: data?.created_at ? String(data.created_at).split('T')[0] : new Date().toISOString().split('T')[0],
+  joined: data?.joined || (data?.created_at ? String(data.created_at).split('T')[0] : new Date().toISOString().split('T')[0]),
   bio: data?.bio || '',
   phone_number: data?.phone_number || '',
   country: data?.country || '',
@@ -21,15 +21,34 @@ const mapUser = (data) => ({
 });
 
 export const useAuthStore = create((set, get) => ({
-  user: JSON.parse(localStorage.getItem('auth_user')) || null,
-  theme: 'light',
+  user: typeof window !== 'undefined' && localStorage.getItem('auth_user') 
+    ? mapUser(JSON.parse(localStorage.getItem('auth_user') || '{}')) 
+    : null,
+  theme: typeof window !== 'undefined' ? (localStorage.getItem('theme') || (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) : 'light',
   isAuthReady: false,
-  setUser: (user) => set({ user: user ? mapUser(user) : null }),
+  setUser: (user) => {
+    const mapped = user ? mapUser(user) : null;
+    if (typeof window !== 'undefined') {
+      if (mapped) {
+        localStorage.setItem('auth_user', JSON.stringify(mapped));
+      } else {
+        localStorage.removeItem('auth_user');
+      }
+    }
+    set({ user: mapped });
+  },
 
   initTheme: () => {
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     const root = window.document.documentElement;
-    root.classList.add('light');
-    root.classList.remove('dark');
+    if (savedTheme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    }
+    set({ theme: savedTheme });
   },
 
   hydrateUser: async () => {
@@ -46,7 +65,19 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  toggleTheme: () => {},
+  toggleTheme: () => {
+    const newTheme = get().theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('theme', newTheme);
+    const root = window.document.documentElement;
+    if (newTheme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    }
+    set({ theme: newTheme });
+  },
 
   login: async (email, password) => {
     const response = await auth.login({ email, password });

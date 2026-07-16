@@ -71,20 +71,6 @@ export default function LandingPage() {
     }
   ];
 
-  const testimonials = [
-    {
-      name: 'Sarah Chen',
-      role: 'Staff Frontend Engineer at Stripe',
-      quote: 'PrepAI was absolute key for my preparation. The simulated voice mode made me feel exactly like I was presenting in front of an interviewer. I landed my target role!',
-      initials: 'SC'
-    },
-    {
-      name: 'Marcus Brody',
-      role: 'Senior Backend Developer at Amazon',
-      quote: 'The ATS scan found 4 critical missing keywords in my resume. Combined with the hard-mode database system design simulations, this app got me fully prepared.',
-      initials: 'MB'
-    }
-  ];
 
   const faqs = [
     {
@@ -217,41 +203,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="max-w-7xl mx-auto py-16 px-6 border-t border-dashed border-gray-500/20">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <h2 className="font-display font-extrabold text-2xl sm:text-4xl mb-4">
-            Trusted by Software Engineers
-          </h2>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Read how other developers used PrepAI to land technical positions.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {testimonials.map((t) => (
-            <div 
-              key={t.name}
-              className={`p-8 rounded-2xl border flex flex-col justify-between ${
-                theme === 'dark' ? 'bg-dark-card border-dark-border' : 'bg-white border-light-border shadow-sm'
-              }`}
-            >
-              <p className={`italic mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                "{t.quote}"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold font-display">
-                  {t.initials}
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.name}</h4>
-                  <p className="text-xs text-gray-500">{t.role}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* Pricing Comparison */}
       <section className={`py-16 px-6 border-t border-dashed border-gray-500/20 ${theme === 'dark' ? 'bg-dark-card/10' : 'bg-white'}`}>

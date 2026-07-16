@@ -181,6 +181,17 @@ export default function DashboardLayout({ children }) {
 
           <div className="flex items-center gap-4">
 
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle visual theme mode"
+              className={`p-2 rounded-xl border transition-all ${
+                theme === 'dark' ? 'border-dark-border text-gray-300 hover:bg-dark-hover' : 'border-light-border text-gray-600 hover:bg-light-hover'
+              }`}
+            >
+              {theme === 'dark' ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+            </button>
+
             {/* Notifications Popup */}
             <button
               onClick={() => setIsNotificationPopupOpen(!isNotificationPopupOpen)}

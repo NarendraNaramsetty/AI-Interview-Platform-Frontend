@@ -328,7 +328,7 @@ export default function InterviewSetupPage() {
                 if (filteredItems.length === 0) return null;
                 return (
                   <div key={category} className="space-y-2">
-                    <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider block">
                       {category}
                     </span>
                     <div className="flex flex-wrap gap-2">
@@ -341,7 +341,7 @@ export default function InterviewSetupPage() {
                             className={`text-xs px-3.5 py-2 rounded-xl border font-semibold transition-all duration-200 ${
                               isSelected 
                                 ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
-                                : 'border-light-border dark:border-dark-border hover:border-gray-500/30 text-gray-600 dark:text-gray-400'
+                                : 'border-light-border dark:border-dark-border hover:border-gray-550/30 text-gray-700 dark:text-gray-200 hover:text-gray-900 hover:dark:text-white'
                             }`}
                           >
                             {tech}
@@ -378,11 +378,11 @@ export default function InterviewSetupPage() {
                     className={`p-4 rounded-xl border text-center transition-all duration-200 ${
                       isSelected 
                         ? 'border-indigo-500 bg-indigo-500/5 text-indigo-400' 
-                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-400'
+                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-755 dark:text-gray-200 hover:text-gray-950 hover:dark:text-white'
                     }`}
                   >
                     <span className="font-bold text-xs block">{exp.title}</span>
-                    <span className="text-[10px] text-gray-500 block mt-1">{exp.range}</span>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 block mt-1">{exp.range}</span>
                   </button>
                 );
               })}
@@ -407,7 +407,7 @@ export default function InterviewSetupPage() {
                       className={`flex-1 min-w-[70px] text-[11px] font-bold py-2 rounded-xl transition-all duration-200 ${
                         isSelected 
                           ? 'bg-white dark:bg-dark-card text-indigo-600 shadow-sm border border-light-border/40 dark:border-dark-border/40' 
-                          : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-200'
+                          : 'text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
                       }`}
                     >
                       {diff}
@@ -470,13 +470,13 @@ export default function InterviewSetupPage() {
                     <div className={`p-2 rounded-lg border ${
                       isSelected 
                         ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-500' 
-                        : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400'
+                        : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400 dark:text-gray-300'
                     }`}>
                       <ModeIcon className="h-4.5 w-4.5" />
                     </div>
                     <div className="space-y-0.5">
                       <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200">{mode.title}</h4>
-                      <p className="text-[10px] text-gray-500 leading-normal">{mode.desc}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">{mode.desc}</p>
                     </div>
                   </button>
                 );
