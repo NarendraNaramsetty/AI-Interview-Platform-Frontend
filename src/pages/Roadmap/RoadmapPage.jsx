@@ -135,6 +135,7 @@ export default function RoadmapPage() {
     pushToast({ type: 'info', title: 'AI Roadmap Generator', message: 'Synthesizing customized pathway...' });
 
     const payload = {
+      interest: selectedCareers.join(' & '),
       career_track: selectedCareers.join(' & '),
       experience_level: experienceLevel,
       target_company: targetCompany,
@@ -489,54 +490,104 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
           
-          <div className="text-center">
-            <h1 className="text-3xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight py-2 animate-pulse">
+          <div className="text-center pb-2">
+            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
               Create Your Personalized AI Learning Roadmap
             </h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Select your career objectives and learning preferences to compile an adaptive syllabus.
+            </p>
           </div>
 
           <div className={`p-8 rounded-3xl border ${cardStyle} space-y-8`}>
             
-            {/* Step 1: Career track roles */}
+            {/* Step 1: Target Career Track */}
             <div className="space-y-4">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                1. What do you want to become? (Select one or more roles)
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                {careerOptions.map((role) => {
-                  const isSelected = selectedCareers.includes(role);
-                  return (
-                    <button
-                      key={role}
-                      type="button"
-                      onClick={() => toggleCareerSelection(role)}
-                      className={`text-[11px] px-3.5 py-2.5 rounded-2xl border font-bold text-left transition-all duration-200 ${
-                        isSelected 
-                          ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500' 
-                          : 'border-light-border dark:border-dark-border hover:border-gray-500/30 text-gray-600 dark:text-gray-400 bg-light-hover/10 dark:bg-dark-hover/5'
-                      }`}
-                    >
+              <div className="flex items-center gap-3">
+                <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                  1
+                </span>
+                <div className="space-y-0.5">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                    What do you want to become?
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Select target roles to shape your career curriculum.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const role = e.target.value;
+                    if (role && !selectedCareers.includes(role)) {
+                      setSelectedCareers([...selectedCareers, role]);
+                    }
+                  }}
+                  className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="" disabled>Select target roles...</option>
+                  {careerOptions.map((role) => (
+                    <option key={role} value={role} disabled={selectedCareers.includes(role)}>
                       {role}
-                    </button>
-                  );
-                })}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Selected Roles Chips */}
+                {selectedCareers.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {selectedCareers.map((role) => (
+                      <span
+                        key={role}
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg"
+                      >
+                        {role}
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCareers(selectedCareers.filter(c => c !== role))}
+                          className="text-emerald-500 hover:text-emerald-700 font-bold ml-0.5"
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Step 2: Experience Tier and Target Company */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                  2. Experience Level
-                </label>
-                <div className="flex border border-light-border dark:border-dark-border rounded-2xl overflow-hidden text-xs">
+              <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                    2
+                  </span>
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                      Experience Level
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Choose depth of learning tasks.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex border border-light-border dark:border-dark-border rounded-xl overflow-hidden text-xs pt-2">
                   {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => (
                     <button
                       key={lvl}
                       type="button"
                       onClick={() => setExperienceLevel(lvl)}
-                      className={`flex-1 py-3 font-bold transition-all ${experienceLevel === lvl ? 'bg-indigo-600 text-white' : 'bg-light-hover/30 dark:bg-dark-hover/10 text-gray-500'}`}
+                      className={`flex-1 py-2.5 font-bold transition-all ${
+                        experienceLevel === lvl 
+                          ? 'bg-emerald-600 text-white' 
+                          : 'bg-white dark:bg-dark-card hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-500 dark:text-gray-400'
+                      }`}
                     >
                       {lvl}
                     </button>
@@ -544,92 +595,132 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                  3. Target Company (Optional)
-                </label>
-                <select
-                  value={targetCompany}
-                  onChange={(e) => setTargetCompany(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 text-xs text-gray-700 dark:text-gray-200 focus:outline-none"
-                >
-                  <option value="">No Target Company</option>
-                  {companiesList.slice(1).map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
+              <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                    3
+                  </span>
+                  <div className="space-y-0.5">
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                      Target Company (Optional)
+                    </h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Tailor roadmap to industry patterns.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="pt-2">
+                  <select
+                    value={targetCompany}
+                    onChange={(e) => setTargetCompany(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="">No Target Company</option>
+                    {companiesList.slice(1).map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
+          </div>
+
+          {/* Step 3: Hours commitments */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                  4
+                </span>
+                <div className="space-y-0.5">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                    Weekly Study Commitment
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Specify available preparation hours.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                {weeklyHours} Hours / Week
+              </span>
             </div>
-
-            {/* Step 3: Hours commitments */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                  4. Weekly Study Commitment
-                </label>
-                <span className="text-xs font-bold text-indigo-500">{weeklyHours} Hours / Week</span>
-              </div>
+            <div className="pt-2">
               <input
                 type="range"
                 min="5"
                 max="50"
                 value={weeklyHours}
                 onChange={(e) => setWeeklyHours(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 dark:bg-dark-border rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-1.5 bg-gray-200 dark:bg-dark-border rounded-lg appearance-none cursor-pointer accent-emerald-650"
               />
-              <div className="flex justify-between text-[10px] text-gray-400">
+              <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-semibold">
                 <span>5 Hours</span>
                 <span>25 Hours</span>
                 <span>50 Hours</span>
               </div>
             </div>
-
-            {/* Step 4: Learning styles */}
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">
-                5. Preferred Learning Styles
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                {learningStyleOptions.map((style) => {
-                  const isSelected = learningStyles.includes(style);
-                  return (
-                    <label key={style} className="flex items-center gap-3 p-3.5 rounded-xl border border-light-border dark:border-dark-border hover:bg-light-hover/20 cursor-pointer text-xs">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleLearningStyle(style)}
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                      />
-                      <span className="text-gray-600 dark:text-gray-300 font-semibold">{style}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Submit onboarding CTA */}
-            <button
-              type="button"
-              disabled={isGenerating}
-              onClick={handleGenerateRoadmap}
-              className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold py-4.5 rounded-2xl text-xs transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 disabled:opacity-50"
-            >
-              {isGenerating ? (
-                <>
-                  <RefreshCw className="h-5 w-5 animate-spin text-white" />
-                  <span>Synthesizing AI Roadmap Plan...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-5 w-5 fill-white text-white" />
-                  <span>Generate AI Roadmap</span>
-                </>
-              )}
-            </button>
-
           </div>
 
+          {/* Step 4: Learning styles */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                5
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Preferred Learning Styles
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Choose media layout formats.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              {learningStyleOptions.map((style) => {
+                const isSelected = learningStyles.includes(style);
+                return (
+                  <label key={style} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer text-xs transition-all duration-200 ${
+                    isSelected 
+                      ? 'border-emerald-500 bg-emerald-500/5' 
+                      : 'border-light-border dark:border-dark-border bg-white dark:bg-dark-card hover:bg-light-hover/20'
+                  }`}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleLearningStyle(style)}
+                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4 accent-emerald-600"
+                    />
+                    <span className="text-gray-700 dark:text-gray-200 font-semibold">{style}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Submit onboarding CTA */}
+          <button
+            type="button"
+            disabled={isGenerating}
+            onClick={handleGenerateRoadmap}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 disabled:opacity-50 mt-4"
+          >
+            {isGenerating ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                <span>Generating AI Roadmap...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                <span>Generate AI Roadmap</span>
+              </>
+            )}
+          </button>
+
+          </div>
         </div>
       ) : (
         

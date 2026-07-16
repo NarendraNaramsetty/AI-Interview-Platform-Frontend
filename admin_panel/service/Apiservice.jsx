@@ -6,6 +6,21 @@ const _BACKEND_URL = getApiUrl();
 const BASE_URL = `${_BACKEND_URL}/api/admin/`;
 const api = axios.create({ baseURL: BASE_URL, headers: { "Content-Type": "application/json" } });
 
+let isAdminRefreshing = false;
+let adminFailedQueue = [];
+
+const processAdminQueue = (error, token = null) => {
+  adminFailedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  adminFailedQueue = [];
+};
+
 // Add request interceptor to automatically attach JWT token
 api.interceptors.request.use(
   (config) => {
@@ -28,22 +43,46 @@ api.interceptors.response.use(
     const status = error?.response?.status;
 
     if (status === 401 && originalRequest && !originalRequest._retry) {
+      if (isAdminRefreshing) {
+        return new Promise((resolve, reject) => {
+          adminFailedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
       originalRequest._retry = true;
+      isAdminRefreshing = true;
+
       const refreshToken = localStorage.getItem("admin_refresh_token");
       if (refreshToken) {
         try {
           const refreshRes = await axios.post(`${_BACKEND_URL}/api/admin/token/refresh/`, { refresh: refreshToken });
           const newAccess = refreshRes.data?.access;
+          const newRefresh = refreshRes.data?.refresh;
           if (newAccess) {
             localStorage.setItem("admin_access_token", newAccess);
+            if (newRefresh) {
+              localStorage.setItem("admin_refresh_token", newRefresh);
+            }
             originalRequest.headers.Authorization = `Bearer ${newAccess}`;
+            processAdminQueue(null, newAccess);
+            isAdminRefreshing = false;
             return api(originalRequest);
           }
         } catch (refreshErr) {
+          processAdminQueue(refreshErr, null);
+          isAdminRefreshing = false;
           localStorage.removeItem("admin_access_token");
           localStorage.removeItem("admin_refresh_token");
           localStorage.removeItem("admin_user");
           window.location.href = '/adminlogin';
+          return Promise.reject(refreshErr);
         }
       } else {
         window.location.href = '/adminlogin';

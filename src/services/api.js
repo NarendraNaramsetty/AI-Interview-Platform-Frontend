@@ -11,6 +11,21 @@ const api = axios.create({
   }
 });
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
 api.interceptors.request.use((config) => {
   console.log(`[API Request] Initiating request:
     URL: ${config.baseURL || ''}${config.url}
@@ -56,7 +71,22 @@ api.interceptors.response.use(
 
     // Handle SimpleJWT token refresh on 401 Unauthorized
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
+
       const refreshToken = localStorage.getItem('refresh_token');
 
       if (refreshToken) {
@@ -68,12 +98,21 @@ api.interceptors.response.use(
           );
 
           const nextAccessToken = refreshResponse.data?.access || refreshResponse.data?.data?.access;
+          const nextRefreshToken = refreshResponse.data?.refresh || refreshResponse.data?.data?.refresh;
+
           if (nextAccessToken) {
             localStorage.setItem('access_token', nextAccessToken);
+            if (nextRefreshToken) {
+              localStorage.setItem('refresh_token', nextRefreshToken);
+            }
             originalRequest.headers.Authorization = `Bearer ${nextAccessToken}`;
+            processQueue(null, nextAccessToken);
+            isRefreshing = false;
             return api(originalRequest);
           }
         } catch (refreshError) {
+          processQueue(refreshError, null);
+          isRefreshing = false;
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('auth_user');

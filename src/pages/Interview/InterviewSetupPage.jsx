@@ -61,6 +61,15 @@ export default function InterviewSetupPage() {
   const [voiceLang, setVoiceLang] = useState('US English');
   const [voiceSpeed, setVoiceSpeed] = useState('Normal');
   const [useResumeSkills, setUseResumeSkills] = useState(true);
+  const [showStats, setShowStats] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState({});
+
+  const toggleCategory = (cat) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [cat]: !prev[cat]
+    }));
+  };
 
   // Gamification Metrics
   const xpPoints = 1250;
@@ -258,90 +267,110 @@ export default function InterviewSetupPage() {
       {/* Premium Dashboard Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-light-border dark:border-dark-border">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
-              AI Practice Arena
-            </span>
-            <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-              <Sparkles className="h-3 w-3" />
-              Adaptive Mode Active
-            </span>
-          </div>
-          <h1 className="text-3xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 tracking-tight py-2 animate-pulse">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Simulate Your Next Interview
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Generate personalized simulated interview sessions tailored to your target role and real-world experience level.
+            Configure and launch mock interview sessions tailored to your target role and stack.
           </p>
-        </div>
-
-        {/* Header Indicators Widget */}
-        <div className="flex gap-4 self-start md:self-center">
-          <div className="px-4 py-2.5 rounded-2xl bg-white/70 dark:bg-dark-card/50 border border-light-border dark:border-dark-border flex items-center gap-3">
-            <Clock className="h-5 w-5 text-indigo-500" />
-            <div className="text-left">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-gray-400 block">Est. Time</span>
-              <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{getEstimatedDuration()}</span>
-            </div>
-          </div>
-          <div className="px-4 py-2.5 rounded-2xl bg-white/70 dark:bg-dark-card/50 border border-light-border dark:border-dark-border flex items-center gap-3">
-            <TrendingUp className="h-5 w-5 text-indigo-500" />
-            <div className="text-left">
-              <span className="text-[9px] uppercase font-bold tracking-wider text-gray-400 block">AI Adaptivity</span>
-              <span className="text-xs font-bold text-gray-800 dark:text-gray-200">Enabled</span>
-            </div>
-          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         {/* LEFT COLUMN (70%) - Config Section */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6">
           
-          {/* Section 1: Tech Stack selection */}
-          <div className="p-6 rounded-2xl border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md border-light-border dark:border-dark-border space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  1. Technology stack / Skills
+          {/* Step 1: Target Skills */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-5">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                1
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Target Skills
                 </h3>
-                <p className="text-[11px] text-gray-500">
-                  Select core frameworks and compilers to shape code tasks and evaluations.
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Search and toggle the specific skills to test.
                 </p>
               </div>
-              <div className="relative max-w-xs w-full">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+            </div>
+
+            {/* Filter input */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider block">
+                Search Skills
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Filter skills..."
                   value={techSearch}
                   onChange={(e) => setTechSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 text-xs text-gray-800 dark:text-gray-200"
+                  className="w-full pl-9 pr-4 py-2 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs text-gray-800 dark:text-gray-200"
                 />
               </div>
             </div>
 
-            <div className="space-y-4">
+            {/* Selected chips representation */}
+            {config.techStack?.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Selected Stack</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {config.techStack.slice(0, 6).map((tech) => (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg"
+                    >
+                      {tech}
+                      <button
+                        type="button"
+                        onClick={() => handleTechToggle(tech)}
+                        className="text-emerald-500 hover:text-emerald-700 font-bold ml-0.5"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                  {config.techStack.length > 6 && (
+                    <span className="text-[10px] font-bold text-gray-500 bg-gray-150 dark:bg-dark-hover/30 px-2 py-0.5 rounded-lg">
+                      +{config.techStack.length - 6} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Flat skill list grouped by category */}
+            <div className="space-y-4 pt-2">
               {Object.entries(activeTechCategories).map(([category, items]) => {
                 const filteredItems = items.filter(item => item.toLowerCase().includes(techSearch.toLowerCase()));
                 if (filteredItems.length === 0) return null;
+                
                 return (
-                  <div key={category} className="space-y-2">
-                    <span className="text-[10px] font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider block">
-                      {category}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
+                  <div key={category} className="space-y-2 pt-2 border-b border-light-border/40 dark:border-dark-border/40 last:border-0 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-1 rounded-full bg-emerald-500" />
+                      <span className="text-[11px] font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wider">
+                        {category}
+                      </span>
+                      <span className="text-[9px] font-semibold text-gray-400 bg-gray-100 dark:bg-dark-hover/20 px-1.5 py-0.5 rounded">
+                        {filteredItems.length}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
                       {filteredItems.map((tech) => {
                         const isSelected = (config.techStack || []).includes(tech);
                         return (
                           <button
                             key={tech}
                             onClick={() => handleTechToggle(tech)}
-                            className={`text-xs px-3.5 py-2 rounded-xl border font-semibold transition-all duration-200 ${
+                            className={`text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition-all duration-150 ${
                               isSelected 
-                                ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400' 
-                                : 'border-light-border dark:border-dark-border hover:border-gray-550/30 text-gray-700 dark:text-gray-200 hover:text-gray-900 hover:dark:text-white'
+                                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600' 
+                                : 'border-light-border dark:border-dark-border bg-white dark:bg-dark-card hover:border-gray-300 dark:hover:border-gray-700 text-gray-600 dark:text-gray-300'
                             }`}
                           >
                             {tech}
@@ -353,107 +382,94 @@ export default function InterviewSetupPage() {
                 );
               })}
             </div>
-            {config.techStack?.length > 0 && (
-              <div className="pt-2 flex items-center justify-between text-xs border-t border-light-border/50 dark:border-dark-border/50">
-                <span className="text-gray-500">Selected Skills:</span>
-                <span className="font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-full">
-                  {config.techStack.length} Skills
-                </span>
-              </div>
-            )}
           </div>
 
-          {/* Section 2: Target Experience Level */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              2. Experience Level
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {experienceCards.map((exp) => {
-                const isSelected = config.experienceLevel === exp.id;
+          {/* Step 2: Difficulty */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                2
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Session Difficulty
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Select target complexity or enable Adaptive AI.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              {difficulties.map((diff) => {
+                const isSelected = config.difficulty === diff.toLowerCase();
                 return (
                   <button
-                    key={exp.id}
-                    onClick={() => setSetupConfig({ experienceLevel: exp.id })}
-                    className={`p-4 rounded-xl border text-center transition-all duration-200 ${
+                    key={diff}
+                    onClick={() => setSetupConfig({ difficulty: diff.toLowerCase() })}
+                    className={`flex-1 min-w-[80px] px-4 py-2.5 rounded-xl border text-center transition-all duration-200 ${
                       isSelected 
-                        ? 'border-indigo-500 bg-indigo-500/5 text-indigo-400' 
-                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-755 dark:text-gray-200 hover:text-gray-950 hover:dark:text-white'
+                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 font-bold' 
+                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-300'
                     }`}
                   >
-                    <span className="font-bold text-xs block">{exp.title}</span>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 block mt-1">{exp.range}</span>
+                    <span className="text-xs font-bold">{diff}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Section 4: Difficulty and mode settings */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            
-            {/* Difficulty Segmented Controls */}
-            <div className="space-y-3">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                3. Session Difficulty
-              </h3>
-              <div className="p-1 rounded-2xl border border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg flex flex-wrap gap-1">
-                {difficulties.map((diff) => {
-                  const isSelected = config.difficulty === diff.toLowerCase();
-                  return (
-                    <button
-                      key={diff}
-                      onClick={() => setSetupConfig({ difficulty: diff.toLowerCase() })}
-                      className={`flex-1 min-w-[70px] text-[11px] font-bold py-2 rounded-xl transition-all duration-200 ${
-                        isSelected 
-                          ? 'bg-white dark:bg-dark-card text-indigo-600 shadow-sm border border-light-border/40 dark:border-dark-border/40' 
-                          : 'text-gray-500 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100'
-                      }`}
-                    >
-                      {diff}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Questions count slider */}
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  4. Question Count
+          {/* Step 3: Question Count */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                3
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Question Count
                 </h3>
-                <span className="text-xs font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-md">
-                  {config.questionCount} Questions
-                </span>
-              </div>
-              <div className="pt-2">
-                <input
-                  type="range"
-                  min="3"
-                  max="15"
-                  step="1"
-                  value={config.questionCount || 5}
-                  onChange={(e) => setSetupConfig({ questionCount: parseInt(e.target.value) })}
-                  className="w-full accent-indigo-600 h-1.5 bg-gray-200 dark:bg-dark-border rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-semibold">
-                  <span>3 Mocks</span>
-                  <span>5 Mocks</span>
-                  <span>10 Mocks</span>
-                  <span>15 Mocks</span>
-                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Determine the length of the mock interview session.
+                </p>
               </div>
             </div>
-
+            <div className="flex gap-2 pt-2">
+              {[3, 5, 10, 15].map((count) => {
+                const isSelected = config.questionCount === count;
+                return (
+                  <button
+                    key={count}
+                    onClick={() => setSetupConfig({ questionCount: count })}
+                    className={`flex-1 py-2.5 rounded-xl border text-center font-bold text-xs transition-all duration-200 ${
+                      isSelected 
+                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600' 
+                        : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-300'
+                    }`}
+                  >
+                    {count} Questions
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Section 5: Interview Mode list */}
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              5. Interview Mode
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {/* Step 4: Interview Mode */}
+          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                4
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Interview Mode
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Choose mock presentation style.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
               {modes.map((mode) => {
                 const ModeIcon = mode.icon;
                 const isSelected = config.mode === mode.id;
@@ -461,22 +477,27 @@ export default function InterviewSetupPage() {
                   <button
                     key={mode.id}
                     onClick={() => setSetupConfig({ mode: mode.id })}
-                    className={`p-4 rounded-xl border text-left transition-all duration-200 flex items-start gap-3 relative ${
+                    className={`p-3 rounded-xl border text-left transition-all duration-200 flex flex-col gap-2 relative ${
                       isSelected 
-                        ? 'border-indigo-500 bg-indigo-500/5' 
+                        ? 'border-emerald-500 bg-emerald-500/5' 
                         : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg border ${
-                      isSelected 
-                        ? 'border-indigo-500/30 bg-indigo-500/10 text-indigo-500' 
-                        : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400 dark:text-gray-300'
-                    }`}>
-                      <ModeIcon className="h-4.5 w-4.5" />
+                    <div className="flex items-center justify-between w-full">
+                      <div className={`p-1.5 rounded-lg border ${
+                        isSelected 
+                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500' 
+                          : 'border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-400 dark:text-gray-300'
+                      }`}>
+                        <ModeIcon className="h-4 w-4" />
+                      </div>
+                      {isSelected && (
+                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      )}
                     </div>
                     <div className="space-y-0.5">
-                      <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200">{mode.title}</h4>
-                      <p className="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">{mode.desc}</p>
+                      <h4 className="font-bold text-[11px] text-gray-800 dark:text-gray-200">{mode.title}</h4>
+                      <p className="text-[9px] text-gray-500 dark:text-gray-400 leading-tight">{mode.desc}</p>
                     </div>
                   </button>
                 );
@@ -484,60 +505,17 @@ export default function InterviewSetupPage() {
             </div>
           </div>
 
-
-
-          {/* Recent Sessions */}
-          {history.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                Recent Practice Mocks
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {history.slice(0, 2).map((session, idx) => (
-                  <div key={idx} className="p-4 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md flex justify-between items-center gap-4">
-                    <div className="space-y-1 min-w-0">
-                      <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">{session.role}</h4>
-                      <div className="flex gap-2.5 text-[9px] text-gray-500 font-semibold">
-                        <span>{session.date}</span>
-                        <span>{session.duration}</span>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-extrabold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/10 block w-fit ml-auto mb-1">
-                        {session.overallScore}%
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSetupConfig({
-                            role: session.role?.toLowerCase().includes('front') ? 'frontend' : 'backend',
-                            experienceLevel: session.level?.toLowerCase() || 'mid',
-                            difficulty: session.difficulty?.toLowerCase() || 'medium'
-                          });
-                          pushToast({ type: 'info', title: 'Session Reloaded', message: `Template matching ${session.role} loaded.` });
-                        }}
-                        className="text-[9px] font-bold text-indigo-400 hover:underline"
-                      >
-                        Try Again
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
         </div>
 
         {/* RIGHT COLUMN (30%) - Summary & Sidebar widgets */}
         <div className="space-y-6 lg:sticky lg:top-8">
           
-          {/* Glass Sticky Summary Card */}
-          <div className="p-6 rounded-3xl border bg-gradient-to-br from-indigo-500/10 to-violet-500/5 backdrop-blur-xl border-light-border dark:border-dark-border space-y-6">
+{/* Glass Sticky Summary Card */}
+          <div className="p-6 rounded-3xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-6">
             
             <div className="space-y-2">
               <h3 className="font-display font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <Sliders className="h-5 w-5 text-indigo-500 animate-pulse" />
+                <Sliders className="h-5 w-5 text-emerald-500" />
                 <span>Session Summary</span>
               </h3>
               <p className="text-[10px] text-gray-500 leading-relaxed">
@@ -550,17 +528,14 @@ export default function InterviewSetupPage() {
                 <span className="text-gray-500 dark:text-gray-400">Target Role</span>
                 <span className="font-bold text-gray-900 dark:text-gray-100">{currentRoleObj.name}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Experience</span>
-                <span className="font-bold text-gray-900 dark:text-gray-100 capitalize">{config.experienceLevel}</span>
-              </div>
+
               <div className="flex justify-between items-center">
                 <span className="text-gray-500 dark:text-gray-400">Difficulty</span>
                 <span className="font-bold text-gray-900 dark:text-gray-100 capitalize">{config.difficulty}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500 dark:text-gray-400">Interview Mode</span>
-                <span className="font-bold text-indigo-500 capitalize flex items-center gap-1">
+                <span className="font-bold text-emerald-500 capitalize flex items-center gap-1">
                   {config.mode === 'text' ? <Keyboard className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
                   {config.mode}
                 </span>
@@ -571,7 +546,15 @@ export default function InterviewSetupPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-500 dark:text-gray-400">Score Goal</span>
-                <span className="font-bold text-indigo-500">85% minimum</span>
+                <span className="font-bold text-emerald-500">85% minimum</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500 dark:text-gray-400">Est. Time</span>
+                <span className="font-bold text-gray-900 dark:text-gray-100">{getEstimatedDuration()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500 dark:text-gray-400">AI Adaptivity</span>
+                <span className="font-bold text-emerald-500">Enabled</span>
               </div>
             </div>
 
@@ -587,9 +570,9 @@ export default function InterviewSetupPage() {
               <div className="relative h-12 w-12 shrink-0">
                 <svg className="h-full w-full transform -rotate-90">
                   <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-gray-200 dark:text-dark-border" />
-                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-indigo-600 transition-all duration-300" strokeDasharray="125" strokeDashoffset={125 - (125 * calculateReadyScore()) / 100} />
+                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-emerald-500 transition-all duration-300" strokeDasharray="125" strokeDashoffset={125 - (125 * calculateReadyScore()) / 100} />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-indigo-500">
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-emerald-500">
                   {calculateReadyScore()}%
                 </span>
               </div>
@@ -598,7 +581,7 @@ export default function InterviewSetupPage() {
             {/* Launch CTA */}
             <button
               onClick={handleLaunch}
-              className="w-full bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold py-4 rounded-2xl text-xs transition-all duration-200 flex items-center justify-center gap-1.5 shadow-lg shadow-indigo-500/25 mt-4"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 mt-4"
             >
               <Play className="h-4 w-4 fill-white" />
               <span>Start AI Interview</span>
@@ -607,7 +590,7 @@ export default function InterviewSetupPage() {
           </div>
 
           {/* Resume Integration Card */}
-          <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md space-y-4">
+          <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm space-y-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl">
                 <FileText className="h-5 w-5" />
@@ -625,7 +608,7 @@ export default function InterviewSetupPage() {
                 <button
                   type="button"
                   onClick={() => setUseResumeSkills(!useResumeSkills)}
-                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${useResumeSkills ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-dark-border'}`}
+                  className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${useResumeSkills ? 'bg-emerald-650' : 'bg-gray-300 dark:bg-dark-border'}`}
                 >
                   <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${useResumeSkills ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -633,14 +616,28 @@ export default function InterviewSetupPage() {
             )}
           </div>
 
-          {/* Gamification Streak & Levels */}
-          <div className="grid grid-cols-2 gap-4">
-            
+        </div>
+
+      </div>
+
+      {/* Collapsible Gamification & History Section */}
+      <div className="border-t border-light-border dark:border-dark-border pt-8 mt-12">
+        <button
+          type="button"
+          onClick={() => setShowStats(!showStats)}
+          className="flex items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+        >
+          <span>{showStats ? 'Hide' : 'Show'} Gamification & Recent Practice Mocks</span>
+          <span className="text-[10px]">{showStats ? '▲' : '▼'}</span>
+        </button>
+
+        {showStats && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 transition-all duration-300">
             {/* Daily Streak */}
-            <div className="p-4 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md flex flex-col justify-between gap-3">
+            <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm flex flex-col justify-between gap-3">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Streak</span>
-                <Flame className="h-5 w-5 text-orange-500 fill-orange-500/20 animate-bounce" />
+                <Flame className="h-5 w-5 text-orange-500 fill-orange-500/20" />
               </div>
               <div>
                 <span className="text-xl font-extrabold text-gray-900 dark:text-gray-100 block">
@@ -651,7 +648,7 @@ export default function InterviewSetupPage() {
             </div>
 
             {/* Level & XP */}
-            <div className="p-4 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md flex flex-col justify-between gap-3">
+            <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm flex flex-col justify-between gap-3">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Gamification</span>
                 <Trophy className="h-5 w-5 text-amber-500" />
@@ -664,33 +661,72 @@ export default function InterviewSetupPage() {
               </div>
             </div>
 
-          </div>
-
-          {/* Achievements widget */}
-          <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white/70 dark:bg-dark-card/50 backdrop-blur-md space-y-4">
-            <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
-              <Award className="h-4 w-4 text-indigo-500" />
-              <span>Earned Achievements</span>
-            </h4>
-            <div className="space-y-2">
-              {[
-                { name: 'First Mock Mocked', desc: 'Finished initial mock simulation.' },
-                { name: '100 Questions Solved', desc: 'Resolved target sandbox evaluations.' },
-                { name: 'Perfect Score 100%', desc: 'Secured exemplary scoring.' }
-              ].map((ach, idx) => (
-                <div key={idx} className="flex gap-2.5 items-start text-xs border-b border-light-border/40 dark:border-dark-border/40 last:border-b-0 pb-2 last:pb-0">
-                  <span className="text-indigo-500 shrink-0 mt-0.5">✦</span>
-                  <div className="space-y-0.5">
-                    <span className="font-bold text-gray-800 dark:text-gray-200">{ach.name}</span>
-                    <p className="text-[9px] text-gray-500 leading-normal">{ach.desc}</p>
+            {/* Achievements widget */}
+            <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm space-y-4">
+              <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                <Award className="h-4 w-4 text-emerald-500" />
+                <span>Earned Achievements</span>
+              </h4>
+              <div className="space-y-2">
+                {[
+                  { name: 'First Mock Mocked', desc: 'Finished initial mock simulation.' },
+                  { name: '100 Questions Solved', desc: 'Resolved target sandbox evaluations.' },
+                  { name: 'Perfect Score 100%', desc: 'Secured exemplary scoring.' }
+                ].map((ach, idx) => (
+                  <div key={idx} className="flex gap-2.5 items-start text-xs border-b border-light-border/40 dark:border-dark-border/40 last:border-b-0 pb-2 last:pb-0">
+                    <span className="text-emerald-500 shrink-0 mt-0.5">✦</span>
+                    <div className="space-y-0.5">
+                      <span className="font-bold text-gray-800 dark:text-gray-200">{ach.name}</span>
+                      <p className="text-[9px] text-gray-500 leading-normal">{ach.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
+
+            {/* Recent Sessions */}
+            {history.length > 0 && (
+              <div className="md:col-span-3 space-y-4 mt-2">
+                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  Recent Practice Mocks
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {history.slice(0, 2).map((session, idx) => (
+                    <div key={idx} className="p-4 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm flex justify-between items-center gap-4">
+                      <div className="space-y-1 min-w-0">
+                        <h4 className="font-bold text-xs text-gray-800 dark:text-gray-200 truncate">{session.role}</h4>
+                        <div className="flex gap-2.5 text-[9px] text-gray-500 font-semibold">
+                          <span>{session.date}</span>
+                          <span>{session.duration}</span>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-extrabold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/10 block w-fit ml-auto mb-1">
+                          {session.overallScore}%
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSetupConfig({
+                              role: session.role?.toLowerCase().includes('front') ? 'frontend' : 'backend',
+                              experienceLevel: session.level?.toLowerCase() || 'mid',
+                              difficulty: session.difficulty?.toLowerCase() || 'medium'
+                            });
+                            pushToast({ type: 'info', title: 'Session Reloaded', message: `Template matching ${session.role} loaded.` });
+                          }}
+                          className="text-[9px] font-bold text-emerald-500 hover:underline"
+                        >
+                          Try Again
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
           </div>
-
-        </div>
-
+        )}
       </div>
 
     </div>
