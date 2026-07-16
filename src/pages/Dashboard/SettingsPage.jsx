@@ -180,11 +180,11 @@ export default function SettingsPage() {
                     <select
                       value={prefLang}
                       onChange={(e) => setPrefLang(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-bg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-800 dark:text-gray-100"
                     >
-                      <option value="javascript">JavaScript (ES6)</option>
-                      <option value="python">Python 3</option>
-                      <option value="cpp">C++ (GCC 11)</option>
+                      <option value="javascript" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">JavaScript (ES6)</option>
+                      <option value="python" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">Python 3</option>
+                      <option value="cpp" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">C++ (GCC 11)</option>
                     </select>
                   </div>
 
@@ -193,11 +193,11 @@ export default function SettingsPage() {
                     <select
                       value={fontSize}
                       onChange={(e) => setFontSize(e.target.value)}
-                      className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-bg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-800 dark:text-gray-100"
                     >
-                      <option value="12px">12px (Compact)</option>
-                      <option value="14px">14px (Standard)</option>
-                      <option value="16px">16px (Large)</option>
+                      <option value="12px" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">12px (Compact)</option>
+                      <option value="14px" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">14px (Standard)</option>
+                      <option value="16px" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">16px (Large)</option>
                     </select>
                   </div>
                 </div>

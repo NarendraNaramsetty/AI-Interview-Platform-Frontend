@@ -143,12 +143,12 @@ export default function InterviewHistoryPage() {
           <select
             value={roleFilter}
             onChange={(e) => { setRoleFilter(e.target.value); setCurrentPage(1); }}
-            className="w-full px-3 py-2 rounded-xl border border-light-border dark:border-dark-border bg-light-hover dark:bg-dark-bg text-xs focus:outline-none"
+            className="w-full px-3 py-2 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">All Job Roles</option>
-            <option value="Frontend Engineer">Frontend Engineer</option>
-            <option value="Backend Engineer">Backend Engineer</option>
-            <option value="Product Manager">Product Manager</option>
+            <option value="" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">All Job Roles</option>
+            <option value="Frontend Engineer" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">Frontend Engineer</option>
+            <option value="Backend Engineer" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">Backend Engineer</option>
+            <option value="Product Manager" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">Product Manager</option>
           </select>
         </div>
 

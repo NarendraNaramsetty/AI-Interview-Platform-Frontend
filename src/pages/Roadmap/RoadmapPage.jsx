@@ -68,6 +68,7 @@ export default function RoadmapPage() {
   const [bookmarkFilter, setBookmarkFilter] = useState(false);
   const [sortBy, setSortBy] = useState('order'); // order, difficulty, estimated_time
   const [viewMode, setViewMode] = useState('roadmap'); // roadmap, timeline, kanban, calendar
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // WORKBENCH SIDE PANEL STATE
   const [selectedModule, setSelectedModule] = useState(null);
@@ -577,21 +578,24 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                   </div>
                 </div>
                 
-                <div className="flex border border-light-border dark:border-dark-border rounded-xl overflow-hidden text-xs pt-2">
-                  {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => (
-                    <button
-                      key={lvl}
-                      type="button"
-                      onClick={() => setExperienceLevel(lvl)}
-                      className={`flex-1 py-2.5 font-bold transition-all ${
-                        experienceLevel === lvl 
-                          ? 'bg-emerald-600 text-white' 
-                          : 'bg-white dark:bg-dark-card hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      {lvl}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
+                  {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => {
+                    const isSelected = experienceLevel === lvl;
+                    return (
+                      <button
+                        key={lvl}
+                        type="button"
+                        onClick={() => setExperienceLevel(lvl)}
+                        className={`py-2.5 px-4 rounded-xl border text-xs font-bold transition-all duration-200 text-center cursor-pointer ${
+                          isSelected 
+                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm shadow-emerald-500/20' 
+                            : 'border-light-border dark:border-dark-border bg-white dark:bg-dark-card hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        {lvl}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -614,11 +618,11 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                   <select
                     value={targetCompany}
                     onChange={(e) => setTargetCompany(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
-                    <option value="">No Target Company</option>
+                    <option value="" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">No Target Company</option>
                     {companiesList.slice(1).map(c => (
-                      <option key={c} value={c}>{c}</option>
+                      <option key={c} value={c} className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">{c}</option>
                     ))}
                   </select>
                 </div>
@@ -750,11 +754,7 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
             </div>
 
             <button
-              onClick={() => {
-                if (window.confirm("Are you sure you want to delete this custom roadmap? Your learning history, notes, and quiz details will be lost forever.")) {
-                  roadmap.pause({ roadmap_id: activeRoadmap.roadmap }).then(() => fetchActiveRoadmap());
-                }
-              }}
+              onClick={() => setShowDeleteModal(true)}
               className="text-xs font-bold border border-rose-500/30 text-rose-500 hover:bg-rose-500/5 px-4.5 py-2.5 rounded-2xl transition-all"
             >
               Reset Roadmap Setup
@@ -867,35 +867,35 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-gray-600 dark:text-gray-300"
+                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-850 dark:text-gray-100"
               >
-                <option value="all">All Statuses</option>
-                <option value="not_started">Not Started</option>
-                <option value="in_progress">In Progress</option>
-                <option value="completed">Completed</option>
+                <option value="all" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">All Statuses</option>
+                <option value="not_started" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Not Started</option>
+                <option value="in_progress" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">In Progress</option>
+                <option value="completed" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Completed</option>
               </select>
 
               {/* Difficulty Select */}
               <select
                 value={difficultyFilter}
                 onChange={(e) => setDifficultyFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-gray-600 dark:text-gray-300"
+                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-850 dark:text-gray-100"
               >
-                <option value="all">All Difficulties</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                <option value="all" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">All Difficulties</option>
+                <option value="beginner" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Beginner</option>
+                <option value="intermediate" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Intermediate</option>
+                <option value="advanced" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Advanced</option>
               </select>
 
               {/* Sorting */}
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-slate-50 dark:bg-slate-900 text-xs font-semibold text-gray-600 dark:text-gray-300"
+                className="px-3 py-1.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-gray-850 dark:text-gray-100"
               >
-                <option value="order">Chronological Order</option>
-                <option value="difficulty">Difficulty Level</option>
-                <option value="estimated_time">Estimated Time</option>
+                <option value="order" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Chronological Order</option>
+                <option value="difficulty" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Difficulty Level</option>
+                <option value="estimated_time" className="bg-white dark:bg-dark-card text-gray-850 dark:text-gray-100">Estimated Time</option>
               </select>
 
               {/* Bookmarks toggle */}
@@ -1491,6 +1491,45 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
               </form>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`w-full max-w-md rounded-3xl border p-6 space-y-6 shadow-2xl animate-fade-in ${theme === 'dark' ? 'bg-dark-card border-dark-border text-gray-200' : 'bg-white border-light-border text-gray-800'}`}>
+            <div className="flex flex-col items-center text-center space-y-3">
+              <div className="p-3 bg-rose-500/10 text-rose-500 rounded-full animate-bounce">
+                <AlertTriangle className="h-8 w-8" />
+              </div>
+              <h3 className="text-lg font-display font-extrabold text-gray-900 dark:text-white">
+                Delete Custom Roadmap?
+              </h3>
+              <p className="text-xs text-gray-500 leading-relaxed max-w-sm">
+                Are you sure you want to delete this custom roadmap? Your learning history, notes, and quiz details will be lost forever.
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-3 text-xs font-bold border border-light-border dark:border-dark-border bg-transparent text-gray-500 dark:text-gray-400 hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 rounded-2xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  roadmap.pause({ roadmap_id: activeRoadmap.roadmap }).then(() => fetchActiveRoadmap());
+                }}
+                className="flex-1 py-3 text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white rounded-2xl transition-all shadow-md shadow-rose-500/10"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

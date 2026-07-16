@@ -40,9 +40,9 @@ import PerformanceAnalyticsPage from './pages/Analytics/PerformanceAnalyticsPage
 import NotificationsPage from './pages/Dashboard/NotificationsPage';
 
 // Isolated Admin Components
-import AdminLoginPage from '../admin_panel/components/auth/login/Login.jsx';
-import AdminMainLayout from '../admin_panel/layouts/MainLayout.jsx';
-import { AuthProvider as AdminAuthProvider } from '../admin_panel/context/AuthContext.jsx';
+import AdminLoginPage from './admin_panel/components/auth/login/Login.jsx';
+import AdminMainLayout from './admin_panel/layouts/MainLayout.jsx';
+import { AuthProvider as AdminAuthProvider } from './admin_panel/context/AuthContext.jsx';
 
 // Simple Route Protection wrapper
 function ProtectedRoute({ children }) {

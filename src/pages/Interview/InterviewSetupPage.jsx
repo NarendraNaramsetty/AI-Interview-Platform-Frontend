@@ -434,14 +434,14 @@ export default function InterviewSetupPage() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2 pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
               {[3, 5, 10, 15].map((count) => {
                 const isSelected = config.questionCount === count;
                 return (
                   <button
                     key={count}
                     onClick={() => setSetupConfig({ questionCount: count })}
-                    className={`flex-1 py-2.5 rounded-xl border text-center font-bold text-xs transition-all duration-200 ${
+                    className={`py-2.5 rounded-xl border text-center font-bold text-xs transition-all duration-200 ${
                       isSelected 
                         ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600' 
                         : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-300'

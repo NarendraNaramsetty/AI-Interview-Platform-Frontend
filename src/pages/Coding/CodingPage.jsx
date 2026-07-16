@@ -390,10 +390,10 @@ export default function CodingPage() {
                 <select
                   value={selectedCompany}
                   onChange={(e) => setSelectedCompany(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-light-hover/30 dark:bg-dark-hover/10 text-xs text-gray-800 dark:text-gray-200"
+                  className="w-full px-3 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 >
                   {companies.map(c => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c} className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">{c}</option>
                   ))}
                 </select>
               </div>
@@ -539,15 +539,15 @@ export default function CodingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             
             {/* LEFT AREA: Tabs & Description */}
-            <div className="p-6 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card flex flex-col min-h-[550px] max-h-[700px] overflow-y-auto">
+            <div className="p-6 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card flex flex-col min-h-[300px] sm:min-h-[550px] max-h-[700px] overflow-y-auto">
               
               {/* Tabs */}
-              <div className="flex border-b border-light-border dark:border-dark-border mb-4">
+              <div className="flex border-b border-light-border dark:border-dark-border mb-4 overflow-x-auto scrollbar-none">
                 {['description', 'hints', 'follow-up'].map(tab => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`pb-2 px-2 text-xs font-bold uppercase tracking-wider border-b-2 transition-all capitalize ${
+                    className={`pb-2 px-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider border-b-2 transition-all whitespace-nowrap capitalize ${
                       activeTab === tab ? 'border-indigo-500 text-indigo-500' : 'border-transparent text-gray-400 hover:text-gray-200'
                     }`}
                   >
@@ -647,11 +647,11 @@ export default function CodingPage() {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="px-3 py-1.5 rounded-lg border border-light-border dark:border-dark-border bg-white dark:bg-dark-bg text-xs font-semibold focus:outline-none text-gray-800 dark:text-gray-200"
+                    className="px-3 py-1.5 rounded-lg border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold focus:outline-none text-gray-800 dark:text-gray-100"
                   >
-                    <option value="python">Python 3</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="cpp">C++ (GCC 11)</option>
+                    <option value="python" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">Python 3</option>
+                    <option value="javascript" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">JavaScript</option>
+                    <option value="cpp" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">C++ (GCC 11)</option>
                   </select>
                 </div>
 
