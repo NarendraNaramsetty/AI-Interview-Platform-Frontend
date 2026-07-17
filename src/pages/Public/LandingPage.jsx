@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/useAuthStore';
+import Hero from '../../components/landing/Hero';
+import FeatureCard from '../../components/landing/FeatureCard';
 import { 
-  Sparkles, 
   Upload, 
   Cpu, 
   MessageSquare, 
   TrendingUp, 
-  Play, 
-  FileText, 
-  ArrowRight,
-  ShieldCheck,
   Zap,
   CheckCircle,
   HelpCircle,
@@ -24,27 +22,27 @@ export default function LandingPage() {
   const features = [
     {
       title: 'ATS Resume Optimizer',
-      description: 'Upload your resume for instant ATS scores, keyword checks, and improvement tips.',
+      description: 'Upload your resume for instant ATS scores, keyword checks, and improvement tips tailored to your target role.',
       icon: Upload,
-      color: 'from-blue-500 to-indigo-500'
+      gradient: 'from-blue-500 via-indigo-500 to-purple-500'
     },
     {
       title: 'AI Simulator Arena',
-      description: 'Simulate coding or behavioral loops with custom roles, stack filters, and levels.',
+      description: 'Simulate realistic coding, behavioral, and technical interviews with custom difficulty levels and tech stacks.',
       icon: Cpu,
-      color: 'from-violet-500 to-fuchsia-500'
+      gradient: 'from-violet-500 via-purple-500 to-fuchsia-500'
     },
     {
       title: 'Multimodal Inputs',
-      description: 'Answer questions in realistic layouts using text typing or voice recording mode.',
+      description: 'Answer questions using text or voice mode in realistic interview layouts, perfect for practicing communication.',
       icon: MessageSquare,
-      color: 'from-pink-500 to-rose-500'
+      gradient: 'from-pink-500 via-rose-500 to-red-500'
     },
     {
       title: 'Precision Scorecards',
-      description: 'Review instant AI metrics for technical depth, confidence indexes, and answers.',
+      description: 'Get instant AI-powered feedback with detailed metrics on technical depth, communication, and confidence levels.',
       icon: TrendingUp,
-      color: 'from-emerald-500 to-teal-500'
+      gradient: 'from-emerald-500 via-teal-500 to-cyan-500'
     }
   ];
 
@@ -89,115 +87,86 @@ export default function LandingPage() {
 
   return (
     <div className="relative overflow-hidden">
-      
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none opacity-30 dark:opacity-20 z-0">
-        <div className="absolute top-10 left-1/4 w-[300px] h-[300px] rounded-full bg-indigo-600 blur-[120px]" />
-        <div className="absolute top-40 right-1/4 w-[250px] h-[250px] rounded-full bg-violet-500 blur-[100px]" />
-      </div>
 
-      {/* Hero Section */}
-      <section className="relative max-w-7xl mx-auto pt-20 pb-16 px-6 text-center z-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold mb-6 bg-indigo-500/10 text-indigo-400 border-indigo-500/20 backdrop-blur-sm animate-pulse">
-          <Sparkles className="h-4.5 w-4.5 text-indigo-400" />
-          <span>Next-Gen AI Interview Trainer</span>
-        </div>
-        
-        <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-7xl leading-tight tracking-tight max-w-4xl mx-auto mb-6">
-          Nail Your Next Interview with{' '}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-500 to-fuchsia-500">
-            Real-Time AI feedback
-          </span>
-        </h1>
-        
-        <p className={`text-base sm:text-lg lg:text-xl max-w-xl mx-auto mb-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Scan your resume for ATS gaps, run realistic mock interview sessions, and get detailed AI feedback in minutes.
-        </p>
+      {/* Hero Section - New Component */}
+      <Hero />
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <Link
-            to="/register"
-            className="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
-          >
-            <span>Start Practice Free</span>
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-          <Link
-            to="/login"
-            className={`w-full sm:w-auto border font-bold px-8 py-4 rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 ${
-              theme === 'dark' 
-                ? 'border-dark-border text-gray-300 hover:bg-dark-hover hover:text-white' 
-                : 'border-light-border text-gray-700 hover:bg-light-hover hover:text-gray-900'
-            }`}
-          >
-            <Play className="h-4.5 w-4.5 text-indigo-500 fill-indigo-500" />
-            <span>Interactive Demo</span>
-          </Link>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="max-w-7xl mx-auto py-16 px-6 relative z-10 border-t border-dashed border-gray-500/20">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <h2 className="font-display font-extrabold text-2xl sm:text-4xl mb-4">
-            A Complete Tech Interview Toolkit
+      {/* Features Grid - Updated with 3D Cards */}
+      <section className="max-w-7xl mx-auto py-20 px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-2xl mx-auto mb-16"
+        >
+          <h2 className="font-display font-black text-3xl sm:text-5xl mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
+            Everything You Need to Succeed
           </h2>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Everything you need to benchmark your technical and communication skill sets against production benchmarks.
+          <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            A complete toolkit designed for students and early-career professionals preparing for technical interviews.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((feat) => {
-            const Icon = feat.icon;
-            return (
-              <div 
-                key={feat.title}
-                className={`glow-card p-6 border transition-all duration-300 flex flex-col justify-between ${
-                  theme === 'dark' ? 'bg-dark-card/50 border-dark-border' : 'bg-white border-light-border'
-                }`}
-              >
-                <div>
-                  <div className={`p-3 rounded-xl bg-gradient-to-tr ${feat.color} text-white w-12 h-12 flex items-center justify-center mb-6`}>
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="font-display font-bold text-lg mb-2">{feat.title}</h3>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {feat.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
+          {features.map((feat, index) => (
+            <FeatureCard
+              key={feat.title}
+              title={feat.title}
+              description={feat.description}
+              icon={feat.icon}
+              gradient={feat.gradient}
+              index={index}
+            />
+          ))}
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className={`py-20 px-6 relative border-t border-dashed border-gray-500/20 ${theme === 'dark' ? 'bg-dark-card/10' : 'bg-white'}`}>
+      <section className={`py-24 px-6 relative border-t border-gray-200 dark:border-gray-800 ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 to-black' : 'bg-gradient-to-b from-gray-50 to-white'}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-16">
-            <h2 className="font-display font-extrabold text-2xl sm:text-4xl mb-4">
-              How It Works
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-2xl mx-auto mb-16"
+          >
+            <h2 className="font-display font-black text-3xl sm:text-5xl mb-4">
+              <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>How It Works</span>
             </h2>
-            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-              Follow four simple steps to audit your skills, analyze metrics, and prepare for your loops.
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Four simple steps to transform your interview preparation and land your dream role.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((s, idx) => (
-              <div key={s.step} className="relative space-y-4">
+              <motion.div
+                key={s.step}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                className="relative space-y-4"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="font-display font-extrabold text-4xl bg-clip-text text-transparent bg-gradient-to-tr from-indigo-500 to-violet-500">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                    className="font-display font-extrabold text-5xl bg-gradient-to-br from-emerald-400 via-teal-500 to-purple-500 bg-clip-text text-transparent"
+                  >
                     {s.step}
-                  </div>
-                  <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-dark-border' : 'bg-gray-200'} ${idx === steps.length - 1 ? 'hidden lg:block lg:opacity-0' : ''}`} />
+                  </motion.div>
+                  {idx < steps.length - 1 && (
+                    <div className={`hidden lg:block h-px flex-1 bg-gradient-to-r from-emerald-500/50 to-transparent`} />
+                  )}
                 </div>
-                <h3 className="font-display font-bold text-lg">{s.title}</h3>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                <h3 className="font-display font-bold text-xl">{s.title}</h3>
+                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {s.desc}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -205,93 +174,131 @@ export default function LandingPage() {
 
 
       {/* Pricing Comparison */}
-      <section className={`py-16 px-6 border-t border-dashed border-gray-500/20 ${theme === 'dark' ? 'bg-dark-card/10' : 'bg-white'}`}>
+      <section className={`py-20 px-6 border-t border-gray-200 dark:border-gray-800 ${theme === 'dark' ? 'bg-black' : 'bg-white'}`}>
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-xl mx-auto mb-12">
-            <h2 className="font-display font-extrabold text-2xl sm:text-4xl mb-4">
-              Flexible Practice Tiers
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-2xl mx-auto mb-12"
+          >
+            <h2 className="font-display font-black text-3xl sm:text-5xl mb-4">
+              <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Simple, Transparent Pricing</span>
             </h2>
-            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-              Get started with free diagnostic practice, or unlock unlimited customization tools.
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Start free, upgrade when you're ready to unlock unlimited practice sessions.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free tier */}
-            <div className={`p-8 rounded-2xl border flex flex-col justify-between ${
-              theme === 'dark' ? 'bg-dark-card border-dark-border' : 'bg-white border-light-border'
-            }`}>
-              <div className="space-y-4">
-                <h3 className="font-display font-bold text-lg text-gray-400">Free Tier</h3>
-                <div className="font-display font-extrabold text-4xl">
-                  $0 <span className="text-sm font-normal text-gray-500">/ forever</span>
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -10 }}
+              className={`p-8 rounded-3xl border-2 flex flex-col justify-between transition-all duration-300 ${
+                theme === 'dark' ? 'bg-gray-900 border-gray-800 hover:border-gray-700' : 'bg-white border-gray-200 hover:border-gray-300 shadow-lg'
+              }`}
+            >
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-display font-bold text-lg text-gray-500 mb-2">Free Tier</h3>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-extrabold text-5xl">$0</span>
+                    <span className="text-sm font-medium text-gray-500">/ forever</span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500">Perfect for initial ATS resume scan diagnostic audits.</p>
-                <div className="space-y-2 pt-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>1 ATS Resume Compatibility Scan</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>3 Mock AI Interview Questions</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                    <span>Basic Text-Mode responses</span>
-                  </div>
+                <p className="text-sm text-gray-500">Perfect for exploring interview prep tools and getting started.</p>
+                <div className="space-y-3 pt-4">
+                  {[
+                    '1 ATS Resume Scan',
+                    '3 Mock Interview Sessions',
+                    'Basic Text-Mode Responses',
+                    'Performance Feedback'
+                  ].map((feature, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                      <span className="text-sm">{feature}</span>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
               <Link 
                 to="/register" 
-                className={`w-full text-center font-bold px-4 py-3 rounded-xl border mt-8 transition-all duration-200 ${
-                  theme === 'dark' ? 'border-dark-border hover:bg-dark-hover text-gray-300' : 'border-light-border hover:bg-light-hover text-gray-700'
+                className={`w-full text-center font-bold px-6 py-4 rounded-2xl border-2 mt-8 transition-all duration-300 ${
+                  theme === 'dark' ? 'border-gray-700 hover:bg-gray-800 text-gray-300' : 'border-gray-300 hover:bg-gray-100 text-gray-700'
                 }`}
               >
-                Sign Up Free
+                Get Started Free
               </Link>
-            </div>
+            </motion.div>
 
             {/* Pro tier */}
-            <div className="p-8 rounded-2xl border border-indigo-500/50 bg-gradient-to-b from-indigo-900/10 to-violet-950/10 dark:from-indigo-950/20 dark:to-transparent relative overflow-hidden flex flex-col justify-between">
-              <div className="absolute top-0 right-0 bg-indigo-500 text-white text-xs font-bold font-display px-3 py-1 rounded-bl-xl uppercase tracking-wider">
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              className="p-8 rounded-3xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent relative overflow-hidden flex flex-col justify-between shadow-2xl shadow-emerald-500/20"
+            >
+              <div className="absolute top-0 right-0 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold font-display px-4 py-1.5 rounded-bl-2xl uppercase tracking-wider">
                 Popular
               </div>
-              <div className="space-y-4">
-                <h3 className="font-display font-bold text-lg text-indigo-400 flex items-center gap-1.5">
-                  <Zap className="h-4 w-4 fill-indigo-400" />
-                  <span>Pro Member</span>
-                </h3>
-                <div className="font-display font-extrabold text-4xl">
-                  $19 <span className="text-sm font-normal text-gray-500">/ month</span>
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-5 w-5 text-emerald-400 fill-emerald-400" />
+                    <h3 className="font-display font-bold text-lg text-emerald-400">Pro Member</h3>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-extrabold text-5xl">$19</span>
+                    <span className="text-sm font-medium text-gray-500">/ month</span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500">Complete toolset for serious candidates in active search loops.</p>
-                <div className="space-y-2 pt-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-indigo-500" />
-                    <span>Unlimited ATS Resume Scans</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-indigo-500" />
-                    <span>Unlimited Mock Interviews</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-indigo-500" />
-                    <span>Simulated Voice Mode + Transcripts</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="h-4 w-4 text-indigo-500" />
-                    <span>Interactive Performance Score Analytics</span>
-                  </div>
+                <p className="text-sm text-gray-500">For serious candidates preparing for technical interviews at top companies.</p>
+                <div className="space-y-3 pt-4">
+                  {[
+                    'Unlimited ATS Resume Scans',
+                    'Unlimited Mock Interviews',
+                    'Voice Mode + Transcripts',
+                    'Advanced Analytics Dashboard',
+                    'Coding Sandbox Access',
+                    'Priority Support'
+                  ].map((feature, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className="flex items-center gap-3"
+                    >
+                      <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                      <span className="text-sm font-medium">{feature}</span>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-              <Link 
-                to="/register" 
-                className="w-full text-center bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold px-4 py-3 rounded-xl mt-8 transition-all duration-200 shadow-md shadow-indigo-500/20"
-              >
-                Go Pro Now
-              </Link>
-            </div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                <Link 
+                  to="/register" 
+                  className="block w-full text-center bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold px-6 py-4 rounded-2xl mt-8 transition-all duration-300 shadow-lg shadow-emerald-500/30"
+                >
+                  Upgrade to Pro
+                </Link>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </section>

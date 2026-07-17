@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { Sparkles, Sun, Moon, ArrowRight, Menu, X, Info, DollarSign, HelpCircle, Phone, LayoutDashboard, LogOut, Shield } from 'lucide-react';
 import Footer from '../components/Footer';
+import logoImg from '../assets/logo.jpg';
 
 export default function MainLayout({ children }) {
   const { user, logout, theme, toggleTheme } = useAuthStore();
@@ -61,9 +62,7 @@ export default function MainLayout({ children }) {
       }`}>
         {/* Left Side: Brand Logo */}
         <Link to="/" className="flex items-center gap-2 font-display font-extrabold text-xl tracking-tight">
-          <div className="bg-gradient-to-tr from-indigo-500 to-violet-500 p-1.5 rounded-lg text-white">
-            <Sparkles className="h-5 w-5" />
-          </div>
+          <img src={logoImg} alt="PrepAI Logo" className="h-8 w-8 rounded-lg object-cover" />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-500">
             PrepAI
           </span>
@@ -163,9 +162,7 @@ export default function MainLayout({ children }) {
           theme === 'dark' ? 'border-dark-border' : 'border-light-border'
         }`}>
           <Link to="/" className="flex items-center gap-2 font-display font-extrabold text-lg tracking-tight" onClick={() => setIsMenuOpen(false)}>
-            <div className="bg-gradient-to-tr from-indigo-500 to-violet-500 p-1 rounded-lg text-white">
-              <Sparkles className="h-4.5 w-4.5" />
-            </div>
+            <img src={logoImg} alt="PrepAI Logo" className="h-7 w-7 rounded-lg object-cover" />
             <span>PrepAI</span>
           </Link>
           <button

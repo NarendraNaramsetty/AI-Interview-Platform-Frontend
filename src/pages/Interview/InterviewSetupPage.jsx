@@ -519,69 +519,44 @@ export default function InterviewSetupPage() {
                 <span>Session Summary</span>
               </h3>
               <p className="text-[10px] text-gray-500 leading-relaxed">
-                Confirm your generated parameters below before booting the interviewer sandbox.
+                Confirm your generated parameters below before starting the interview.
               </p>
             </div>
 
-            <div className="space-y-4 pt-4 border-t border-light-border/40 dark:border-dark-border/40 text-xs">
+            <div className="space-y-4 pt-4 border-t border-light-border/40 dark:border-dark-border/40 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Target Role</span>
-                <span className="font-bold text-gray-900 dark:text-gray-100">{currentRoleObj.name}</span>
+                <span className="text-gray-600 dark:text-gray-400">Target Role</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{currentRoleObj.name}</span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Difficulty</span>
-                <span className="font-bold text-gray-900 dark:text-gray-100 capitalize">{config.difficulty}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Interview Mode</span>
-                <span className="font-bold text-emerald-500 capitalize flex items-center gap-1">
-                  {config.mode === 'text' ? <Keyboard className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+                <span className="text-gray-600 dark:text-gray-400">Interview Mode</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400 capitalize flex items-center gap-1.5">
+                  {config.mode === 'text' ? <Keyboard className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                   {config.mode}
                 </span>
               </div>
+              
               <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Mock Duration</span>
-                <span className="font-bold text-gray-900 dark:text-gray-100">{getEstimatedDuration()}</span>
+                <span className="text-gray-600 dark:text-gray-400">Mock Duration</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{getEstimatedDuration()}</span>
               </div>
+              
               <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Score Goal</span>
-                <span className="font-bold text-emerald-500">85% minimum</span>
+                <span className="text-gray-600 dark:text-gray-400">Score Goal</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">85% minimum</span>
               </div>
+              
               <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">Est. Time</span>
-                <span className="font-bold text-gray-900 dark:text-gray-100">{getEstimatedDuration()}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 dark:text-gray-400">AI Adaptivity</span>
-                <span className="font-bold text-emerald-500">Enabled</span>
-              </div>
-            </div>
-
-            {/* Circular Progress & readiness */}
-            <div className="pt-4 border-t border-light-border/40 dark:border-dark-border/40 flex items-center justify-between gap-4">
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Ready Score</span>
-                <span className="text-lg font-extrabold text-gray-900 dark:text-gray-100 block">
-                  {calculateReadyScore()}%
-                </span>
-              </div>
-              {/* Progress Circle Visual */}
-              <div className="relative h-12 w-12 shrink-0">
-                <svg className="h-full w-full transform -rotate-90">
-                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-gray-200 dark:text-dark-border" />
-                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-emerald-500 transition-all duration-300" strokeDasharray="125" strokeDashoffset={125 - (125 * calculateReadyScore()) / 100} />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-emerald-500">
-                  {calculateReadyScore()}%
-                </span>
+                <span className="text-gray-600 dark:text-gray-400">AI Adaptivity</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Enabled</span>
               </div>
             </div>
 
             {/* Launch CTA */}
             <button
               onClick={handleLaunch}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 mt-4"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 mt-4"
             >
               <Play className="h-4 w-4 fill-white" />
               <span>Start AI Interview</span>

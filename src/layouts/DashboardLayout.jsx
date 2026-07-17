@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import NotificationPopup from '../components/NotificationPopup';
+import logoImg from '../assets/logo.jpg';
 import { 
   LayoutDashboard, 
   UploadCloud, 
@@ -29,6 +30,7 @@ export default function DashboardLayout({ children }) {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false);
   const [isNotificationPopupOpen, setIsNotificationPopupOpen] = useState(false);
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   // Close sidebar on mobile routes change
   useEffect(() => {
@@ -80,9 +82,7 @@ export default function DashboardLayout({ children }) {
         {/* Brand Header */}
         <div className={`h-16 px-6 flex items-center justify-between border-b ${theme === 'dark' ? 'border-dark-border' : 'border-light-border'}`}>
           <Link to="/dashboard" className="flex items-center gap-2 font-display font-extrabold text-xl tracking-tight">
-            <div className="bg-gradient-to-tr from-indigo-500 to-violet-500 p-1.5 rounded-lg text-white">
-              <Sparkles className="h-5 w-5" />
-            </div>
+            <img src={logoImg} alt="PrepAI Logo" className="h-8 w-8 rounded-lg object-cover" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-violet-500">
               PrepAI
             </span>
@@ -200,7 +200,13 @@ export default function DashboardLayout({ children }) {
               }`}
             >
               <Bell className="h-4.5 w-4.5" />
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-dark-card animate-pulse" />
+              {unreadNotificationsCount > 0 ? (
+                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white dark:ring-dark-card animate-pulse">
+                  {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                </span>
+              ) : (
+                <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+              )}
             </button>
 
             {/* Quick action button */}
@@ -218,6 +224,7 @@ export default function DashboardLayout({ children }) {
         <NotificationPopup 
           isOpen={isNotificationPopupOpen} 
           onClose={() => setIsNotificationPopupOpen(false)}
+          onUnreadCountChange={setUnreadNotificationsCount}
         />
 
         <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">

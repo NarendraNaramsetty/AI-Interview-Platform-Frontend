@@ -331,7 +331,7 @@ export default function CodingPage() {
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   1. Select Coding Language
                 </h3>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {['Python', 'JavaScript', 'Java', 'C++', 'Go', 'TypeScript'].map((lang) => {
                     const isSelected = selectedLanguage === lang.toLowerCase();
                     return (
@@ -343,7 +343,7 @@ export default function CodingPage() {
                           setLanguage(lang.toLowerCase() === 'c++' ? 'cpp' : lang.toLowerCase());
                           setSelectedSkills([lang]);
                         }}
-                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 ${
+                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 text-center ${
                           isSelected 
                             ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-sm' 
                             : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-400'
@@ -361,7 +361,7 @@ export default function CodingPage() {
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                   2. Number of Questions
                 </h3>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[1, 2, 3, 5, 10].map((count) => {
                     const isSelected = questionCount === count;
                     return (
@@ -369,7 +369,7 @@ export default function CodingPage() {
                         key={count}
                         type="button"
                         onClick={() => setQuestionCount(count)}
-                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 ${
+                        className={`text-xs px-5 py-3 rounded-2xl border font-bold transition-all duration-200 text-center ${
                           isSelected 
                             ? 'border-indigo-500 bg-indigo-500/10 text-indigo-400 shadow-sm' 
                             : 'border-light-border dark:border-dark-border hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-600 dark:text-gray-400'
