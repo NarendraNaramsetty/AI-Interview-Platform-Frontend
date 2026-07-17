@@ -230,11 +230,13 @@ export const useInterviewStore = create((set, get) => ({
 
       let evalResponse = null;
       try {
-        evalResponse = await feedback.generate({ interview_id: sessionId });
+        const genRes = await feedback.generate({ interview_id: sessionId });
+        evalResponse = genRes?.data || genRes || {};
       } catch (evalError) {
         console.error('Failed to generate full evaluation details, fetching details:', evalError);
         try {
-          evalResponse = await feedback.detail(sessionId);
+          const detailRes = await feedback.detail(sessionId);
+          evalResponse = detailRes?.data || detailRes || {};
         } catch (detailErr) {
           console.error('Failed to load detail evaluation:', detailErr);
         }
@@ -288,6 +290,83 @@ export const useInterviewStore = create((set, get) => ({
     } catch (error) {
       set({ isGeneratingReport: false });
       console.error(error);
+    }
+  },
+
+  reviewReport: async (sessionId, overallScore, technicalScore, communicationScore, confidenceScore) => {
+    try {
+      const detailResponse = await interview.detail(sessionId);
+      const detail = detailResponse?.data || detailResponse || {};
+      
+      let evalData = null;
+      try {
+        const detailRes = await feedback.detail(sessionId);
+        evalData = detailRes?.data || detailRes || {};
+      } catch (e) {
+        console.error('Failed to get detail evaluation from database, generating instead:', e);
+        try {
+          const genResponse = await feedback.generate({ interview_id: sessionId });
+          evalData = genResponse?.data || genResponse || {};
+        } catch (genError) {
+          console.error('Failed to generate evaluation:', genError);
+        }
+      }
+
+      const techEval = evalData?.technical_evaluation || {};
+      const commEval = evalData?.communication_evaluation || {};
+      const hrEval = evalData?.hr_evaluation || {};
+      const overallEval = evalData?.overall_evaluation || {};
+
+      const currentReport = {
+        overallScore: overallEval?.overall_score ?? overallScore ?? 0,
+        technicalScore: techEval?.technical_score ?? technicalScore ?? 0,
+        communicationScore: commEval?.communication_score ?? communicationScore ?? 0,
+        confidenceScore: hrEval?.confidence_score ?? confidenceScore ?? 0,
+        strengths: techEval?.strengths || ["Demonstrated professional communication and structure."],
+        weaknesses: techEval?.weaknesses || ["Could expand on edge cases or code testability."],
+        recommendedTopics: techEval?.recommendations || ["Advanced Component Lifecycle Design Patterns"],
+        feedbackSummary: overallEval?.final_feedback || '',
+        constructiveAdvice: overallEval?.next_learning_plan || '',
+        idealSample: '',
+        matchedKeywords: [],
+        unmatchedKeywords: []
+      };
+
+      const answers = (detail?.answers || []).map(ans => ({
+        questionText: ans.question?.question_text || 'Interview Question',
+        answerText: ans.answer_text,
+        evaluation: {
+          overallScore: ans.evaluation?.score || 0,
+          feedbackSummary: ans.evaluation?.feedback || 'Reviewed by AI agent.',
+          constructiveAdvice: ans.evaluation?.grammar_suggestions || '',
+          idealSample: ans.question?.expected_answer_placeholder || '',
+          matchedKeywords: [],
+          unmatchedKeywords: []
+        }
+      }));
+
+      set({
+        currentReport,
+        answers,
+        isFinished: true
+      });
+      return true;
+    } catch (error) {
+      console.error('Failed to review report:', error);
+      set({
+        currentReport: {
+          overallScore: overallScore || 0,
+          technicalScore: technicalScore || 0,
+          communicationScore: communicationScore || 0,
+          confidenceScore: confidenceScore || 0,
+          strengths: ["Demonstrated structure and consistency."],
+          weaknesses: ["Could expand on edge cases."],
+          recommendedTopics: []
+        },
+        answers: [],
+        isFinished: true
+      });
+      return true;
     }
   },
 

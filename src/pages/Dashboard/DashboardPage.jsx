@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useResumeStore } from '../../store/useResumeStore';
 import { useInterviewStore } from '../../store/useInterviewStore';
@@ -26,17 +26,21 @@ import {
   Award,
   BookOpen,
   ArrowUpRight,
-  ListTodo
+  ListTodo,
+  Loader2
 } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, theme } = useAuthStore();
   const { parsedData, hydrateResume } = useResumeStore();
-  const { history, loadHistory } = useInterviewStore();
+  const { history, loadHistory, reviewReport } = useInterviewStore();
   const { pushToast } = useToastStore();
+  const navigate = useNavigate();
+
   const [dashboardStats, setDashboardStats] = useState(null);
   const [dashboardActivity, setDashboardActivity] = useState([]);
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(false);
+  const [loadingDetailsId, setLoadingDetailsId] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -49,8 +53,9 @@ export default function DashboardPage() {
     ])
       .then(([stats, activity]) => {
         if (!mounted) return;
-        setDashboardStats(stats || null);
-        setDashboardActivity(Array.isArray(activity) ? activity : activity?.items || activity?.results || []);
+        setDashboardStats(stats?.data || null);
+        const actList = activity?.data || [];
+        setDashboardActivity(Array.isArray(actList) ? actList : actList.items || actList.results || []);
       })
       .catch((error) => {
         if (!mounted) return;
@@ -61,6 +66,15 @@ export default function DashboardPage() {
       });
     return () => { mounted = false; };
   }, [pushToast, hydrateResume, loadHistory]);
+
+  const handleReviewReport = async (item) => {
+    setLoadingDetailsId(item.id);
+    const success = await reviewReport(item.id, item.overallScore, item.technicalScore, item.communicationScore, item.confidenceScore);
+    setLoadingDetailsId(null);
+    if (success) {
+      navigate('/interview/results');
+    }
+  };
 
   const completedMocks = history.length;
   const avgOverallScore = completedMocks > 0 
@@ -463,7 +477,7 @@ export default function DashboardPage() {
       <div className={`p-6 rounded-xl border ${cardStyle}`}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display font-bold text-lg">Recent Mocks History</h3>
-          <Link to="/history" className="text-xs font-semibold text-green-500 hover:text-green-600 flex items-center gap-0.5">
+          <Link to="/interview-history" className="text-xs font-semibold text-green-500 hover:text-green-600 flex items-center gap-0.5">
             <span>View All</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -497,8 +511,19 @@ export default function DashboardPage() {
                       </span>
                     </td>
                     <td className="py-3 text-right">
-                      <button className="text-xs text-green-500 hover:text-green-600 font-semibold">
-                        View Details
+                      <button
+                        onClick={() => handleReviewReport(item)}
+                        disabled={loadingDetailsId !== null}
+                        className="text-xs text-green-500 hover:text-green-650 dark:hover:text-green-400 font-semibold disabled:opacity-50 inline-flex items-center gap-1.5"
+                      >
+                        {loadingDetailsId === item.id ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <span>Loading...</span>
+                          </>
+                        ) : (
+                          <span>View Details</span>
+                        )}
                       </button>
                     </td>
                   </tr>

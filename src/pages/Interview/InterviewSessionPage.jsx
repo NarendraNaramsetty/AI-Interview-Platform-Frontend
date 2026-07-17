@@ -69,6 +69,22 @@ export default function InterviewSessionPage() {
     return () => clearInterval(interval);
   }, [isStarted, isPaused, isFinished, tickTimer]);
 
+  // Cleanup speech recognition and timers on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      if (recordingIntervalRef.current) {
+        clearInterval(recordingIntervalRef.current);
+      }
+    };
+  }, []);
+
   // Handle Speech Recognition Setup
   const startSpeechRecognition = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;

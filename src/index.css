@@ -175,3 +175,36 @@ body {
   box-shadow: 0 0 40px rgba(34, 197, 94, 0.4), 0 0 80px rgba(74, 222, 128, 0.2);
 }
 
+/* Global Mobile Responsiveness Overrides */
+@media (max-width: 640px) {
+  /* Reduce content layout margins on mobile */
+  main {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Expand max-width containers to full screen */
+  .max-w-7xl {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+  }
+
+  /* Scale down card paddings from p-6/p-5 to p-4 (16px) */
+  main div[class*="p-6"], 
+  main div[class*="p-5"],
+  main div[class*="p-4"] {
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Tighten vertical gap spacings */
+  .space-y-10, .space-y-8, .space-y-6 {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+}
+

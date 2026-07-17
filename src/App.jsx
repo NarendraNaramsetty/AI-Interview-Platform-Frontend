@@ -7,37 +7,37 @@ import MainLayout from './layouts/MainLayout';
 import DashboardLayout from './layouts/DashboardLayout';
 
 // Public Pages
-import LandingPage from './pages/Public/LandingPage';
-import LoginPage from './pages/Auth/LoginPage';
-import RegisterPage from './pages/Auth/RegisterPage';
-import PricingPage from './pages/Public/PricingPage';
-import Contact from './pages/Public/Contact';
-import About from './pages/Public/About';
-import PrivacyPolicy from './pages/Public/PrivacyPolicy';
-import Terms from './pages/Public/Terms';
-import FAQ from './pages/Public/FAQ';
-import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
-import VerifyEmailPage from './pages/Auth/VerifyEmailPage';
+const LandingPage = React.lazy(() => import('./pages/Public/LandingPage'));
+const LoginPage = React.lazy(() => import('./pages/Auth/LoginPage'));
+const RegisterPage = React.lazy(() => import('./pages/Auth/RegisterPage'));
+const PricingPage = React.lazy(() => import('./pages/Public/PricingPage'));
+const Contact = React.lazy(() => import('./pages/Public/Contact'));
+const About = React.lazy(() => import('./pages/Public/About'));
+const PrivacyPolicy = React.lazy(() => import('./pages/Public/PrivacyPolicy'));
+const Terms = React.lazy(() => import('./pages/Public/Terms'));
+const FAQ = React.lazy(() => import('./pages/Public/FAQ'));
+const ForgotPasswordPage = React.lazy(() => import('./pages/Auth/ForgotPasswordPage'));
+const ResetPasswordPage = React.lazy(() => import('./pages/Auth/ResetPasswordPage'));
+const VerifyEmailPage = React.lazy(() => import('./pages/Auth/VerifyEmailPage'));
 
 // Authenticated Dashboard Pages
-import DashboardPage from './pages/Dashboard/DashboardPage';
-import ResumeUploadPage from './pages/Interview/ResumeUploadPage';
-import InterviewSetupPage from './pages/Interview/InterviewSetupPage';
-import InterviewSessionPage from './pages/Interview/InterviewSessionPage';
-import ResultsPage from './pages/Interview/ResultsPage';
-import AnalyticsPage from './pages/Analytics/AnalyticsPage';
-import HistoryPage from './pages/Interview/HistoryPage';
-import ProfilePage from './pages/Dashboard/ProfilePage';
-import CodingPage from './pages/Coding/CodingPage';
-import RoadmapPage from './pages/Roadmap/RoadmapPage';
-import ChatBot from './pages/Chat/ChatBot';
-import SettingsPage from './pages/Dashboard/SettingsPage';
+const DashboardPage = React.lazy(() => import('./pages/Dashboard/DashboardPage'));
+const ResumeUploadPage = React.lazy(() => import('./pages/Interview/ResumeUploadPage'));
+const InterviewSetupPage = React.lazy(() => import('./pages/Interview/InterviewSetupPage'));
+const InterviewSessionPage = React.lazy(() => import('./pages/Interview/InterviewSessionPage'));
+const ResultsPage = React.lazy(() => import('./pages/Interview/ResultsPage'));
+const AnalyticsPage = React.lazy(() => import('./pages/Analytics/AnalyticsPage'));
+const HistoryPage = React.lazy(() => import('./pages/Interview/HistoryPage'));
+const ProfilePage = React.lazy(() => import('./pages/Dashboard/ProfilePage'));
+const CodingPage = React.lazy(() => import('./pages/Coding/CodingPage'));
+const RoadmapPage = React.lazy(() => import('./pages/Roadmap/RoadmapPage'));
+const ChatBot = React.lazy(() => import('./pages/Chat/ChatBot'));
+const SettingsPage = React.lazy(() => import('./pages/Dashboard/SettingsPage'));
 
 // Phase 2 New Pages
-import InterviewHistoryPage from './pages/Interview/InterviewHistoryPage';
-import PerformanceAnalyticsPage from './pages/Analytics/PerformanceAnalyticsPage';
-import NotificationsPage from './pages/Dashboard/NotificationsPage';
+const InterviewHistoryPage = React.lazy(() => import('./pages/Interview/InterviewHistoryPage'));
+const PerformanceAnalyticsPage = React.lazy(() => import('./pages/Analytics/PerformanceAnalyticsPage'));
+const NotificationsPage = React.lazy(() => import('./pages/Dashboard/NotificationsPage'));
 
 // Isolated Admin Components
 import AdminLoginPage from './admin_panel/components/auth/login/Login.jsx';
@@ -69,6 +69,12 @@ function AdminProtectedRoute({ children }) {
   return children;
 }
 
+const RouteLoadingSpinner = () => (
+  <div className="h-screen w-screen flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
+    <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-500/20 border-t-indigo-500"></div>
+  </div>
+);
+
 export default function App() {
   const { initTheme } = useAuthStore();
 
@@ -92,55 +98,57 @@ export default function App() {
 
   return (
     <Router>
-      <Routes>
-        
-        {/* Public Landing & Authentication */}
-        <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
-        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-        <Route path="/pricing" element={<PublicRoute><PricingPage /></PublicRoute>} />
-        <Route path="/contact" element={<PublicRoute><Contact /></PublicRoute>} />
-        <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
-        <Route path="/privacy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
-        <Route path="/terms" element={<PublicRoute><Terms /></PublicRoute>} />
-        <Route path="/faq" element={<PublicRoute><FAQ /></PublicRoute>} />
-        <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
-        <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
-        <Route path="/verify-email" element={<PublicRoute><VerifyEmailPage /></PublicRoute>} />
-        
-        {/* Protected Dashboard Channels */}
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-        <Route path="/resume-upload" element={<ProtectedRoute><ResumeUploadPage /></ProtectedRoute>} />
-        <Route path="/interview/setup" element={<ProtectedRoute><InterviewSetupPage /></ProtectedRoute>} />
-        <Route path="/interview/session" element={<ProtectedRoute><InterviewSessionPage /></ProtectedRoute>} />
-        <Route path="/interview/results" element={<ProtectedRoute><ResultsPage /></ProtectedRoute>} />
-        <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
-        <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/coding" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
-        <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
-        <Route path="/chatbot" element={<ProtectedRoute><ChatBot /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+      <React.Suspense fallback={<RouteLoadingSpinner />}>
+        <Routes>
+          
+          {/* Public Landing & Authentication */}
+          <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+          <Route path="/pricing" element={<PublicRoute><PricingPage /></PublicRoute>} />
+          <Route path="/contact" element={<PublicRoute><Contact /></PublicRoute>} />
+          <Route path="/about" element={<PublicRoute><About /></PublicRoute>} />
+          <Route path="/privacy" element={<PublicRoute><PrivacyPolicy /></PublicRoute>} />
+          <Route path="/terms" element={<PublicRoute><Terms /></PublicRoute>} />
+          <Route path="/faq" element={<PublicRoute><FAQ /></PublicRoute>} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+          <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
+          <Route path="/verify-email" element={<PublicRoute><VerifyEmailPage /></PublicRoute>} />
+          
+          {/* Protected Dashboard Channels */}
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/resume-upload" element={<ProtectedRoute><ResumeUploadPage /></ProtectedRoute>} />
+          <Route path="/interview/setup" element={<ProtectedRoute><InterviewSetupPage /></ProtectedRoute>} />
+          <Route path="/interview/session" element={<ProtectedRoute><InterviewSessionPage /></ProtectedRoute>} />
+          <Route path="/interview/results" element={<ProtectedRoute><ResultsPage /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
+          <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/coding" element={<ProtectedRoute><CodingPage /></ProtectedRoute>} />
+          <Route path="/roadmap" element={<ProtectedRoute><RoadmapPage /></ProtectedRoute>} />
+          <Route path="/chatbot" element={<ProtectedRoute><ChatBot /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
 
-        {/* Phase 2 Protected Pages */}
-        <Route path="/interview-history" element={<ProtectedRoute><InterviewHistoryPage /></ProtectedRoute>} />
-        <Route path="/performance-analytics" element={<ProtectedRoute><PerformanceAnalyticsPage /></ProtectedRoute>} />
-        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+          {/* Phase 2 Protected Pages */}
+          <Route path="/interview-history" element={<ProtectedRoute><InterviewHistoryPage /></ProtectedRoute>} />
+          <Route path="/performance-analytics" element={<ProtectedRoute><PerformanceAnalyticsPage /></ProtectedRoute>} />
+          <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
 
-        {/* Isolated Admin Portal */}
-        <Route path="/adminlogin" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
-        <Route path="/admin/*" element={
-          <AdminProtectedRoute>
-            <AdminAuthProvider>
-              <AdminMainLayout />
-            </AdminAuthProvider>
-          </AdminProtectedRoute>
-        } />
+          {/* Isolated Admin Portal */}
+          <Route path="/adminlogin" element={<AdminAuthProvider><AdminLoginPage /></AdminAuthProvider>} />
+          <Route path="/admin/*" element={
+            <AdminProtectedRoute>
+              <AdminAuthProvider>
+                <AdminMainLayout />
+              </AdminAuthProvider>
+            </AdminProtectedRoute>
+          } />
 
-        {/* Fallback Catch-All Redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Fallback Catch-All Redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
 
-      </Routes>
+        </Routes>
+      </React.Suspense>
     </Router>
   );
 }

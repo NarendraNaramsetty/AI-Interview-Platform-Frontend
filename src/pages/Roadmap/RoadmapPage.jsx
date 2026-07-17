@@ -46,6 +46,19 @@ import { useToastStore } from '../../store/useToastStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { roadmap } from '../../services/roadmap';
 
+const careerOptions = [
+  "Frontend Developer", "Backend Developer", "Full Stack Developer", "React Developer",
+  "Node.js Developer", "Java Developer", "Python Developer", "MERN Stack Developer",
+  "MEAN Stack Developer", "DevOps Engineer", "Cloud Engineer", "Data Engineer",
+  "Data Analyst", "Data Scientist", "AI Engineer", "Machine Learning Engineer",
+  "Prompt Engineer", "Android Developer", "Flutter Developer", "Cyber Security Engineer",
+  "Software Engineer", "QA Engineer", "System Design Engineer"
+];
+
+const companiesList = ['General/Any Company', 'Google', 'Amazon', 'Microsoft', 'Meta', 'Netflix', 'Adobe', 'Atlassian', 'Uber', 'Walmart', 'Service Based Company', 'Startup'];
+
+const learningStyleOptions = ['Reading Documentation', 'Practice Problems', 'Interview Questions'];
+
 export default function RoadmapPage() {
   const { theme } = useAuthStore();
   const { pushToast } = useToastStore();
@@ -86,19 +99,6 @@ export default function RoadmapPage() {
   const [aiMentorLog, setAiMentorLog] = useState([]);
   const [aiMentorQuery, setAiMentorQuery] = useState('');
   const [aiMentorLoading, setAiMentorLoading] = useState(false);
-
-  const careerOptions = [
-    "Frontend Developer", "Backend Developer", "Full Stack Developer", "React Developer",
-    "Node.js Developer", "Java Developer", "Python Developer", "MERN Stack Developer",
-    "MEAN Stack Developer", "DevOps Engineer", "Cloud Engineer", "Data Engineer",
-    "Data Analyst", "Data Scientist", "AI Engineer", "Machine Learning Engineer",
-    "Prompt Engineer", "Android Developer", "Flutter Developer", "Cyber Security Engineer",
-    "Software Engineer", "QA Engineer", "System Design Engineer"
-  ];
-
-  const companiesList = ['General/Any Company', 'Google', 'Amazon', 'Microsoft', 'Meta', 'Netflix', 'Adobe', 'Atlassian', 'Uber', 'Walmart', 'Service Based Company', 'Startup'];
-
-  const learningStyleOptions = ['Reading Documentation', 'Practice Problems', 'Interview Questions'];
 
   const fetchActiveRoadmap = () => {
     setIsLoading(true);

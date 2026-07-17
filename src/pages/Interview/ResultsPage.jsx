@@ -10,11 +10,74 @@ import {
   ChevronUp, 
   CheckCircle, 
   AlertTriangle, 
+  AlertCircle,
   TrendingUp, 
   Sparkles, 
   ArrowRight,
   BookOpen
 } from 'lucide-react';
+
+function ScoreRing({ score, colorClass, strokeColor, trackColor, label, icon: Icon, theme }) {
+  const radius = 32;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+
+  return (
+    <div className={`p-6 rounded-2xl border transition-all duration-300 transform hover:scale-[1.02] flex flex-col items-center justify-center relative overflow-hidden backdrop-blur-md ${
+      theme === 'dark' 
+        ? 'bg-dark-card/75 border-dark-border text-gray-200 hover:shadow-lg hover:shadow-indigo-500/5 hover:border-indigo-500/30' 
+        : 'bg-white border-light-border text-gray-800 shadow-md shadow-gray-100 hover:shadow-lg hover:shadow-indigo-500/5 hover:border-indigo-500/20'
+    }`}>
+      {/* Background Glow */}
+      <div className={`absolute -right-8 -bottom-8 w-24 h-24 rounded-full blur-2xl opacity-10 ${
+        colorClass.includes('indigo') ? 'bg-indigo-500' :
+        colorClass.includes('green') ? 'bg-emerald-500' :
+        colorClass.includes('pink') ? 'bg-pink-500' : 'bg-blue-500'
+      }`} />
+      
+      <div className="relative h-20 w-20 flex items-center justify-center mb-3">
+        <svg className="absolute w-full h-full transform -rotate-90">
+          {/* Background Track */}
+          <circle
+            cx="40"
+            cy="40"
+            r={radius}
+            className={`${trackColor} stroke-current`}
+            strokeWidth="5.5"
+            fill="transparent"
+          />
+          {/* Fill Track */}
+          <circle
+            cx="40"
+            cy="40"
+            r={radius}
+            className={`${strokeColor} stroke-current transition-all duration-1000 ease-out`}
+            strokeWidth="5.5"
+            fill="transparent"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+          />
+        </svg>
+        {/* Inner Text with Icon */}
+        <div className="flex flex-col items-center justify-center z-10">
+          <span className={`text-lg font-extrabold font-display leading-none ${colorClass}`}>{score}%</span>
+          {Icon && <Icon className={`h-3 w-3 mt-1 opacity-75 ${colorClass}`} />}
+        </div>
+      </div>
+      <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold text-center mb-1.5">{label}</span>
+      
+      {/* Mini Rating Tag */}
+      <span className={`text-[8px] font-bold px-2 py-0.5 rounded-full ${
+        score >= 80 ? 'bg-emerald-500/10 text-emerald-500 dark:text-emerald-400' : 
+        score >= 60 ? 'bg-amber-500/10 text-amber-500 dark:text-amber-400' : 
+        'bg-rose-500/10 text-rose-500 dark:text-rose-400'
+      }`}>
+        {score >= 80 ? 'Excellent' : score >= 60 ? 'Passing' : 'Needs Work'}
+      </span>
+    </div>
+  );
+}
 
 export default function ResultsPage() {
   const { theme } = useAuthStore();
@@ -37,16 +100,16 @@ export default function ResultsPage() {
   };
 
   const cardStyle = theme === 'dark' 
-    ? 'bg-dark-card border-dark-border text-gray-200' 
-    : 'bg-white border-light-border text-gray-800 shadow-sm';
+    ? 'bg-dark-card border-dark-border text-gray-200 shadow-lg shadow-black/10' 
+    : 'bg-white border-light-border text-gray-800 shadow-md shadow-gray-100/50';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-extrabold text-3xl">Interview Evaluation</h2>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <h2 className="font-display font-extrabold text-3xl tracking-tight bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Interview Evaluation</h2>
+          <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
             Review your technical and communication performance metrics compiled by PrepAI.
           </p>
         </div>
@@ -55,7 +118,7 @@ export default function ResultsPage() {
             resetInterview();
             navigate('/dashboard');
           }}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all duration-200"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all duration-200 shadow-md shadow-indigo-600/10 hover:shadow-indigo-600/20 hover:scale-[1.01]"
         >
           Back to Dashboard
         </button>
@@ -63,53 +126,56 @@ export default function ResultsPage() {
 
       {/* Metric Cards row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        
-        {/* Overall score */}
-        <div className={`p-6 rounded-2xl border text-center ${cardStyle} flex flex-col items-center justify-center`}>
-          <div className="h-20 w-20 rounded-full border-4 border-indigo-500/10 border-t-indigo-500 flex items-center justify-center font-bold font-display text-xl text-indigo-400 mb-3">
-            {currentReport.overallScore}%
-          </div>
-          <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Overall Readiness</span>
-        </div>
-
-        {/* Technical score */}
-        <div className={`p-6 rounded-2xl border text-center ${cardStyle} flex flex-col items-center justify-center`}>
-          <div className="h-20 w-20 rounded-full border-4 border-green-500/10 border-t-green-500 flex items-center justify-center font-bold font-display text-xl text-green-400 mb-3">
-            {currentReport.technicalScore}%
-          </div>
-          <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Technical Score</span>
-        </div>
-
-        {/* Communication score */}
-        <div className={`p-6 rounded-2xl border text-center ${cardStyle} flex flex-col items-center justify-center`}>
-          <div className="h-20 w-20 rounded-full border-4 border-pink-500/10 border-t-pink-500 flex items-center justify-center font-bold font-display text-xl text-pink-400 mb-3">
-            {currentReport.communicationScore}%
-          </div>
-          <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Communication</span>
-        </div>
-
-        {/* Confidence score */}
-        <div className={`p-6 rounded-2xl border text-center ${cardStyle} flex flex-col items-center justify-center`}>
-          <div className="h-20 w-20 rounded-full border-4 border-blue-500/10 border-t-blue-500 flex items-center justify-center font-bold font-display text-xl text-blue-400 mb-3">
-            {currentReport.confidenceScore}%
-          </div>
-          <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Confidence Rating</span>
-        </div>
-
+        <ScoreRing
+          score={currentReport.overallScore}
+          colorClass="text-indigo-500 dark:text-indigo-400"
+          strokeColor="text-indigo-500 dark:text-indigo-400"
+          trackColor="text-indigo-500/10 dark:text-indigo-500/5"
+          label="Overall Readiness"
+          icon={Trophy}
+          theme={theme}
+        />
+        <ScoreRing
+          score={currentReport.technicalScore}
+          colorClass="text-emerald-500 dark:text-emerald-400"
+          strokeColor="text-emerald-500 dark:text-emerald-400"
+          trackColor="text-emerald-500/10 dark:text-emerald-500/5"
+          label="Technical Score"
+          icon={Award}
+          theme={theme}
+        />
+        <ScoreRing
+          score={currentReport.communicationScore}
+          colorClass="text-pink-500 dark:text-pink-400"
+          strokeColor="text-pink-500 dark:text-pink-400"
+          trackColor="text-pink-500/10 dark:text-pink-500/5"
+          label="Communication"
+          icon={TrendingUp}
+          theme={theme}
+        />
+        <ScoreRing
+          score={currentReport.confidenceScore}
+          colorClass="text-blue-500 dark:text-blue-400"
+          strokeColor="text-blue-500 dark:text-blue-400"
+          trackColor="text-blue-500/10 dark:text-blue-500/5"
+          label="Confidence Rating"
+          icon={Sparkles}
+          theme={theme}
+        />
       </div>
 
       {/* Aggregate Strengths and weaknesses */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Strengths */}
-        <div className={`p-6 rounded-2xl border ${cardStyle}`}>
-          <h4 className="font-display font-bold text-base mb-4 text-green-400 flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-500" />
+        <div className={`p-6 rounded-2xl border border-l-4 border-l-emerald-500/80 transition-all hover:shadow-md ${cardStyle}`}>
+          <h4 className="font-display font-bold text-sm mb-4 text-emerald-500 dark:text-emerald-400 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-emerald-500" />
             <span>Key Strengths Highlighted</span>
           </h4>
           <ul className="space-y-3">
             {currentReport.strengths.map((str, idx) => (
-              <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+              <li key={idx} className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed flex items-start gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
                 <span>{str}</span>
               </li>
             ))}
@@ -117,15 +183,15 @@ export default function ResultsPage() {
         </div>
 
         {/* Weaknesses */}
-        <div className={`p-6 rounded-2xl border ${cardStyle}`}>
-          <h4 className="font-display font-bold text-base mb-4 text-red-400 flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
+        <div className={`p-6 rounded-2xl border border-l-4 border-l-rose-500/80 transition-all hover:shadow-md ${cardStyle}`}>
+          <h4 className="font-display font-bold text-sm mb-4 text-rose-500 dark:text-rose-400 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-rose-500" />
             <span>Improvement Opportunities</span>
           </h4>
           <ul className="space-y-3">
             {currentReport.weaknesses.map((weak, idx) => (
-              <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+              <li key={idx} className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed flex items-start gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-1.5 flex-shrink-0" />
                 <span>{weak}</span>
               </li>
             ))}

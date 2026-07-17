@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInterviewStore } from '../../store/useInterviewStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -13,85 +13,27 @@ import {
   TrendingUp,
   Award,
   Sparkles,
-  FileText
+  FileText,
+  Loader2
 } from 'lucide-react';
 
 export default function HistoryPage() {
   const { theme } = useAuthStore();
-  const { history } = useInterviewStore();
+  const { history, reviewReport } = useInterviewStore();
   const navigate = useNavigate();
+  const [loadingReportId, setLoadingReportId] = useState(null);
 
   const handleReviewReport = async (sessionItem) => {
-    try {
-      const detail = await interview.detail(sessionItem.id);
-      
-      let evalData = null;
-      try {
-        evalData = await feedback.detail(sessionItem.id);
-      } catch (e) {
-        console.error('Failed to get detail evaluation from database, generating instead:', e);
-        try {
-          evalData = await feedback.generate({ interview_id: sessionItem.id });
-        } catch (genError) {
-          console.error('Failed to generate evaluation:', genError);
-        }
-      }
-
-      const techEval = evalData?.technical_evaluation || {};
-      const commEval = evalData?.communication_evaluation || {};
-      const hrEval = evalData?.hr_evaluation || {};
-      const overallEval = evalData?.overall_evaluation || {};
-
-      const currentReport = {
-        overallScore: overallEval?.overall_score ?? sessionItem.overallScore ?? 0,
-        technicalScore: techEval?.technical_score ?? sessionItem.technicalScore ?? 0,
-        communicationScore: commEval?.communication_score ?? sessionItem.communicationScore ?? 0,
-        confidenceScore: hrEval?.confidence_score ?? sessionItem.confidenceScore ?? 0,
-        strengths: techEval?.strengths || ["Demonstrated professional communication and structure."],
-        weaknesses: techEval?.weaknesses || ["Could expand on edge cases or code testability."],
-        recommendedTopics: techEval?.recommendations || ["Advanced Component Lifecycle Design Patterns"],
-        feedbackSummary: overallEval?.final_feedback || '',
-        constructiveAdvice: overallEval?.next_learning_plan || '',
-        idealSample: '',
-        matchedKeywords: [],
-        unmatchedKeywords: []
-      };
-
-      const answers = (detail?.answers || []).map(ans => ({
-        questionText: ans.question?.question_text || 'Interview Question',
-        answerText: ans.answer_text,
-        evaluation: {
-          overallScore: ans.evaluation?.score || 0,
-          feedbackSummary: ans.evaluation?.feedback || 'Reviewed by AI agent.',
-          constructiveAdvice: ans.evaluation?.grammar_suggestions || '',
-          idealSample: ans.question?.expected_answer_placeholder || '',
-          matchedKeywords: [],
-          unmatchedKeywords: []
-        }
-      }));
-
-      useInterviewStore.setState({
-        currentReport,
-        answers,
-        isFinished: true
-      });
-
-      navigate('/interview/results');
-    } catch (error) {
-      console.error('Failed to review report:', error);
-      useInterviewStore.setState({
-        currentReport: {
-          overallScore: sessionItem.overallScore || 0,
-          technicalScore: sessionItem.technicalScore || 0,
-          communicationScore: sessionItem.communicationScore || 0,
-          confidenceScore: sessionItem.confidenceScore || 0,
-          strengths: ["Demonstrated structure and consistency."],
-          weaknesses: ["Could expand on edge cases."],
-          recommendedTopics: []
-        },
-        answers: [],
-        isFinished: true
-      });
+    setLoadingReportId(sessionItem.id);
+    const success = await reviewReport(
+      sessionItem.id, 
+      sessionItem.overallScore, 
+      sessionItem.technicalScore, 
+      sessionItem.communicationScore, 
+      sessionItem.confidenceScore
+    );
+    setLoadingReportId(null);
+    if (success) {
       navigate('/interview/results');
     }
   };
@@ -151,10 +93,20 @@ export default function HistoryPage() {
                     <td className="py-4 text-right">
                       <button
                         onClick={() => handleReviewReport(item)}
-                        className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 ml-auto group-hover:translate-x-0.5 transition-transform"
+                        disabled={loadingReportId !== null}
+                        className="text-xs text-indigo-400 hover:text-indigo-305 font-semibold flex items-center gap-1.5 ml-auto disabled:opacity-50"
                       >
-                        <span>Review Report</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
+                        {loadingReportId === item.id ? (
+                          <>
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            <span>Loading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Review Report</span>
+                            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </>
+                        )}
                       </button>
                     </td>
                   </tr>

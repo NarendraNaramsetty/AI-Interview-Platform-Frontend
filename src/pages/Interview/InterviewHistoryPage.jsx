@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Calendar, Briefcase, Award, Clock, ArrowRight, Download, Trash2, RefreshCw, AlertCircle, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Calendar, Briefcase, Award, Clock, ArrowRight, Download, Trash2, RefreshCw, AlertCircle, FileText, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useInterviewStore } from '../../store/useInterviewStore';
 import { interview } from '../../services/interview';
 
 export default function InterviewHistoryPage() {
   const { theme } = useAuthStore();
+  const { reviewReport } = useInterviewStore();
   const navigate = useNavigate();
   
   const [interviews, setInterviews] = useState([]);
+  const [loadingReportId, setLoadingReportId] = useState(null);
   useEffect(() => {
     setIsLoading(true);
     interview.history().then((data) => {
@@ -88,6 +91,21 @@ export default function InterviewHistoryPage() {
   const handleResume = (item) => {
     alert(`Resuming incomplete mock simulation: ${item.name} for ${item.role}`);
     navigate('/interview/session');
+  };
+
+  const handleReviewReport = async (item) => {
+    setLoadingReportId(item.id);
+    const success = await reviewReport(
+      item.id,
+      item.overallScore,
+      item.technicalScore,
+      item.communicationScore,
+      item.confidenceScore
+    );
+    setLoadingReportId(null);
+    if (success) {
+      navigate('/interview/results');
+    }
   };
 
   const triggerResetFilters = () => {
@@ -254,14 +272,31 @@ export default function InterviewHistoryPage() {
                               Resume
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleDownloadPDF(item.id)}
-                              disabled={downloadingId === item.id}
-                              className="p-2 hover:bg-light-hover dark:hover:bg-dark-hover text-gray-400 hover:text-indigo-500 rounded-lg transition-colors"
-                              title="Download PDF Report"
-                            >
-                              <Download className={`h-4 w-4 ${downloadingId === item.id ? 'animate-bounce' : ''}`} />
-                            </button>
+                            <>
+                              <button
+                                onClick={() => handleReviewReport(item)}
+                                disabled={loadingReportId !== null}
+                                className="px-2.5 py-1.5 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-500 hover:text-indigo-650 dark:bg-indigo-500/15 dark:hover:bg-indigo-500/25 dark:text-indigo-400 dark:hover:text-indigo-300 font-bold rounded-lg text-[10px] uppercase transition-colors inline-flex items-center gap-1"
+                                title="Review Report details"
+                              >
+                                {loadingReportId === item.id ? (
+                                  <>
+                                    <Loader2 className="h-3 w-3 animate-spin" />
+                                    <span>Loading...</span>
+                                  </>
+                                ) : (
+                                  <span>View Report</span>
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleDownloadPDF(item.id)}
+                                disabled={downloadingId === item.id}
+                                className="p-2 hover:bg-light-hover dark:hover:bg-dark-hover text-gray-400 hover:text-indigo-500 rounded-lg transition-colors"
+                                title="Download PDF Report"
+                              >
+                                <Download className={`h-4 w-4 ${downloadingId === item.id ? 'animate-bounce' : ''}`} />
+                              </button>
+                            </>
                           )}
                           <button
                             onClick={() => handleDelete(item.id)}

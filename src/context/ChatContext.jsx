@@ -81,7 +81,7 @@ export function ChatProvider({ children }) {
   }, [currentSession, fetchHistory, skipHistoryFetch]);
 
   // Create a new session
-  const createNewSession = async (title = "") => {
+  const createNewSession = useCallback(async (title = "") => {
     setIsLoading(true);
     setError(null);
     try {
@@ -97,10 +97,10 @@ export function ChatProvider({ children }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // Delete a session
-  const removeSession = async (id) => {
+  const removeSession = useCallback(async (id) => {
     try {
       await chatbotApi.deleteSession(id);
       setSessions(prev => prev.filter(s => s.id !== id));
@@ -111,10 +111,10 @@ export function ChatProvider({ children }) {
       console.error("Failed to delete session:", err);
       throw err;
     }
-  };
+  }, [currentSession]);
 
   // Send user message
-  const sendUserMessage = async (text) => {
+  const sendUserMessage = useCallback(async (text) => {
     if (!text.trim()) return;
     setError(null);
 
@@ -166,10 +166,10 @@ export function ChatProvider({ children }) {
     } finally {
       setIsTyping(false);
     }
-  };
+  }, [currentSession, createNewSession, fetchSessions]);
 
   // Submit feed ratings
-  const submitRating = async (messageId, rating, comment = "") => {
+  const submitRating = useCallback(async (messageId, rating, comment = "") => {
     try {
       const response = await chatbotApi.submitFeedback({
         message_id: messageId,
@@ -189,24 +189,39 @@ export function ChatProvider({ children }) {
       console.error("Feedback submission error:", err);
       throw err;
     }
-  };
+  }, []);
+
+  const contextValue = React.useMemo(() => ({
+    sessions,
+    currentSession,
+    setCurrentSession,
+    messages,
+    categories,
+    isLoading,
+    isTyping,
+    error,
+    fetchSessions,
+    createNewSession,
+    removeSession,
+    sendUserMessage,
+    submitRating
+  }), [
+    sessions,
+    currentSession,
+    messages,
+    categories,
+    isLoading,
+    isTyping,
+    error,
+    fetchSessions,
+    createNewSession,
+    removeSession,
+    sendUserMessage,
+    submitRating
+  ]);
 
   return (
-    <ChatContext.Provider value={{
-      sessions,
-      currentSession,
-      setCurrentSession,
-      messages,
-      categories,
-      isLoading,
-      isTyping,
-      error,
-      fetchSessions,
-      createNewSession,
-      removeSession,
-      sendUserMessage,
-      submitRating
-    }}>
+    <ChatContext.Provider value={contextValue}>
       {children}
     </ChatContext.Provider>
   );

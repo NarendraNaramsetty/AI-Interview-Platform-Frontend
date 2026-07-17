@@ -262,7 +262,7 @@ export default function InterviewSetupPage() {
   const activeTechCategories = dynamicTechCategories || techCategories;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-10">
+    <div className="max-w-7xl mx-auto px-1 sm:px-4 md:px-8 py-4 sm:py-8 space-y-6 sm:space-y-10">
       
       {/* Premium Dashboard Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-light-border dark:border-dark-border">
@@ -282,7 +282,7 @@ export default function InterviewSetupPage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Step 1: Target Skills */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-5">
+          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-5">
             <div className="flex items-center gap-3">
               <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
                 1
@@ -385,7 +385,7 @@ export default function InterviewSetupPage() {
           </div>
 
           {/* Step 2: Difficulty */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
             <div className="flex items-center gap-3">
               <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
                 2
@@ -420,7 +420,7 @@ export default function InterviewSetupPage() {
           </div>
 
           {/* Step 3: Question Count */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
             <div className="flex items-center gap-3">
               <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
                 3
@@ -455,7 +455,7 @@ export default function InterviewSetupPage() {
           </div>
 
           {/* Step 4: Interview Mode */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
             <div className="flex items-center gap-3">
               <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
                 4
@@ -511,7 +511,7 @@ export default function InterviewSetupPage() {
         <div className="space-y-6 lg:sticky lg:top-8">
           
 {/* Glass Sticky Summary Card */}
-          <div className="p-6 rounded-3xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-6">
+          <div className="p-4 sm:p-6 rounded-3xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-6">
             
             <div className="space-y-2">
               <h3 className="font-display font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
@@ -590,7 +590,7 @@ export default function InterviewSetupPage() {
           </div>
 
           {/* Resume Integration Card */}
-          <div className="p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card shadow-sm space-y-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl">
                 <FileText className="h-5 w-5" />
