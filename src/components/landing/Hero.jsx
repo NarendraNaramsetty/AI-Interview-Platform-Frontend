@@ -11,10 +11,12 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
+import DemoVideoModal from './DemoVideoModal';
 
 export default function Hero() {
   const { theme } = useAuthStore();
   const [isMobile, setIsMobile] = useState(false);
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
   const containerRef = useRef(null);
   
   // Mouse tracking for 3D tilt effect
@@ -212,8 +214,9 @@ export default function Hero() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Link
-                  to="/login"
+                <button
+                  type="button"
+                  onClick={() => setIsDemoOpen(true)}
                   className={`inline-flex items-center justify-center gap-2 px-8 py-4 font-bold rounded-2xl border-2 transition-all duration-300 ${
                     theme === 'dark'
                       ? 'border-gray-700 text-gray-300 hover:bg-gray-800/50 hover:border-gray-600'
@@ -222,7 +225,7 @@ export default function Hero() {
                 >
                   <Play className="h-5 w-5 text-emerald-500 fill-emerald-500" />
                   <span>Watch Demo</span>
-                </Link>
+                </button>
               </motion.div>
             </div>
 
@@ -234,20 +237,7 @@ export default function Hero() {
               className="flex flex-wrap items-center gap-6 pt-4"
             >
               <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 border-2 border-white dark:border-gray-900" />
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  2,500+ students practicing
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Zap className="h-4 w-4 text-amber-500 fill-amber-500" />
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  85% success rate
-                </span>
+                
               </div>
             </motion.div>
           </motion.div>
@@ -366,6 +356,12 @@ export default function Hero() {
           </motion.div>
         </div>
       </div>
+
+      {/* Product Tour Demo Video Modal */}
+      <DemoVideoModal
+        isOpen={isDemoOpen}
+        onClose={() => setIsDemoOpen(false)}
+      />
     </section>
   );
 }

@@ -68,10 +68,7 @@ export default function RoadmapPage() {
 
   // ONBOARDING SETUP FORM STATES
   const [selectedCareers, setSelectedCareers] = useState([]);
-  const [experienceLevel, setExperienceLevel] = useState('Beginner');
-  const [targetCompany, setTargetCompany] = useState('');
-  const [weeklyHours, setWeeklyHours] = useState(15);
-  const [learningStyles, setLearningStyles] = useState(['Practice Problems']);
+  const [learningStyles] = useState(['Reading Documentation']);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // DASHBOARD MANAGEMENT STATES
@@ -129,19 +126,16 @@ export default function RoadmapPage() {
   // 1. GENERATE ROADMAP ROUTINE
   const handleGenerateRoadmap = async () => {
     if (selectedCareers.length === 0) {
-      pushToast({ type: 'warning', title: 'Target Role Required', message: 'Please click at least one career role to continue.' });
+      pushToast({ type: 'warning', title: 'Target Role Required', message: 'Please select at least one career role to generate your documentation roadmap.' });
       return;
     }
     setIsGenerating(true);
-    pushToast({ type: 'info', title: 'AI Roadmap Generator', message: 'Synthesizing customized pathway...' });
+    pushToast({ type: 'info', title: 'Documentation Roadmap Architect', message: 'Synthesizing interactive documentation curriculum...' });
 
     const payload = {
       interest: selectedCareers.join(' & '),
       career_track: selectedCareers.join(' & '),
-      experience_level: experienceLevel,
-      target_company: targetCompany,
-      weekly_hours: weeklyHours,
-      preferred_learning_style: learningStyles
+      preferred_learning_style: ['Reading Documentation']
     };
 
     try {
@@ -560,149 +554,32 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
               </div>
             </div>
 
-            {/* Step 2: Experience Tier and Target Company */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
-              <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
-                    2
-                  </span>
-                  <div className="space-y-0.5">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
-                      Experience Level
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Choose depth of learning tasks.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
-                  {['Beginner', 'Intermediate', 'Advanced'].map((lvl) => {
-                    const isSelected = experienceLevel === lvl;
-                    return (
-                      <button
-                        key={lvl}
-                        type="button"
-                        onClick={() => setExperienceLevel(lvl)}
-                        className={`py-2.5 px-4 rounded-xl border text-xs font-bold transition-all duration-200 text-center cursor-pointer ${
-                          isSelected 
-                            ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm shadow-emerald-500/20' 
-                            : 'border-light-border dark:border-dark-border bg-white dark:bg-dark-card hover:bg-light-hover/30 dark:hover:bg-dark-hover/10 text-gray-500 dark:text-gray-400'
-                        }`}
-                      >
-                        {lvl}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
-                    3
-                  </span>
-                  <div className="space-y-0.5">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
-                      Target Company (Optional)
-                    </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Tailor roadmap to industry patterns.
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="pt-2">
-                  <select
-                    value={targetCompany}
-                    onChange={(e) => setTargetCompany(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  >
-                    <option value="" className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">No Target Company</option>
-                    {companiesList.slice(1).map(c => (
-                      <option key={c} value={c} className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">{c}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-          </div>
-
-          {/* Step 3: Hours commitments */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
+            {/* Step 2: Preferred Learning Format */}
+            <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
               <div className="flex items-center gap-3">
                 <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
-                  4
+                  2
                 </span>
                 <div className="space-y-0.5">
-                  <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
-                    Weekly Study Commitment
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
+                    Learning Format
+                    <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                      Reading Documentation
+                    </span>
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Specify available preparation hours.
+                    Your interactive 3D roadmap compiles official documentation, technical guides, code snippets, and architectural standards for your target role.
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                {weeklyHours} Hours / Week
-              </span>
-            </div>
-            <div className="pt-2">
-              <input
-                type="range"
-                min="5"
-                max="50"
-                value={weeklyHours}
-                onChange={(e) => setWeeklyHours(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-gray-200 dark:bg-dark-border rounded-lg appearance-none cursor-pointer accent-emerald-650"
-              />
-              <div className="flex justify-between text-[10px] text-gray-400 mt-2 font-semibold">
-                <span>5 Hours</span>
-                <span>25 Hours</span>
-                <span>50 Hours</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Step 4: Learning styles */}
-          <div className="p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
-                5
-              </span>
-              <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
-                  Preferred Learning Styles
-                </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Choose media layout formats.
-                </p>
+              <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex items-center gap-3">
+                <BookOpen className="h-5 w-5 text-emerald-500 shrink-0" />
+                <div className="text-xs text-gray-700 dark:text-gray-300">
+                  <strong>Reading Documentation Default Mode:</strong> Focus on official documentation guides, specification sheets, core architectural concepts, and milestone progress.
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              {learningStyleOptions.map((style) => {
-                const isSelected = learningStyles.includes(style);
-                return (
-                  <label key={style} className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer text-xs transition-all duration-200 ${
-                    isSelected 
-                      ? 'border-emerald-500 bg-emerald-500/5' 
-                      : 'border-light-border dark:border-dark-border bg-white dark:bg-dark-card hover:bg-light-hover/20'
-                  }`}>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => toggleLearningStyle(style)}
-                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4 accent-emerald-600"
-                    />
-                    <span className="text-gray-700 dark:text-gray-200 font-semibold">{style}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
 
           {/* Submit onboarding CTA */}
           <button

@@ -10,7 +10,7 @@ import { getApiUrl } from '../utils/envConfig';
 export default function GoogleLoginButton() {
   const navigate = useNavigate();
   const { pushToast } = useToastStore();
-  const { setUser } = useAuthStore();
+  const { setUser, theme } = useAuthStore();
   const [loading, setLoading] = useState(false);
 
   const handleGoogleLogin = () => {
@@ -99,18 +99,19 @@ export default function GoogleLoginButton() {
       fullWidth
       disabled={loading}
       onClick={handleGoogleLogin}
-      startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <FaGoogle />}
+      startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <FaGoogle style={{ color: '#ea4335' }} />}
       sx={{
         py: 1.2,
         borderRadius: 3,
         textTransform: 'none',
         fontWeight: 600,
         fontSize: '0.825rem',
-        borderColor: 'rgba(0,0,0,0.12)',
-        color: 'text.primary',
+        borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.15)',
+        color: theme === 'dark' ? '#f3f4f6' : '#1f2937',
+        backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
         '&:hover': {
-          borderColor: 'text.primary',
-          backgroundColor: 'action.hover',
+          borderColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.4)' : '#6b7280',
+          backgroundColor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : '#f9fafb',
         },
         display: 'flex',
         alignItems: 'center',

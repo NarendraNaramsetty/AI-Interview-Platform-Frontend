@@ -37,7 +37,8 @@ import {
   TrendingUp, 
   Sliders, 
   Eye, 
-  HelpCircle,
+  Loader2,
+  AlertTriangle,
   FileText,
   User
 } from 'lucide-react';
@@ -63,6 +64,8 @@ export default function InterviewSetupPage() {
   const [useResumeSkills, setUseResumeSkills] = useState(true);
   const [showStats, setShowStats] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [showSkillConflictModal, setShowSkillConflictModal] = useState(false);
 
   const toggleCategory = (cat) => {
     setExpandedCategories(prev => ({
@@ -150,10 +153,10 @@ export default function InterviewSetupPage() {
   };
 
   const techCategories = {
-    Languages: ['Python', 'Java', 'JavaScript', 'Go', 'C#', 'Rust'],
-    Frameworks: ['React', 'Angular', 'Vue', 'Django', 'Flask', 'Spring Boot', 'Node', 'Express'],
-    Databases: ['Postgres', 'MongoDB', 'Redis', 'MySQL'],
-    Cloud: ['AWS', 'Azure', 'Docker', 'Kubernetes'],
+    Languages: ['Python', 'Java', 'JavaScript', 'TypeScript', 'Go', 'C++', 'C#', 'Rust'],
+    Frameworks: ['React', 'Angular', 'Vue', 'Next.js', 'Django', 'Flask', 'Spring Boot', 'Node', 'Express'],
+    Databases: ['Postgres', 'MongoDB', 'Redis', 'MySQL', 'SQLite'],
+    Cloud: ['AWS', 'Azure', 'Docker', 'Kubernetes', 'GCP', 'Git', 'CI/CD'],
     AI: ['OpenAI', 'LangChain', 'RAG', 'Vector DB', 'TensorFlow', 'PyTorch']
   };
 
@@ -165,7 +168,7 @@ export default function InterviewSetupPage() {
     { id: 'lead', title: 'Lead', range: '10+ years' }
   ];
 
-  const difficulties = ['Easy', 'Medium', 'Hard', 'Expert', 'Adaptive AI'];
+  const difficulties = ['Easy', 'Medium', 'Hard'];
 
   const modes = [
     { id: 'text', title: 'Text Interview', desc: 'Type answers', icon: Keyboard },
@@ -195,12 +198,29 @@ export default function InterviewSetupPage() {
     });
   };
 
+  const getCategoryOfSkill = (skill) => {
+    for (const [catName, skillList] of Object.entries(techCategories)) {
+      if (skillList.includes(skill)) return catName;
+    }
+    return 'Other';
+  };
+
   const handleTechToggle = (tech) => {
     const currentStack = config.techStack || [];
     if (currentStack.includes(tech)) {
       setSetupConfig({ techStack: currentStack.filter(t => t !== tech) });
     } else {
-      setSetupConfig({ techStack: [...currentStack, tech] });
+      const newStack = [...currentStack, tech];
+      const selectedCats = new Set(newStack.map(getCategoryOfSkill));
+      if (selectedCats.size > 2) {
+        pushToast({
+          type: 'warning',
+          title: 'Category Limit Reached',
+          message: 'You can select target skills from at most 2 categories for a focused mock interview.'
+        });
+        return;
+      }
+      setSetupConfig({ techStack: newStack });
     }
   };
 
@@ -249,17 +269,41 @@ export default function InterviewSetupPage() {
     return `Expect comprehensive system queries on ${skillsStr} covering REST standards, API latency, and data integrity.`;
   };
 
-  const handleLaunch = () => {
+  const handleLaunch = async (overrideClearSkills = false) => {
+    const isNonTech = ['behavioral', 'hr', 'rapid', 'mixed'].includes(config.mode);
+    const hasSkills = config.techStack && config.techStack.length > 0;
+
+    if (isNonTech && hasSkills && !overrideClearSkills) {
+      setShowSkillConflictModal(true);
+      return;
+    }
+
+    if (overrideClearSkills) {
+      setSetupConfig({ techStack: [] });
+    }
+
     const roleName = currentRoleObj.name;
-    startInterview(roleName);
-    navigate('/interview/session');
+    setIsLaunching(true);
+    try {
+      await startInterview(roleName);
+      navigate('/interview/session');
+    } catch (err) {
+      pushToast({
+        type: 'error',
+        title: 'Interview Setup Failed',
+        message: err?.message || 'Could not start interview session. Please try again.'
+      });
+    } finally {
+      setIsLaunching(false);
+      setShowSkillConflictModal(false);
+    }
   };
 
   const cardStyle = theme === 'dark' 
     ? 'bg-dark-card border-dark-border text-gray-200' 
     : 'bg-white border-light-border text-gray-800 shadow-sm';
 
-  const activeTechCategories = dynamicTechCategories || techCategories;
+  const activeTechCategories = techCategories;
 
   return (
     <div className="max-w-7xl mx-auto px-1 sm:px-4 md:px-8 py-4 sm:py-8 space-y-6 sm:space-y-10">
@@ -282,17 +326,26 @@ export default function InterviewSetupPage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Step 1: Target Skills */}
-          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-5">
+          <div className={`p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-5 transition-all ${
+            ['behavioral', 'hr', 'rapid', 'mixed'].includes(config.mode) ? 'opacity-85' : ''
+          }`}>
             <div className="flex items-center gap-3">
               <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
                 1
               </span>
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
                   Target Skills
+                  {['behavioral', 'hr', 'rapid', 'mixed'].includes(config.mode) && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-semibold">
+                      Auto-Managed for {modes.find(m => m.id === config.mode)?.title}
+                    </span>
+                  )}
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Search and toggle the specific skills to test.
+                  {['behavioral', 'hr', 'rapid', 'mixed'].includes(config.mode)
+                    ? `Specific technical stack skills are disabled for ${modes.find(m => m.id === config.mode)?.title}. Questions will be generated based on your selected Target Company (${config.companyFocus || 'Amazon'}) and Difficulty (${config.difficulty || 'Medium'}).`
+                    : 'Search and toggle the specific skills to test.'}
                 </p>
               </div>
             </div>
@@ -395,7 +448,7 @@ export default function InterviewSetupPage() {
                   Session Difficulty
                 </h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Select target complexity or enable Adaptive AI.
+                  Select target question difficulty (Easy, Medium, or Hard).
                 </p>
               </div>
             </div>
@@ -505,6 +558,34 @@ export default function InterviewSetupPage() {
             </div>
           </div>
 
+          {/* Step 5: Target Company Focus */}
+          <div className="p-4 sm:p-6 rounded-2xl border bg-white dark:bg-dark-card border-light-border dark:border-dark-border shadow-sm space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="h-6 w-6 shrink-0 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-[11px] font-extrabold border border-emerald-500/10">
+                5
+              </span>
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-tight">
+                  Target Company Focus
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Select target company interview style and engineering scenario context.
+                </p>
+              </div>
+            </div>
+            <div className="pt-2">
+              <select
+                value={config.companyFocus || 'Amazon'}
+                onChange={(e) => setSetupConfig({ companyFocus: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-light-border dark:border-dark-border bg-white dark:bg-dark-card text-xs font-semibold text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                {['Amazon', 'Google', 'Microsoft', 'Meta', 'Netflix', 'Uber', 'Atlassian', 'General / Tech Startup'].map(c => (
+                  <option key={c} value={c} className="bg-white dark:bg-dark-card text-gray-800 dark:text-gray-100">{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
         </div>
 
         {/* RIGHT COLUMN (30%) - Summary & Sidebar widgets */}
@@ -556,10 +637,22 @@ export default function InterviewSetupPage() {
             {/* Launch CTA */}
             <button
               onClick={handleLaunch}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 mt-4"
+              disabled={isLaunching}
+              className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-md shadow-emerald-500/10 mt-4 ${
+                isLaunching ? 'opacity-75 cursor-not-allowed' : ''
+              }`}
             >
-              <Play className="h-4 w-4 fill-white" />
-              <span>Start AI Interview</span>
+              {isLaunching ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  <span>Preparing AI Session...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4 fill-white" />
+                  <span>Start AI Interview</span>
+                </>
+              )}
             </button>
 
           </div>
@@ -703,6 +796,50 @@ export default function InterviewSetupPage() {
           </div>
         )}
       </div>
+
+      {/* Target Skills Conflict Popup Modal */}
+      {showSkillConflictModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center gap-3 text-amber-500">
+              <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">Target Skills Selected</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Please unselect target skills for this mode</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-gray-50 dark:bg-dark-card/50 border border-gray-200 dark:border-dark-border space-y-2">
+              <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                You currently have <strong>{config.techStack?.join(', ')}</strong> selected under Target Skills, but you chose <strong>{modes.find(m => m.id === config.mode)?.title || config.mode}</strong>.
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Target skills are not used for {modes.find(m => m.id === config.mode)?.title || config.mode} because questions are generated based on your selected <strong>Target Company</strong> and <strong>Difficulty</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => handleLaunch(true)}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-md"
+              >
+                <Sparkles className="h-4 w-4 fill-white" />
+                <span>Clear Skills & Start</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSkillConflictModal(false)}
+                className="flex-1 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-border text-gray-700 dark:text-gray-300 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all text-center border border-gray-200 dark:border-dark-border"
+              >
+                Unselect Manually
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

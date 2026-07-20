@@ -32,10 +32,10 @@ import {
   Eye, 
   HelpCircle,
   FileText,
-  Building,
-  Target,
   Send,
-  ArrowRight
+  ArrowRight,
+  AlertTriangle,
+  LogOut
 } from 'lucide-react';
 
 export default function CodingPage() {
@@ -57,8 +57,9 @@ export default function CodingPage() {
   const [activeTab, setActiveTab] = useState('description'); // description, hints, follow-up
   const [currentHintLevel, setCurrentHintLevel] = useState(0);
 
-  // Review Modal State
+  // Review & Exit Modal State
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showExitConfirmModal, setShowExitConfirmModal] = useState(false);
   const [aiReviewData, setAiReviewData] = useState(null);
 
   // Dashboard / Analytics State
@@ -404,7 +405,7 @@ export default function CodingPage() {
                   5. Difficulty level
                 </h3>
                 <div className="p-1 rounded-xl border border-light-border dark:border-dark-border bg-gray-50 dark:bg-dark-bg flex gap-1">
-                  {['Easy', 'Medium', 'Hard', 'Expert', 'Adaptive AI'].map((diff) => {
+                  {['Easy', 'Medium', 'Hard'].map((diff) => {
                     const isSelected = difficulty === diff.toLowerCase();
                     return (
                       <button
@@ -525,14 +526,11 @@ export default function CodingPage() {
             </div>
             
             <button
-              onClick={() => {
-                if (window.confirm("Return to setup dashboard? Your current code will be lost.")) {
-                  setIsChallengeActive(false);
-                }
-              }}
-              className="text-xs font-semibold border border-light-border dark:border-dark-border hover:bg-light-hover dark:hover:bg-dark-hover px-4 py-2 rounded-xl text-gray-500 dark:text-gray-300"
+              onClick={() => setShowExitConfirmModal(true)}
+              className="text-xs font-semibold border border-light-border dark:border-dark-border hover:bg-light-hover dark:hover:bg-dark-hover px-4 py-2 rounded-xl text-gray-500 dark:text-gray-300 transition-all flex items-center gap-1.5"
             >
-              Exit Workbench
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Exit Workbench</span>
             </button>
           </div>
 
@@ -834,6 +832,50 @@ export default function CodingPage() {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Professional Exit Confirmation Modal */}
+      {showExitConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div className="flex items-center gap-3 text-amber-500">
+              <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
+                <AlertTriangle className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">Exit Coding Workbench?</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Unsaved code edits will be reset</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl bg-gray-50 dark:bg-dark-card/50 border border-gray-200 dark:border-dark-border space-y-2">
+              <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                Are you sure you want to return to the setup dashboard? Any code edits in your current virtual sandbox will be reset.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExitConfirmModal(false);
+                  setIsChallengeActive(false);
+                }}
+                className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-md"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Exit Workbench</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowExitConfirmModal(false)}
+                className="flex-1 bg-gray-100 dark:bg-dark-card hover:bg-gray-200 dark:hover:bg-dark-border text-gray-700 dark:text-gray-300 font-semibold py-2.5 px-4 rounded-xl text-xs transition-all text-center border border-gray-200 dark:border-dark-border"
+              >
+                Continue Coding
+              </button>
+            </div>
           </div>
         </div>
       )}

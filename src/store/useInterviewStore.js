@@ -82,17 +82,41 @@ export const useInterviewStore = create((set, get) => ({
   },
 
   startInterview: async (targetRoleName) => {
+    // Reset state immediately so stale questions from previous session never flash
+    set({
+      sessionId: null,
+      activeSessionId: null,
+      questions: [],
+      currentQuestionIndex: 0,
+      answers: [],
+      isStarted: false,
+      isPaused: false,
+      isFinished: false,
+      isEvaluatingQuestion: false,
+      isLoadingSession: true
+    });
+
     const { config } = get();
     try {
       const response = await interview.start({
         target_role: targetRoleName || ROLE_LABELS[config.role] || 'Frontend Engineer',
-        target_company: 'Your Company',
+        target_company: config.companyFocus || 'General',
         interview_type: 'Technical',
         difficulty: String(config.difficulty || 'Medium').charAt(0).toUpperCase() + String(config.difficulty || 'Medium').slice(1),
-        interview_mode: String(config.mode || 'Text').charAt(0).toUpperCase() + String(config.mode || 'Text').slice(1),
+        interview_mode: {
+          'text': 'Text',
+          'voice': 'Voice',
+          'coding': 'Coding',
+          'sys-design': 'System Design',
+          'behavioral': 'Behavioral Round',
+          'hr': 'HR Round',
+          'rapid': 'Rapid Fire',
+          'mixed': 'Mixed Mock'
+        }[config.mode] || 'Text',
         language: 'English',
         total_questions: config.questionCount,
         duration_minutes: config.duration,
+        tech_stack: config.techStack || [],
         resume_id: null
       });
 
@@ -125,10 +149,11 @@ export const useInterviewStore = create((set, get) => ({
         isFinished: false,
         isEvaluatingQuestion: false,
         timeRemaining: config.questionCount * 120,
-        currentReport: null
+        currentReport: null,
+        isLoadingSession: false
       });
     } catch (error) {
-      set({ isStarted: false, isPaused: false, isFinished: false });
+      set({ isStarted: false, isPaused: false, isFinished: false, isLoadingSession: false });
       throw error;
     }
   },
