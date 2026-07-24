@@ -55,6 +55,37 @@ export const useResumeStore = create((set) => ({
     set({ file: null, parsedData: null, error: null, parsingProgress: 0, parsingStatus: '' });
   },
 
+  matchData: JSON.parse(localStorage.getItem('match_analysis')) || null,
+  isMatching: false,
+  matchError: null,
+
+  analyzeMatch: async (uploadedFile, jobDescription) => {
+    set({ isMatching: true, matchError: null });
+    try {
+      const formData = new FormData();
+      if (uploadedFile) {
+        formData.append('file', uploadedFile);
+      }
+      formData.append('job_description', jobDescription);
+
+      const response = await resume.match(formData);
+      const matchData = response?.match || response?.data?.match || response?.data || response;
+
+      localStorage.setItem('match_analysis', JSON.stringify(matchData));
+      set({ matchData, isMatching: false });
+      return true;
+    } catch (err) {
+      const errMsg = err?.response?.data?.message || err?.message || 'Failed to process match. Please try again.';
+      set({ matchError: errMsg, isMatching: false });
+      return false;
+    }
+  },
+
+  clearMatch: () => {
+    localStorage.removeItem('match_analysis');
+    set({ matchData: null, matchError: null });
+  },
+
   hydrateResume: async () => {
     try {
       const list = await resume.list();

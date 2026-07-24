@@ -55,7 +55,7 @@ export default function DashboardLayout({ children }) {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Resume Sync', path: '/resume-upload', icon: UploadCloud },
+    { name: 'Resume Matcher', path: '/resume-upload', icon: UploadCloud },
     { name: 'Interview Lab', path: '/interview/setup', icon: PlayCircle },
     { name: 'Coding Sandbox', path: '/coding', icon: Code },
     { name: 'Roadmap Track', path: '/roadmap', icon: Compass },
@@ -160,7 +160,7 @@ export default function DashboardLayout({ children }) {
             </button>
             <h1 className="font-display font-bold text-lg hidden sm:block">
               {location.pathname === '/dashboard' && 'Welcome back! Practice makes perfect.'}
-              {location.pathname === '/resume-upload' && 'Resume ATS Analysis'}
+              {location.pathname === '/resume-upload' && 'Resume & JD Matcher'}
               {location.pathname.startsWith('/interview') && 'AI Simulated Interview'}
               {location.pathname === '/analytics' && 'Growth Insights'}
               {location.pathname === '/history' && 'Practice Records'}

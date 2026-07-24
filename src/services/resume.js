@@ -13,5 +13,8 @@ export const resume = {
   text: (id) => api.get(`/api/resume/${id}/text`),
   versions: (id) => api.get(`/api/resume/${id}/versions`),
   activity: (id) => api.get(`/api/resume/${id}/activity`),
-  analysis: () => api.get('/api/resume/analysis')
+  analysis: () => api.get('/api/resume/analysis'),
+  match: (formData) => api.post('/api/resume/match', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
 };

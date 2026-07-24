@@ -40,7 +40,8 @@ import {
   BrainCircuit,
   Settings,
   HelpCircle,
-  RefreshCw
+  RefreshCw,
+  Briefcase
 } from 'lucide-react';
 import { useToastStore } from '../../store/useToastStore';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -65,6 +66,24 @@ export default function RoadmapPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [activeRoadmap, setActiveRoadmap] = useState(null);
+
+  // Parse description payload safely
+  let inferredLevelReason = '';
+  let prerequisites = [];
+  let prepGuide = null;
+  let isJsonDescription = false;
+
+  try {
+    const parsedDesc = JSON.parse(activeRoadmap?.roadmap_details?.description || '');
+    if (parsedDesc && typeof parsedDesc === 'object') {
+      inferredLevelReason = parsedDesc.inferred_level_reason || '';
+      prerequisites = parsedDesc.prerequisites || [];
+      prepGuide = parsedDesc.preparation_guide || null;
+      isJsonDescription = true;
+    }
+  } catch (e) {
+    inferredLevelReason = activeRoadmap?.roadmap_details?.description || '';
+  }
 
   // ONBOARDING SETUP FORM STATES
   const [selectedCareers, setSelectedCareers] = useState([]);
@@ -626,7 +645,10 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
                 {activeRoadmap.roadmap_title}
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {activeRoadmap.roadmap_details?.description || 'Your custom roadmap roadmap syllabus details.'}
+                {isJsonDescription 
+                  ? `Goal-oriented curriculum for ${activeRoadmap.roadmap_title}. Click 'Foundations & Prep Guide' below for role documentation.`
+                  : (activeRoadmap.roadmap_details?.description || 'Your custom roadmap syllabus details.')
+                }
               </p>
             </div>
 
@@ -704,11 +726,12 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
             
             <div className="flex items-center gap-2 border-r border-light-border dark:border-dark-border pr-4 w-full lg:w-auto">
               <span className="text-xs font-bold text-gray-400">View:</span>
-              <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl gap-1 text-[11px]">
+              <div className="flex bg-slate-100 dark:bg-slate-900/60 p-1 rounded-xl gap-1 text-[11px] flex-wrap">
                 {[
                   { id: 'roadmap', label: 'Cards Grid', icon: Layers },
                   { id: 'timeline', label: 'Timeline', icon: Calendar },
-                  { id: 'kanban', label: 'Kanban Board', icon: Columns }
+                  { id: 'kanban', label: 'Kanban Board', icon: Columns },
+                  ...(isJsonDescription ? [{ id: 'documentation', label: 'Foundations & Prep Guide', icon: BookOpen }] : [])
                 ].map(view => {
                   const IconComp = view.icon;
                   return (
@@ -788,9 +811,117 @@ Please provide a helpful, clean explanation or solution outline. Use markdown fo
           </div>
 
           {/* 3. SWITCH RENDER VIEWS */}
-          {getFilteredModules().length === 0 ? (
+          {getFilteredModules().length === 0 && viewMode !== 'documentation' ? (
             <div className={`p-12 text-center rounded-3xl border ${cardStyle} text-xs text-gray-500`}>
               No matching modules found for your query. Try clearing search filters.
+            </div>
+          ) : viewMode === 'documentation' ? (
+            
+            // --- DOCUMENTATION VIEW ---
+            <div className="space-y-6 animate-slide-up">
+              {/* Introduction Card */}
+              <div className={`p-6 rounded-3xl border ${cardStyle} space-y-4`}>
+                <h3 className="font-display font-extrabold text-xl text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-indigo-500" />
+                  <span>Curriculum Foundations & Level Assessment</span>
+                </h3>
+                <div className={`p-4 rounded-xl border ${subCardStyle} text-xs leading-relaxed text-gray-400`}>
+                  <strong className="text-gray-200 block mb-1">Starting Level Reasoning:</strong>
+                  {inferredLevelReason || "Your starting difficulty has been automatically inferred based on your stated background."}
+                </div>
+              </div>
+
+              {/* Prerequisites & Basics Card */}
+              <div className={`p-6 rounded-3xl border ${cardStyle} space-y-4`}>
+                <h3 className="font-display font-extrabold text-lg text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Target className="h-5 w-5 text-emerald-500" />
+                  <span>Basics & Prerequisites (What to know earlier)</span>
+                </h3>
+                <p className="text-xs text-gray-500">
+                  Ensure you possess basic comfort with these foundational elements before diving into intermediate/advanced roadmap milestones.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {prerequisites.length > 0 ? prerequisites.map((prereq, index) => (
+                    <div 
+                      key={index}
+                      className={`p-3 rounded-xl border flex items-start gap-2.5 text-xs text-gray-400 ${subCardStyle}`}
+                    >
+                      <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 shrink-0 mt-0.5" />
+                      <span>{prereq}</span>
+                    </div>
+                  )) : (
+                    <div className="text-xs text-gray-500 italic">No specific prerequisites tagged.</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Preparation Strategy & Guidelines */}
+              {prepGuide && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  
+                  {/* Left Column: Prep Strategy & Focus Areas */}
+                  <div className={`p-6 rounded-3xl border ${cardStyle} space-y-5`}>
+                    <div className="space-y-2">
+                      <h4 className="font-display font-bold text-base text-indigo-400 flex items-center gap-2">
+                        <Briefcase className="h-5 w-5" />
+                        <span>Comprehensive Role Prep Strategy</span>
+                      </h4>
+                      <p className="text-xs text-gray-400 leading-relaxed">
+                        {prepGuide.strategy}
+                      </p>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-gray-500/10">
+                      <h5 className="text-xs font-bold text-gray-300 uppercase tracking-wider">Key Focus Areas</h5>
+                      <div className="flex flex-wrap gap-1.5">
+                        {prepGuide.focus_areas?.map((area, idx) => (
+                          <span 
+                            key={idx} 
+                            className="text-[10px] font-semibold px-2.5 py-1 rounded bg-indigo-500/5 text-indigo-400 border border-indigo-500/10"
+                          >
+                            {area}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Interview secrets & recommended resources */}
+                  <div className={`p-6 rounded-3xl border ${cardStyle} space-y-5`}>
+                    <div className="space-y-3">
+                      <h4 className="font-display font-bold text-base text-pink-500 flex items-center gap-2">
+                        <Trophy className="h-5 w-5" />
+                        <span>Interview Performance Tips</span>
+                      </h4>
+                      <ul className="space-y-2">
+                        {prepGuide.interview_tips?.map((tip, idx) => (
+                          <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
+                            <span className="text-pink-500 font-bold shrink-0">{idx + 1}.</span>
+                            <span>{tip}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="space-y-3 pt-4 border-t border-gray-500/10">
+                      <h4 className="font-display font-bold text-base text-emerald-500 flex items-center gap-2">
+                        <BookOpen className="h-5 w-5" />
+                        <span>Curated Study Resources</span>
+                      </h4>
+                      <ul className="space-y-2">
+                        {prepGuide.recommended_resources?.map((res, idx) => (
+                          <li key={idx} className="text-xs text-gray-400 leading-relaxed flex items-start gap-2">
+                            <LinkIcon className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{res}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                  </div>
+
+                </div>
+              )}
             </div>
           ) : viewMode === 'roadmap' ? (
             
